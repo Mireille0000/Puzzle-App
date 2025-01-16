@@ -7,5 +7,8 @@ body {
   display: flex;
   justify-content: space-evenly;
   align-items: center;
+  background: center / cover no-repeat url('../public/winter_l.jpg');
+  background-color: rgb(161 178 200 / 70%);
+  // background: center / contain radial-gradient(rgb(222, 39, 75), rgb(104, 130, 140));
   font-family:'Lucida Sans', sans-serif;
 }
