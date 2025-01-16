@@ -20,10 +20,6 @@
     "rules": {
       "import/prefer-default-export": "off",
       "import/no-unresolved": "off",
-        // "indent": [
-        //     "error",
-        //     "tab"
-        // ],
         "linebreak-style": [
             "error",
             "windows"
