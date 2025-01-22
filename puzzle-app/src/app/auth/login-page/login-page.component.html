@@ -3,7 +3,7 @@
     <legend>Puzzle Game</legend>
     <label for="name">Fisrt Name: </label>
     <input id="name" type="text" formControlName="firstName">
-    <div *ngIf="firstName?.invalid && (firstName?.touched || firstName?.dirty)">
+    <div class="login-form_hints" *ngIf="firstName?.invalid && (firstName?.touched || firstName?.dirty)">
       <div *ngIf="firstName?.hasError('required')" class="alert">
         First Name is required
       </div>
@@ -20,7 +20,7 @@
 
     <label for="name">Last Name: </label>
     <input id="name" type="text" formControlName="lastName">
-    <div *ngIf="lastName?.invalid && (lastName?.touched || lastName?.dirty)">
+    <div class="login-form_hints" *ngIf="lastName?.invalid && (lastName?.touched || lastName?.dirty)">
       <div *ngIf="lastName?.hasError('required')" class="alert">
         Last Name is required
       </div>
@@ -37,7 +37,7 @@
 
     <label for="name">Password: </label>
     <input id="name" type="text" formControlName="password">
-    <div *ngIf="password?.invalid && (password?.touched || password?.dirty)">
+    <div class="login-form_hints" *ngIf="password?.invalid && (password?.touched || password?.dirty)">
       <div *ngIf="password?.hasError('required')" class="alert">
         Password is required
       </div>
