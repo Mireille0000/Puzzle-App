@@ -1,5 +1,6 @@
 import {
   Component, inject,
+  OnInit,
 } from '@angular/core';
 import {
   FormControl, FormGroup, ReactiveFormsModule, Validators,
@@ -10,6 +11,8 @@ import {
   hasDigit, hasLowercaseLetter, hasSpecialCharacter, hasUppercaseLetter,
 } from './custom-validators/password-validators';
 import { LoginService } from '../services/login.service';
+import { ActivatedRoute } from '@angular/router';
+import { NavigationService } from '../../core/navigation.service';
 
 @Component({
   selector: 'pzl-login-page',
@@ -17,7 +20,7 @@ import { LoginService } from '../services/login.service';
   templateUrl: './login-page.component.html',
   styleUrl: './login-page.component.scss',
 })
-export class LoginPageComponent {
+export class LoginPageComponent implements OnInit{
   loginForm = new FormGroup({
     firstName: new FormControl<string>(
       '',
@@ -51,6 +54,12 @@ export class LoginPageComponent {
 
   loginService: LoginService = inject(LoginService);
 
+  constructor(private navigation: NavigationService, private route: ActivatedRoute) {}
+
+  ngOnInit() {
+    this.navigation.getPathName(this.route);
+  }
+
   get firstName() {
     return this.loginForm.get('firstName');
   }
@@ -64,7 +73,6 @@ export class LoginPageComponent {
   }
 
   onSubmit() {
-    console.log(this.loginForm.value);
     const userCredentials = this.loginForm.value;
     this.loginService.saveUserCredentials(userCredentials);
   }

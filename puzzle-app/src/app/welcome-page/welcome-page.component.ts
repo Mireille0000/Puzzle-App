@@ -1,4 +1,6 @@
-import { Component } from '@angular/core';
+import { Component} from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { NavigationService } from '../core/navigation.service';
 
 @Component({
   selector: 'app-welcome-page',
@@ -7,5 +9,9 @@ import { Component } from '@angular/core';
   styleUrl: './welcome-page.component.scss'
 })
 export class WelcomePageComponent {
+  constructor(private navigation: NavigationService, private route: ActivatedRoute) {}
 
+  ngOnInit() {
+    this.navigation.getPathName(this.route);
+  }
 }
