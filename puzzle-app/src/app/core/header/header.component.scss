@@ -1,0 +1,32 @@
+:host {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: rgb(161 178 200 / 90%);
+  .logo {
+    margin: 5px;
+    padding: 5px;
+  }
+  nav {
+    margin: 5px;
+    padding: 5px;
+    ul {
+      display: flex;
+      flex-direction: row-reverse;
+      gap: 15px;
+      li {
+        list-style: none;
+        a {
+          color: #ffff;
+          text-decoration: none;
+          transition-duration: 0.7s;
+        }
+        a:hover {
+          text-shadow: 1px 1px 2px rgba(202, 10, 10, 0.836), 0 0 1em rgb(0, 166, 255), 0 0 0.2em blue;
+          color: rgb(6, 164, 11);
+          transition-duration: 0.7s;
+        }
+      }
+    }
+  }
+}
