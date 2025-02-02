@@ -8,6 +8,5 @@ import { RouterLink, RouterOutlet } from '@angular/router';
   styleUrl: './footer.component.scss'
 })
 export class FooterComponent {
-  gitHubLink: string =  'https://github.com/Mireille0000';
 
 }

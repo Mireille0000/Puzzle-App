@@ -1,1 +1,10 @@
-<h1>Puzzle Game</h1>
+<h1 *ngIf="!isLogged">Puzzle Game</h1>
+<ng-template #startScreen>
+  <div class="start-screen-content" *ngIf="userName">
+    <h3>Greetings, {{userName}}! Welcome to </h3>
+    <h1>Puzzle Game</h1>
+    <button class="start-game-btn">Start Game</button>
+  </div>
+</ng-template>
+<ng-container *ngIf="isLogged" [ngTemplateOutlet]="startScreen"></ng-container>
+

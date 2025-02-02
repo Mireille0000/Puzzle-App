@@ -6,7 +6,7 @@ import { FooterComponent } from './core/footer/footer.component';
 
 @Component({
   selector: 'pzl-app',
-  imports: [RouterOutlet, ReactiveFormsModule, HeaderComponent, FooterComponent],
+  imports: [RouterOutlet, HeaderComponent, FooterComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })
