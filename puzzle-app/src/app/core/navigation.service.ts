@@ -4,15 +4,18 @@ import { BehaviorSubject } from 'rxjs';
 import UserCredentials from '../auth/interfaces/user-credentials.interface';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class NavigationService {
   currentPathName$ = new BehaviorSubject<string>('');
+
   firstNavItem$ = new BehaviorSubject<string>('');
+
   secondNavItem$ = new BehaviorSubject<string>('');
+
   currentLink$ = new BehaviorSubject<string>('');
 
-  isLogged$ = new BehaviorSubject<boolean>(false);;
+  isLogged$ = new BehaviorSubject<boolean>(false);
 
   defineLogInLogOutLink(): string {
     let link = '';
@@ -21,31 +24,38 @@ export class NavigationService {
       this.isLogged$.next(true);
       link = 'Log out';
       return link;
-    } else {
-      this.isLogged$.next(false);
-      link = 'Log in';
-      return link;
     }
+    this.isLogged$.next(false);
+    link = 'Log in';
+    return link;
   }
 
   getPathName(route: ActivatedRoute) {
-    route.url.subscribe((data) =>{
+    route.url.subscribe((data) => {
       this.currentPathName$.next(data[0].path);
-      switch(data[0].path) {
+      switch (data[0].path) {
         case 'login':
-          this.firstNavItem$.next(`Back to Main`);
+          this.firstNavItem$.next('Back to Main');
           this.secondNavItem$.next('About');
           this.currentLink$.next('');
           break;
         case 'welcome':
-          this.firstNavItem$.next(`About`);
+          this.firstNavItem$.next('About');
           this.secondNavItem$.next(this.defineLogInLogOutLink());
           this.currentLink$.next('/login');
           break;
+        case 'puzzle-game':
+          this.firstNavItem$.next('Back to Main');
+          this.secondNavItem$.next(this.defineLogInLogOutLink());
+          this.currentLink$.next('/login');
+          break;
+        default:
+          this.firstNavItem$.next('Back to Main');
+          this.secondNavItem$.next(this.defineLogInLogOutLink());
+          this.currentLink$.next('/login');
       }
 
       return this.currentPathName$;
-    })
+    });
   }
-
 }
