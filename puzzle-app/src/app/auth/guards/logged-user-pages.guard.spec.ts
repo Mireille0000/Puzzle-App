@@ -4,7 +4,7 @@ import { CanActivateFn } from '@angular/router';
 import { loggedUserPagesGuard } from './logged-user-pages.guard';
 
 describe('loggedInUserPagesGuard', () => {
-  const executeGuard: CanActivateFn = (...guardParameters) => TestBed.runInInjectionContext(() => loggedUserPagesGuard(...guardParameters));
+  const executeGuard: CanActivateFn = (...guardParameters) => TestBed.runInInjectionContext(() => loggedUserPagesGuard(...guardParameters));// eslint-disable-line max-len
 
   beforeEach(() => {
     TestBed.configureTestingModule({});

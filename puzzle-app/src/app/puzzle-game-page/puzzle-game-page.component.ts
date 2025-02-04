@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
-import { NavigationService } from '../core/navigation.service';
 import { ActivatedRoute } from '@angular/router';
+import { NavigationService } from '../core/navigation.service';
 
 @Component({
   selector: 'app-puzzle-game-page',
@@ -10,7 +10,8 @@ import { ActivatedRoute } from '@angular/router';
 })
 export class PuzzleGamePageComponent {
   private navigation = inject(NavigationService);
-  private route = inject(ActivatedRoute)
+
+  private route = inject(ActivatedRoute);
 
   ngOnInit(): void {
     this.navigation.getPathName(this.route);
