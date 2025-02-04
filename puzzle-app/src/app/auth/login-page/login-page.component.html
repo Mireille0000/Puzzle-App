@@ -1,0 +1,63 @@
+<form id="form" class="login-form" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+  <fieldset>
+    <legend>Puzzle Game</legend>
+    <label for="name">Fisrt Name: </label>
+    <input id="name" type="text" formControlName="firstName">
+    <div class="login-form_hints" *ngIf="firstName?.invalid && (firstName?.touched || firstName?.dirty)">
+      <div *ngIf="firstName?.hasError('required')" class="alert">
+        First Name is required
+      </div>
+      <div *ngIf="firstName?.hasError('minlength')" class="alert">
+        First Name must be at least 3 characters long
+      </div>
+      <div *ngIf="firstName?.hasError('capitalizedError')" class="alert">
+        {{firstName?.errors?.['capitalizedError']}}
+      </div>
+      <div *ngIf="firstName?.hasError('alphabetError')" class="alert">
+        {{firstName?.errors?.['alphabetError']}}
+      </div>
+    </div>
+
+    <label for="name">Last Name: </label>
+    <input id="name" type="text" formControlName="lastName">
+    <div class="login-form_hints" *ngIf="lastName?.invalid && (lastName?.touched || lastName?.dirty)">
+      <div *ngIf="lastName?.hasError('required')" class="alert">
+        Last Name is required
+      </div>
+      <div *ngIf="lastName?.hasError('minlength')" class="alert">
+        Last Name must be at least 3 characters long
+      </div>
+      <div *ngIf="lastName?.hasError('capitalizedError')" class="alert">
+        {{lastName?.errors?.['capitalizedError']}}
+      </div>
+      <div *ngIf="lastName?.hasError('alphabetError')" class="alert">
+        {{lastName?.errors?.['alphabetError']}}
+      </div>
+    </div>
+
+    <label for="name">Password: </label>
+    <input id="name" type="text" formControlName="password">
+    <div class="login-form_hints" *ngIf="password?.invalid && (password?.touched || password?.dirty)">
+      <div *ngIf="password?.hasError('required')" class="alert">
+        Password is required
+      </div>
+      <div *ngIf="password?.hasError('minlength')" class="alert">
+        Password must be at least 8 characters long
+      </div>
+      <div *ngIf="password?.hasError('digitError')" class="alert">
+        At least one digit
+      </div>
+      <div *ngIf="password?.hasError('uppercaseLetterError')" class="alert">
+        {{password?.errors?.['uppercaseLetterError']}}
+      </div>
+      <div *ngIf="password?.hasError('lowercaseLetterError')" class="alert">
+        {{password?.errors?.['lowercaseLetterError']}}
+      </div>
+      <div *ngIf="password?.hasError('specialCharacterError')" class="alert">
+        {{password?.errors?.['specialCharacterError']}}
+      </div>
+    </div>
+
+    <button type="submit" [disabled]="loginForm.invalid">Log in</button>
+  </fieldset>
+</form>
