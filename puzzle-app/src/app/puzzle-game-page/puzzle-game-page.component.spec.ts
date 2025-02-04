@@ -8,9 +8,9 @@ describe('PuzzleGamePageComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [PuzzleGamePageComponent]
+      imports: [PuzzleGamePageComponent],
     })
-    .compileComponents();
+      .compileComponents();
 
     fixture = TestBed.createComponent(PuzzleGamePageComponent);
     component = fixture.componentInstance;

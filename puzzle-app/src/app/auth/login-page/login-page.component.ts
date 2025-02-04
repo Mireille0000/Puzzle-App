@@ -6,12 +6,12 @@ import {
   FormControl, FormGroup, ReactiveFormsModule, Validators,
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { ActivatedRoute } from '@angular/router';
 import { isEnglishAlphabet, isCapitalized } from './custom-validators/name-validators';
 import {
   hasDigit, hasLowercaseLetter, hasSpecialCharacter, hasUppercaseLetter,
 } from './custom-validators/password-validators';
 import { LoginService } from '../services/login.service';
-import { ActivatedRoute } from '@angular/router';
 import { NavigationService } from '../../core/navigation.service';
 
 @Component({
@@ -20,7 +20,7 @@ import { NavigationService } from '../../core/navigation.service';
   templateUrl: './login-page.component.html',
   styleUrl: './login-page.component.scss',
 })
-export class LoginPageComponent implements OnInit{
+export class LoginPageComponent implements OnInit {
   loginForm = new FormGroup({
     firstName: new FormControl<string>(
       '',

@@ -5,8 +5,7 @@ export const loggedUserPagesGuard: CanActivateFn = () => {
   const router = inject(Router);
   if (localStorage.getItem('userCredentials')) {
     return true;
-  } else {
-    router.navigate(['/login']);
-    return false;
-  };
+  }
+  router.navigate(['/login']);
+  return false;
 };

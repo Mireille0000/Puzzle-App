@@ -1,17 +1,13 @@
 <div class="logo">Puzzle Game</div>
 <nav>
   <ul>
-    <!-- <li>
-      <a routerLink="" routerLinkActive="active-page"
-      [routerLinkActiveOptions]="{exact:true}">{{firstNavLink}}</a>
-    </li> -->
     <li><a [routerLink]="currentLink" routerLinkActive="active-page" *ngIf="isLogged; else elseBlock" (click)="logOut()">{{logInLogOut}}</a></li>
     <ng-template #elseBlock>
       <a [routerLink]="currentLink" routerLinkActive="active-page">{{logInLogOut}}</a>
     </ng-template>
 
     <li>
-      <a routerLink="" routerLinkActive="active-page" *ngIf="isLogged">Your Profile</a>
+      <a routerLink="" routerLinkActive="active-page" *ngIf="isLogged">My Profile</a>
     </li>
 
     <li>
