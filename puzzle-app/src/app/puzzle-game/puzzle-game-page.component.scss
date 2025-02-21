@@ -26,5 +26,24 @@
     padding: 10px;
     background-color: rgb(161 178 200 / 90%);
     border-radius: 10px;
+    .game-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      .check-button, .autocomplition-button {
+        width: 150px;
+        height: 35px;
+        font-family: "Lucida Sans", sans-serif;
+        border-radius: 10px;
+        background-color: rgb(173, 182, 176);
+        cursor: pointer;
+        transition: 1s;
+      }
+      .check-button:hover, .autocomplition-button:hover {
+        color: #ddecf3;
+        background-color: rgb(126 165 128);
+        transition: 1s;
+      }
+    }
   }
 }
