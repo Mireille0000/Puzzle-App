@@ -1,0 +1,49 @@
+:host {
+  width: 70%;
+  display: grid;
+  grid-template-columns: 3fr 1fr;
+  gap: 10px;
+  margin: auto;
+  .puzzle-game {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    .levels-and-rounds {
+      height: 5%;
+      display: flex;
+      gap: 10px;
+      .levels, .rounds {
+        display: flex;
+        gap: 5px;
+      }
+    }
+  }
+  .game-menu {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background-color: rgb(161 178 200 / 90%);
+    border-radius: 10px;
+    .game-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      .check-button, .autocomplition-button {
+        width: 150px;
+        height: 35px;
+        font-family: "Lucida Sans", sans-serif;
+        border-radius: 10px;
+        background-color: rgb(173, 182, 176);
+        cursor: pointer;
+        transition: 1s;
+      }
+      .check-button:hover, .autocomplition-button:hover {
+        color: #ddecf3;
+        background-color: rgb(126 165 128);
+        transition: 1s;
+      }
+    }
+  }
+}

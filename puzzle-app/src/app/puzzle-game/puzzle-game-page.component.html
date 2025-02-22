@@ -1,0 +1,27 @@
+<div class="puzzle-game">
+  <div class="levels-and-rounds">
+    <div class="levels">
+      <label for="levels-select">Level</label>
+      <select name="levels" id="levels-select">
+        <option value="1">1</option>
+      </select>
+    </div>
+
+    <div class="rounds">
+      <label for="Rounds-select">Round</label>
+      <select name="rounds" id="rounds-select">
+        <option value="1">1</option>
+      </select>
+    </div>
+  </div>
+  <pzl-puzzle-field></pzl-puzzle-field>
+  <pzl-puzzles-block></pzl-puzzles-block>
+</div>
+
+<div class="game-menu">
+  <pzl-hints-block></pzl-hints-block>
+  <div class="game-buttons">
+    <button class="check-button">I don't know</button>
+    <button class="autocomplition-button">Check</button>
+  </div>
+</div>
