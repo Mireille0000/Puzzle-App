@@ -5,6 +5,7 @@ import { HintsBlockComponent } from './hints-block/hints-block.component';
 import { PuzzleFieldComponent } from './puzzle-field/puzzle-field.component';
 import { PuzzlesBlockComponent } from './puzzles-block/puzzles-block.component';
 import { PuzzleGameCardsDataService } from './services/puzzle-game-cards-data.service';
+
 @Component({
   selector: 'app-puzzle-game-page',
   imports: [HintsBlockComponent, PuzzleFieldComponent, PuzzlesBlockComponent],
@@ -18,6 +19,6 @@ export class PuzzleGamePageComponent {
 
   ngOnInit(): void {
     this.navigation.getPathName(this.route);
-    this.http.getCardsData().subscribe((data) => console.log(data));
+    this.http.getCardsData(2).subscribe((data) => console.log(data));
   }
 }
