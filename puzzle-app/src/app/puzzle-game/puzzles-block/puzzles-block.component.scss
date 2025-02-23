@@ -1,8 +1,17 @@
 :host {
-  height: 5%;
+  // height: 5%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  // padding: 5px;
   text-align: center;
   background-color: rgb(161 178 200 / 90%);
   border-radius: 10px;
+  .word-puzzle {
+    background-color: rgba(86, 142, 215, 0.9); //
+    cursor: pointer;
+  }
   p {
     margin: auto;
   }
