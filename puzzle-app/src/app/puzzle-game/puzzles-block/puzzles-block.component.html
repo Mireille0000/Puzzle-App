@@ -1,3 +1,7 @@
-<div *ngFor="let word of words" class="word-puzzle">
+<div
+*ngFor="let word of words"
+class="word-puzzle"
+(click)="movePuzzleToPuzzleField($event)"
+>
   {{word}}
 </div>

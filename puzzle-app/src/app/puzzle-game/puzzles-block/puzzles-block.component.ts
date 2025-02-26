@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, ElementRef, inject, OnInit, QueryList, signal, ViewChildren } from '@angular/core';
 import { PuzzleGameCardsDataService } from '../services/puzzle-game-cards-data.service';
 import { NgFor } from '@angular/common';
 
@@ -9,30 +9,54 @@ import { NgFor } from '@angular/common';
   styleUrl: './puzzles-block.component.scss'
 })
 export class PuzzlesBlockComponent implements OnInit{
+  private puzzlesDataService = inject(PuzzleGameCardsDataService);
+  currentSentence = signal(['']); //?
   words: string[] = [];
-  private httpService = inject(PuzzleGameCardsDataService);
+  resultArr: string[] = [];
+  sourceArr: string[] = [];
 
   ngOnInit(): void {
-    this.randomizeWordsOrder()
+    this.puzzlesDataService.getWordsData(1, 0, 1).subscribe((data) => {
+      this.words = data;
+      this.currentSentence = this.puzzlesDataService.currentSentence$; // ?
+    });
+
+    this.puzzlesDataService.resultPuzzles$.subscribe((data) => {
+      this.resultArr = data;
+    });
+
+    this.puzzlesDataService.sourcePuzzles$.subscribe((data) => {
+      this.words = data;
+    });
   }
 
-  randomizeWordsOrder() {
-    this.httpService.getWordsData(1, 0, 0).subscribe((data) => {
-      const currentWordsArr = data.split(' ');
+//   randomizeWordsOrder() {
+//     this.httpService.getWordsData(1, 0, 1).subscribe((data) => {
+//       const currentWordsArr = data.split(' ');
 
-      const reducedCurrentWordsArr: string[] = currentWordsArr.reduce((acc: string[], item, i) => {
-        const randomNumber = this.getRandomInt(currentWordsArr.length);
-        [acc[i], acc[randomNumber]] = [acc[randomNumber], acc[i]];
-        return acc;
-      }, currentWordsArr);
+//       const reducedCurrentWordsArr: string[] = currentWordsArr.reduce((acc: string[], item, i) => {
+//         const randomNumber = this.getRandomInt(currentWordsArr.length);
+//         [acc[i], acc[randomNumber]] = [acc[randomNumber], acc[i]];
+//         return acc;
+//       }, currentWordsArr);
 
-      this.words = reducedCurrentWordsArr.
-          concat(currentWordsArr).
-          filter((item, i, arr) => arr.indexOf(item) === i);
-    })
-  }
+//       this.words = reducedCurrentWordsArr.
+//           concat(currentWordsArr).
+//           filter((item, i, arr) => arr.indexOf(item) === i);
+//     })
+//   }
 
- getRandomInt(max: number) {
-    return Math.floor(Math.random() * max);
+//  getRandomInt(max: number) {
+//     return Math.floor(Math.random() * max);
+//   }
+
+  movePuzzleToPuzzleField(event: Event) {
+    const clickedPuzzle = event.target as HTMLElement;
+    const word = clickedPuzzle.innerHTML;
+    clickedPuzzle.innerHTML = '';
+
+   this.puzzlesDataService.pushInResultsBlock(this.resultArr, this.words, word, this.currentSentence().length);
+    console.log(`puzzle block, words arr, subscription to soucePuzzle: ${this.words}`);
+    console.log(`puzzle block, words arr, subscription to results: ${this.resultArr}`);
   }
 }

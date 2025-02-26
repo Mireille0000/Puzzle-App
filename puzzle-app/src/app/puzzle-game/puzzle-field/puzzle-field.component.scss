@@ -1,9 +1,16 @@
 :host {
   height: 70vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-evenly;
+  display: grid;
+  grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+  gap: 10px;
   padding: 15px;
   background-color: rgb(161 178 200 / 90%);
   border-radius: 10px;
+  .word-puzzles-line {
+    display: flex;
+    gap: 10px;
+    .word-puzzle {
+      background-color: aliceblue;
+    }
+  }
 }

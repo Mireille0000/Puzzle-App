@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
-import { inject, Injectable } from '@angular/core';
+import { ElementRef, inject, Injectable, signal } from '@angular/core';
 import Rounds from '../interfaces/level-data.interface';
-import { map, Observable } from 'rxjs';
+import { BehaviorSubject, map, Observable, Subject } from 'rxjs';
 import Level from '../interfaces/level-data.interface';
 
 @Injectable({
@@ -9,6 +9,9 @@ import Level from '../interfaces/level-data.interface';
 })
 export class PuzzleGameCardsDataService {
   private http: HttpClient = inject(HttpClient)
+  currentSentence$ = signal(['']);
+  resultPuzzles$ = new Subject<Array<string>>();
+  sourcePuzzles$ = new Subject<Array<string>>();
 
   getCardsData (round: number): Observable<Rounds> {
     return this.http.get(`/api/rolling-scopes-school/rss-puzzle-data/main/data/wordCollectionLevel${round}.json`,
@@ -36,9 +39,53 @@ export class PuzzleGameCardsDataService {
       map((data) => {
         const parsedData = this.parsePuzzleGameData(data);
         const sentence = parsedData.rounds[round].words[sentenceNumber].textExample;
-        return sentence;
+        const wordsArr = sentence.split(' ');
+        const reducedCurrentWordsArr: string[] = wordsArr.reduce((acc: string[], item, i) => {
+          const randomNumber = this.getRandomInt(wordsArr.length);
+          [acc[i], acc[randomNumber]] = [acc[randomNumber], acc[i]];
+          return acc;
+        }, wordsArr);
+
+        const randomizedWordsArr = reducedCurrentWordsArr.
+        concat(wordsArr).
+        filter((item, i, arr) => arr.indexOf(item) === i)
+
+        this.sourcePuzzles$.next(randomizedWordsArr);
+        this.currentSentence$.set(sentence.split(' '));
+        return randomizedWordsArr;
       })
     )
+  }
+
+  getRandomInt(max: number) {
+    return Math.floor(Math.random() * max);
+  }
+
+  movePuzzles(arrToPush: string[],
+    arrToDelete: string[],
+    word: string,
+    currentSentenceLength: number,
+    observableToPush: Subject<string[]>,
+    observableToDelete: Subject<string[]>
+  ) {
+    const formattedWord = word.replaceAll("\n","").trim();
+    const wordToDeleteFromSource = arrToDelete.indexOf(formattedWord);
+
+    arrToDelete.splice(wordToDeleteFromSource, 1);
+    observableToDelete.next(arrToDelete);
+
+    arrToPush.push(formattedWord);
+    const result = Array.from(new Set(arrToPush));
+    observableToPush.next(result);
+    console.log(arrToPush);
+  }
+
+  pushInResultsBlock(resultArr: string[], sourceArr: string[], word: string, currentSentenceLength: number) {
+    return this.movePuzzles(resultArr, sourceArr, word, currentSentenceLength, this.resultPuzzles$, this.sourcePuzzles$);
+  }
+
+  pushInSourceBlock(sourceArr: string[], resultArr: string[], word: string, currentSentenceLength: number) {
+    return this.movePuzzles(sourceArr, resultArr, word, currentSentenceLength, this.sourcePuzzles$, this.resultPuzzles$);
   }
 
   parsePuzzleGameData(data: Object) {
@@ -46,5 +93,4 @@ export class PuzzleGameCardsDataService {
     const typedData: Level = JSON.parse(dataToString);
     return typedData;
   }
-
 }
