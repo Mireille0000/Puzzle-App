@@ -13,6 +13,7 @@ import { PuzzlesBlockComponent } from './puzzles-block/puzzles-block.component';
 })
 export class PuzzleGamePageComponent {
   private navigation = inject(NavigationService);
+
   private route = inject(ActivatedRoute);
 
   ngOnInit(): void {

@@ -10,7 +10,25 @@
     display: flex;
     gap: 10px;
     .word-puzzle {
-      background-color: aliceblue;
+      display: flex;
+      align-items: center;
+      padding: 0 5px;
+      background-color: rgb(223, 240, 254);
+      cursor: pointer;
+      transition: 0.5s;
+      span {
+        transform: scale(1);
+        transition: 0.5s;
+      }
+    }
+
+    .word-puzzle:hover {
+      background-color: rgb(234, 238, 187);
+      transition: 0.5s;
+      span:hover {
+        transform: scale(1.1);
+        transition: 0.5s;
+      }
     }
   }
 }

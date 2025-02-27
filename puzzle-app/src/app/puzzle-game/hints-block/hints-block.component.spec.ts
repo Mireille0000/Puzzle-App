@@ -8,9 +8,9 @@ describe('HintsBlockComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [HintsBlockComponent]
+      imports: [HintsBlockComponent],
     })
-    .compileComponents();
+      .compileComponents();
 
     fixture = TestBed.createComponent(HintsBlockComponent);
     component = fixture.componentInstance;

@@ -21,8 +21,9 @@ interface Round {
   words: Array<Card>
 }
 
-
-export default interface Level {
+interface Level {
   rounds: Array<Round>,
   roundsCount: number
 }
+
+export default Level;
