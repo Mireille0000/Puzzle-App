@@ -4,6 +4,7 @@ import { NavigationService } from '../core/navigation.service';
 import { HintsBlockComponent } from './hints-block/hints-block.component';
 import { PuzzleFieldComponent } from './puzzle-field/puzzle-field.component';
 import { PuzzlesBlockComponent } from './puzzles-block/puzzles-block.component';
+
 @Component({
   selector: 'app-puzzle-game-page',
   imports: [HintsBlockComponent, PuzzleFieldComponent, PuzzlesBlockComponent],
@@ -12,6 +13,7 @@ import { PuzzlesBlockComponent } from './puzzles-block/puzzles-block.component';
 })
 export class PuzzleGamePageComponent {
   private navigation = inject(NavigationService);
+
   private route = inject(ActivatedRoute);
 
   ngOnInit(): void {

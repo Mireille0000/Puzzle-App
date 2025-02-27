@@ -1,1 +1,9 @@
-<p>puzzles-block works!</p>
+<div
+*ngFor="let word of words"
+class="word-puzzle"
+(click)="movePuzzleToPuzzleField($event)"
+>
+<span>
+  {{word}}
+</span>
+</div>

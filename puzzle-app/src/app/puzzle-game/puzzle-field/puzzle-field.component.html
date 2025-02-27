@@ -1,1 +1,11 @@
-<p>puzzle-field works!</p>
+<div class="word-puzzles-line">
+  <div
+  *ngFor="let word of resultBlock"
+  class="word-puzzle"
+  (click)="movePuzzleToPuzzlesBlock($event)"
+  >
+    <span>
+      {{word}}
+    </span>
+  </div>
+</div>
