@@ -50,9 +50,10 @@ export class PuzzleGameCardsDataService {
           return acc;
         }, wordsArr);
 
+        console.log(reducedCurrentWordsArr);
         const randomizedWordsArr = reducedCurrentWordsArr
-          .concat(wordsArr)
-          .filter((item, i, arr) => arr.indexOf(item) === i);
+          // .concat(wordsArr)
+          // .filter((item, i, arr) => arr.indexOf(item) === i);
 
         this.sourcePuzzles$.next(randomizedWordsArr);
         this.currentSentence$.set(sentence.split(' '));
@@ -76,8 +77,7 @@ export class PuzzleGameCardsDataService {
     observableToDelete.next(arrToDelete);
 
     arrToPush.push(formattedWord);
-    const result = Array.from(new Set(arrToPush));
-    observableToPush.next(result);
+    observableToPush.next(arrToPush);
     console.log(arrToPush);
   }
 

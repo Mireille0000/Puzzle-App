@@ -19,8 +19,6 @@ export class PuzzlesBlockComponent implements OnInit {
 
   resultArr: string[] = [];
 
-  sourceArr: string[] = [];
-
   ngOnInit(): void {
     this.puzzlesDataService.getWordsData(1, 0, 1).subscribe((data) => {
       this.words = data;
@@ -57,18 +55,17 @@ export class PuzzlesBlockComponent implements OnInit {
   //     return Math.floor(Math.random() * max);
   //   }
 
-  movePuzzleToPuzzleField(event: Event) {
-    const clickedPuzzle = event.target as HTMLElement;
-    const word = clickedPuzzle.innerHTML;
-    clickedPuzzle.innerHTML = '';
-
-    this.puzzlesDataService
+  movePuzzleToPuzzleField(word: string) {
+    const wordIndex = this.words.indexOf(word);
+    if (wordIndex !== -1) {
+      this.puzzlesDataService
       .pushInResultsBlock(
         this.resultArr,
         this.words,
         word,
         this.currentSentence().length,
       );
+    }
     console.log(`puzzle block, words arr, subscription to soucePuzzle: ${this.words}`);
     console.log(`puzzle block, words arr, subscription to results: ${this.resultArr}`);
   }

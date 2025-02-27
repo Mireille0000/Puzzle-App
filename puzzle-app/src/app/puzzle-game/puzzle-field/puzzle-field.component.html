@@ -1,10 +1,7 @@
 <div class="word-puzzles-line">
-  <div
-  *ngFor="let word of resultBlock"
-  class="word-puzzle"
-  (click)="movePuzzleToPuzzlesBlock($event)"
-  >
-    <span>
+  <div class="word-puzzle" *ngFor="let word of resultBlock" (click)="movePuzzleToPuzzlesBlock(word)">
+    <span
+    class="{{word}}">
       {{word}}
     </span>
   </div>

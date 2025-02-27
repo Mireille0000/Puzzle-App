@@ -17,30 +17,29 @@ export class PuzzleFieldComponent implements OnInit {
 
   resultBlock: string[] = [];
 
-  currentSentence = signal(['']); // ?
+  currentSentence = signal(['']);
 
   ngOnInit(): void {
     this.currentSentence = this.puzzlesDataService.currentSentence$;
     this.puzzlesDataService.sourcePuzzles$.subscribe((data) => {
-      this.sourceBlock = Array.from(new Set(data));
+      this.sourceBlock = data;
     });
     this.puzzlesDataService.resultPuzzles$.subscribe((data) => {
-      this.resultBlock = Array.from(new Set(data));
+      this.resultBlock = data;
     });
   }
 
-  movePuzzleToPuzzlesBlock(event: Event) {
-    const clickedPuzzle = event.target as HTMLElement;
-    const word = clickedPuzzle.innerHTML;
-    clickedPuzzle.innerHTML = '';
-
-    this.puzzlesDataService
+  movePuzzleToPuzzlesBlock(word: string) {
+    const wordIndex = this.resultBlock.indexOf(word);
+    if (wordIndex !== -1) {
+      this.puzzlesDataService
       .pushInSourceBlock(
         this.sourceBlock,
         this.resultBlock,
         word,
         this.currentSentence().length,
       );
+    }
     console.log(`source block, puzzle field ${this.sourceBlock}`);
     console.log(`results, puzzle field component ${this.resultBlock}`);
   }
