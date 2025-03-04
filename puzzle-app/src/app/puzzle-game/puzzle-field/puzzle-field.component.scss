@@ -6,28 +6,40 @@
   padding: 15px;
   background-color: rgb(161 178 200 / 90%);
   border-radius: 10px;
-  .word-puzzles-line {
+  .lines {
     display: flex;
-    gap: 10px;
-    .word-puzzle {
+    flex-wrap: wrap;
+    flex-direction: column;
+    .word-puzzles-line {
       display: flex;
-      align-items: center;
-      padding: 0 5px;
-      background-color: rgb(223, 240, 254);
-      cursor: pointer;
-      transition: 0.5s;
-      span {
-        transform: scale(1);
+      flex-direction: column;
+      justify-content: space-evenly;
+      gap: 10px;
+      .word-puzzle {
+        display: flex;
+        align-items: center;
+        padding: 0 5px;
+        background-color: rgb(223, 240, 254);
+        cursor: pointer;
         transition: 0.5s;
+        span {
+          transform: scale(1);
+          transition: 0.5s;
+        }
       }
-    }
 
-    .word-puzzle:hover {
-      background-color: rgb(234, 238, 187);
-      transition: 0.5s;
-      span:hover {
-        transform: scale(1.1);
+      .word-puzzle:hover {
+        background-color: rgb(234, 238, 187);
         transition: 0.5s;
+        span:hover {
+          transform: scale(1.1);
+          transition: 0.5s;
+        }
+      }
+
+      .words {
+        display: flex;
+        gap: 10px;
       }
     }
   }

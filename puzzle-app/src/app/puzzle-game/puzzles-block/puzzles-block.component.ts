@@ -13,16 +13,28 @@ import { PuzzleGameCardsDataService } from '../services/puzzle-game-cards-data.s
 export class PuzzlesBlockComponent implements OnInit {
   private puzzlesDataService = inject(PuzzleGameCardsDataService);
 
-  currentSentence = signal(['']); // ?
-
   words: string[] = [];
 
   resultArr: string[] = [];
 
+  currentSentence = signal(['']);
+
+  level = signal(1);
+
+  round = signal(0);
+
+  sentenceNumber = signal(0);
+
+  isCorrect = signal<boolean>(false);
+
+
   ngOnInit(): void {
-    this.puzzlesDataService.getWordsData(1, 0, 1).subscribe((data) => {
-      this.words = data;
-      this.currentSentence = this.puzzlesDataService.currentSentence$; // ?
+    this.isCorrect = this.puzzlesDataService.isCorrect;
+    this.level = this.puzzlesDataService.level;
+    this.round = this.puzzlesDataService.round;
+    this.sentenceNumber = this.puzzlesDataService.sentenceNumber;
+    this.puzzlesDataService.getWordsData(this.level(), this.round(), this.sentenceNumber()).subscribe((data) => {
+      this.currentSentence = this.puzzlesDataService.currentSentence; // ?
     });
 
     this.puzzlesDataService.resultPuzzles$.subscribe((data) => {
@@ -34,38 +46,32 @@ export class PuzzlesBlockComponent implements OnInit {
     });
   }
 
-  //   randomizeWordsOrder() {
-  //     this.httpService.getWordsData(1, 0, 1).subscribe((data) => {
-  //       const currentWordsArr = data.split(' ');
-
-  //       const reducedCurrentWordsArr: string[] =
-  //         currentWordsArr.reduce((acc: string[], item, i) => {
-  //         const randomNumber = this.getRandomInt(currentWordsArr.length);
-  //         [acc[i], acc[randomNumber]] = [acc[randomNumber], acc[i]];
-  //         return acc;
-  //       }, currentWordsArr);
-
-  //       this.words = reducedCurrentWordsArr.
-  //           concat(currentWordsArr).
-  //           filter((item, i, arr) => arr.indexOf(item) === i);
-  //     })
-  //   }
-
-  //  getRandomInt(max: number) {
-  //     return Math.floor(Math.random() * max);
-  //   }
-
   movePuzzleToPuzzleField(word: string) {
     const wordIndex = this.words.indexOf(word);
-    if (wordIndex !== -1) {
-      this.puzzlesDataService
-      .pushInResultsBlock(
-        this.resultArr,
-        this.words,
-        word,
-        this.currentSentence().length,
-      );
+    if(this.isCorrect()) {
+      this.isCorrect.update(() => false);
+      this.resultArr = [];
+      if (wordIndex !== -1) {
+        this.puzzlesDataService
+        .pushInResultsBlock(
+          this.resultArr,
+          this.words,
+          word,
+          this.currentSentence().length,
+        );
+      }
+    } else {
+      if (wordIndex !== -1) {
+        this.puzzlesDataService
+        .pushInResultsBlock(
+          this.resultArr,
+          this.words,
+          word,
+          this.currentSentence().length,
+        );
+      }
     }
+
     console.log(`puzzle block, words arr, subscription to soucePuzzle: ${this.words}`);
     console.log(`puzzle block, words arr, subscription to results: ${this.resultArr}`);
   }
