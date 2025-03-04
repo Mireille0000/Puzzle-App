@@ -22,6 +22,10 @@
   <pzl-hints-block></pzl-hints-block>
   <div class="game-buttons">
     <button class="autocomplition-button">I don't know</button>
-    <button class="check-button">Check</button>
+    @if(!isCorrect()) {
+      <button class="check-button" (click)="isCorrectlyConstucted()">Check</button>
+    } @else {
+      <button class="check-button" (click)="continue()">Continue</button>
+    }
   </div>
 </div>
