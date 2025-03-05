@@ -58,11 +58,11 @@ export class PuzzleGamePageComponent {
     }) //
 
     // 1) check button is disabled if source block is not empty
-    // 2) continue button appears if a sentence is correct
-    // 3) continue <=> check buttons logic
+    // 2) indicate if a sentence is not completed correctly
+    // 3) show an image if the sentence is correctly completed (???)
   }
 
-  isCorrectlyConstucted() {
+  isCorrectlyCompleted() {
     const sentence = computed(() => {
       return this.currentSentence().toString();
     })
@@ -101,6 +101,19 @@ export class PuzzleGamePageComponent {
     this.puzzlesDataService.resultPuzzles$.next([]);
     this.isCorrect.update(() => false);
     console.log('Continue button works');
+  }
+
+  completeSentence() {
+    if(!this.isCorrect()) {
+      this.correctSentences.update((value) => {
+        value.push(this.currentSentence());
+        return value;
+      })
+      this.puzzlesDataService.sourcePuzzles$.next([]);
+      this.isCorrect.update(() => true);
+    } else {
+      console.log('No word in source block'); // to delete
+    }
   }
 
   // changeSentence() {
