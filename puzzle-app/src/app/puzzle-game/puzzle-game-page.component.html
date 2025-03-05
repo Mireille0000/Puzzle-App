@@ -1,14 +1,14 @@
 <div class="puzzle-game">
   <div class="levels-and-rounds">
     <div class="levels">
-      <label for="levels-select">Level</label>
+      <label for="levels-select">Level: {{level()}}</label>
       <select name="levels" id="levels-select">
         <option value="1">1</option>
       </select>
     </div>
 
     <div class="rounds">
-      <label for="Rounds-select">Round</label>
+      <label for="Rounds-select">Round: {{round() + 1}}</label>
       <select name="rounds" id="rounds-select">
         <option value="1">1</option>
       </select>

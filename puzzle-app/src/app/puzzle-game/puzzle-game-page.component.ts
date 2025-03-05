@@ -5,6 +5,7 @@ import { HintsBlockComponent } from './hints-block/hints-block.component';
 import { PuzzleFieldComponent } from './puzzle-field/puzzle-field.component';
 import { PuzzlesBlockComponent } from './puzzles-block/puzzles-block.component';
 import { PuzzleGameCardsDataService } from './services/puzzle-game-cards-data.service';
+import { Level } from './interfaces/level-data.interface';
 
 @Component({
   selector: 'app-puzzle-game-page',
@@ -80,23 +81,78 @@ export class PuzzleGamePageComponent {
     }
   }
 
+  showNextWordsSet(level: number, round: number, sentenceNum: number) {
+    this.isCorrect.update(() => true);
+    this.puzzlesDataService.getWordsData(level, round, sentenceNum)
+      .subscribe((data) => {
+        this.sourceWords = data;
+      });
+    this.isCorrect.update(() => false);
+  }
+
   continue() {
     this.sentenceNumber.update((value) => value + 1);
     console.log(this.isCorrect());
 
     this.puzzlesDataService.getCardsData(this.level()).subscribe((data) =>{
-      const card = data.rounds[this.round()].words[this.sentenceNumber()];
-      if (card) {
-      this.isCorrect.update(() => true);
-      this.puzzlesDataService.getWordsData(this.level(), this.round(), this.sentenceNumber())
-        .subscribe((data) => {
-          this.sourceWords = data;
-        })
-      this.isCorrect.update(() => false);
-      console.log('Continue button', this.isCorrect());
-      } else {
-        console.log(this.isCorrect(), 'New Round');
+      // const card = data.rounds[this.round()].words[this.sentenceNumber()];
+      const roundsNum = data.rounds.length - 1;
+      console.log(data.rounds.length);
+      //
+      const expr = true || false;
+      switch(expr) {
+        case (this.sentenceNumber() <= 9):
+          this.showNextWordsSet(this.level(), this.round(), this.sentenceNumber());
+          console.log('Continue button', this.isCorrect());
+          break;
+        case (this.sentenceNumber() > 9 && roundsNum > this.round()):
+          this.round.update((value) => value + 1);
+          this.correctSentences.update((value) => value = []);
+          this.sentenceNumber.update((value) => value = 0);
+
+          this.showNextWordsSet(this.level(), this.round(), this.sentenceNumber());
+          console.log(this.isCorrect(), 'New Round', this.round(), this.sentenceNumber());
+          break;
+        case roundsNum === this.round():
+            this.round.update((value) => value = 0);
+            this.level.update((value) => value + 1);
+            this.correctSentences.update((value) => value = []);
+            this.sentenceNumber.update((value) => value = 0);
+
+            this.showNextWordsSet(this.level(), this.round(), this.sentenceNumber());
+            console.log(this.isCorrect(), 'New Level', this.round(), this.sentenceNumber());
+            break;
+          default:
+            console.log('Win!');
+
       }
+      //
+
+      // if (this.sentenceNumber() <= 9) {
+      //   this.showNextWordsSet(this.level(), this.round(), this.sentenceNumber());
+      //   console.log('Continue button', this.isCorrect());
+      // } else {
+      //   if (this.sentenceNumber() > 9 && roundsNum > this.round()) {
+      //     this.round.update((value) => value + 1);
+      //     this.correctSentences.update((value) => value = []);
+      //     this.sentenceNumber.update((value) => value = 0);
+
+      //     this.showNextWordsSet(this.level(), this.round(), this.sentenceNumber());
+      //     console.log(this.isCorrect(), 'New Round', this.round(), this.sentenceNumber());
+      //   } else {
+      //     if (roundsNum === this.round()) {
+      //       this.round.update((value) => value = 0);
+      //       this.level.update((value) => value + 1);
+      //       this.correctSentences.update((value) => value = []);
+      //       this.sentenceNumber.update((value) => value = 0);
+
+      //       this.showNextWordsSet(this.level(), this.round(), this.sentenceNumber());
+      //       console.log(this.isCorrect(), 'New Level', this.round(), this.sentenceNumber());
+      //     } else {
+      //       console.log('Win!');
+      //     }
+      //   }
+      // }
     });
     this.puzzlesDataService.resultPuzzles$.next([]);
     this.isCorrect.update(() => false);
