@@ -27,6 +27,8 @@ export class PuzzleGameCardsDataService {
 
   isCorrect = signal<boolean>(false);
 
+  isDisabled = signal<boolean>(true);
+
   getCardsData(round: number): Observable<Level> {
     return this.http.get(
       `/api/rolling-scopes-school/rss-puzzle-data/main/data/wordCollectionLevel${round}.json`,

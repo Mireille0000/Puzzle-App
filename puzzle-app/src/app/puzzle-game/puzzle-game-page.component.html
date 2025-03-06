@@ -23,7 +23,7 @@
   <div class="game-buttons">
     <button class="autocomplition-button" (click)="completeSentence()">I don't know</button>
     @if(!isCorrect()) {
-      <button class="check-button" (click)="isCorrectlyCompleted()">Check</button>
+      <button class="check-button" (click)="isCorrectlyCompleted()" [disabled]="isDisabled()">Check</button>
     } @else {
       <button class="check-button" (click)="continue()">Continue</button>
     }

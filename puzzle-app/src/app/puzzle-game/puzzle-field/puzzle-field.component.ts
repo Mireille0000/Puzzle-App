@@ -26,6 +26,8 @@ export class PuzzleFieldComponent implements OnInit {
 
   isCorrect = signal<boolean>(false);
 
+  isDisabled = signal<boolean>(true); // ?
+
   sentences = signal<Card[]>([]); // ?
 
   ngOnInit(): void {
@@ -34,6 +36,7 @@ export class PuzzleFieldComponent implements OnInit {
     this.currentSentenceNum =  this.puzzlesDataService.sentenceNumber;
 
     this.isCorrect = this.puzzlesDataService.isCorrect;
+    this.isDisabled = this.puzzlesDataService.isDisabled;
     this.sentences = this.puzzlesDataService.sentences;
     this.puzzlesDataService.sourcePuzzles$.subscribe((data) => {
       this.sourceBlock = data;
@@ -70,7 +73,15 @@ export class PuzzleFieldComponent implements OnInit {
       }
     }
 
-    console.log(`source block, puzzle field ${this.sourceBlock}`);
-    console.log(`results, puzzle field component ${this.resultBlock}`);
+    if(this.sourceBlock.length === 0) {
+      this.isDisabled.update(() => false);
+    } else {
+      this.isDisabled.update(() => true);
+    }
+
+    console.log(this.isDisabled(), this.sourceBlock);
+
+    // console.log(`source block, puzzle field ${this.sourceBlock}`);
+    // console.log(`results, puzzle field component ${this.resultBlock}`);
   }
 }

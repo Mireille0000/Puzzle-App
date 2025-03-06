@@ -44,6 +44,17 @@
         background-color: rgb(126 165 128);
         transition: 1s;
       }
+
+      :disabled {
+        background-color: rgb(200, 191, 191);
+        color: rgb(102, 94, 94);
+        opacity: 1;
+      }
+      :disabled:hover {
+        background-color: rgb(200, 191, 191);
+        color: rgb(102, 94, 94);
+        opacity: 1;
+      }
     }
   }
 }

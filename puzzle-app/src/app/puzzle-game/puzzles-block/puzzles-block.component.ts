@@ -27,12 +27,16 @@ export class PuzzlesBlockComponent implements OnInit {
 
   isCorrect = signal<boolean>(false);
 
+  isDisabled = signal<boolean>(true);
+
 
   ngOnInit(): void {
     this.isCorrect = this.puzzlesDataService.isCorrect;
     this.level = this.puzzlesDataService.level;
     this.round = this.puzzlesDataService.round;
     this.sentenceNumber = this.puzzlesDataService.sentenceNumber;
+    this.isDisabled = this.puzzlesDataService.isDisabled;
+
     this.puzzlesDataService.getWordsData(this.level(), this.round(), this.sentenceNumber()).subscribe((data) => {
       this.currentSentence = this.puzzlesDataService.currentSentence; // ?
     });
@@ -48,6 +52,7 @@ export class PuzzlesBlockComponent implements OnInit {
 
   movePuzzleToPuzzleField(word: string) {
     const wordIndex = this.words.indexOf(word);
+
     if(this.isCorrect()) {
       this.isCorrect.update(() => false);
       this.resultArr = [];
@@ -72,7 +77,14 @@ export class PuzzlesBlockComponent implements OnInit {
       }
     }
 
-    console.log(`puzzle block, words arr, subscription to soucePuzzle: ${this.words}`);
-    console.log(`puzzle block, words arr, subscription to results: ${this.resultArr}`);
+    if(this.words.length === 0) {
+      this.isDisabled.update(() => false);
+    } else {
+      this.isDisabled.update(() => true);
+    }
+
+    console.log(this.isDisabled(), this.words);
+    // console.log(`puzzle block, words arr, subscription to soucePuzzle: ${this.words}`);
+    // console.log(`puzzle block, words arr, subscription to results: ${this.resultArr}`);
   }
 }
