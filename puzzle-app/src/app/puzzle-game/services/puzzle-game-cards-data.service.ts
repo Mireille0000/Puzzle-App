@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
 import { map, Observable, Subject } from 'rxjs';
-import {Level, Card } from '../interfaces/level-data.interface';
+import { Level, Card } from '../interfaces/level-data.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -21,13 +21,15 @@ export class PuzzleGameCardsDataService {
 
   sentenceNumber = signal(0);
 
-  sentences = signal<Card[]>([]); //?
+  sentences = signal<Card[]>([]); // ?
 
   correctSentences = signal<string[][]>([]);
 
   isCorrect = signal<boolean>(false);
 
   isDisabled = signal<boolean>(true);
+
+  isCorrectWordsOrder = signal<boolean>(false); // ??
 
   getCardsData(round: number): Observable<Level> {
     return this.http.get(
@@ -93,7 +95,7 @@ export class PuzzleGameCardsDataService {
     observableToDelete.next(newArrToDelete);
 
     let newArrToPush = [...arrToPush];
-    if(this.isCorrect()) {
+    if (this.isCorrect()) {
       newArrToPush = [];
       observableToPush.next(newArrToPush);
     } else {

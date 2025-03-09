@@ -1,12 +1,12 @@
-import { Component, computed, inject, OnChanges, OnInit, signal } from '@angular/core';
+import {
+  Component, computed, inject, OnInit, signal,
+} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { NavigationService } from '../core/navigation.service';
 import { HintsBlockComponent } from './hints-block/hints-block.component';
 import { PuzzleFieldComponent } from './puzzle-field/puzzle-field.component';
 import { PuzzlesBlockComponent } from './puzzles-block/puzzles-block.component';
 import { PuzzleGameCardsDataService } from './services/puzzle-game-cards-data.service';
-import { Level } from './interfaces/level-data.interface';
-import { NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-puzzle-game-page',
@@ -39,8 +39,7 @@ export class PuzzleGamePageComponent implements OnInit {
 
   correctSentences = signal<string[][]>([]);
 
-  sentencesInRound = ''; //
-
+  isCorrectWordsOrder = signal<boolean>(false);
 
   ngOnInit(): void {
     this.navigation.getPathName(this.route);
@@ -51,35 +50,33 @@ export class PuzzleGamePageComponent implements OnInit {
     this.round = this.puzzlesDataService.round;
     this.sentenceNumber = this.puzzlesDataService.sentenceNumber;
 
-    this.isCorrect = this.puzzlesDataService.isCorrect;
+    this.isCorrect = this.puzzlesDataService.isCorrect; // naming
     this.isDisabled = this.puzzlesDataService.isDisabled;
+    this.isCorrectWordsOrder = this.puzzlesDataService.isCorrectWordsOrder; // naming
 
     this.puzzlesDataService.resultPuzzles$.subscribe((data) => {
       this.completedSentence = data;
-    })
+    });
     this.puzzlesDataService.sourcePuzzles$.subscribe((data) => {
       this.sourceWords = data;
-    }) //
-
-    // 1) indicate if a sentence is not completed correctly
-    // 2) show an image if the sentence is correctly completed (later on)
+    });
   }
 
   isCorrectlyCompleted() {
-    const sentence = computed(() => {
-      return this.currentSentence().toString();
-    })
+    const sentence = computed(() => this.currentSentence().toString());
 
     if (sentence() === this.completedSentence.join()) {
+      this.isCorrectWordsOrder.update(() => false);
       this.isCorrect.update(() => true);
-      console.log(this.isCorrect(),'Correct!');
+      console.log(this.isCorrect(), 'Correct!');
       this.correctSentences.update((value) => {
         value.push(this.currentSentence());
         return value;
-      })
+      });
     } else {
+      this.isCorrectWordsOrder.update(() => true);
       this.isCorrect.update(() => false);
-      console.log(this.isCorrect(),'Try again');
+      console.log(this.isCorrect(), 'Try again');
     }
   }
 
@@ -97,29 +94,49 @@ export class PuzzleGamePageComponent implements OnInit {
     this.isDisabled.update(() => true);
     console.log(this.isCorrect(), this.isDisabled());
 
-    this.puzzlesDataService.getCardsData(this.level()).subscribe((data) =>{
+    this.puzzlesDataService.getCardsData(this.level()).subscribe((data) => {
       const roundsNum = data.rounds.length - 1;
       console.log(data.rounds.length);
 
       const expr = true || false;
-      switch(expr) {
+      switch (expr) {
         case (this.sentenceNumber() <= 9):
           this.showNextWordsSet(this.level(), this.round(), this.sentenceNumber());
           console.log('Continue button', this.isCorrect());
           break;
         case (this.sentenceNumber() > 9 && roundsNum > this.round()):
           this.round.update((value) => value + 1);
-          this.correctSentences.update((value) => value = []);
-          this.sentenceNumber.update((value) => value = 0);
+          this.correctSentences.update((value) => {
+            let newValue = [...value];
+            newValue = [];
+            return newValue;
+          });
+          this.sentenceNumber.update((value) => {
+            let newValue = value;
+            newValue = 0;
+            return newValue;
+          });
 
           this.showNextWordsSet(this.level(), this.round(), this.sentenceNumber());
           console.log(this.isCorrect(), 'New Round', this.round(), this.sentenceNumber());
           break;
         case roundsNum === this.round():
-          this.round.update((value) => value = 0);
+          this.round.update((value) => {
+            let newValue = value;
+            newValue = 0;
+            return newValue;
+          });
           this.level.update((value) => value + 1);
-          this.correctSentences.update((value) => value = []);
-          this.sentenceNumber.update((value) => value = 0);
+          this.correctSentences.update((value) => {
+            let newValue = [...value];
+            newValue = [];
+            return newValue;
+          });
+          this.sentenceNumber.update((value) => {
+            let newValue = value;
+            newValue = 0;
+            return newValue;
+          });
 
           this.showNextWordsSet(this.level(), this.round(), this.sentenceNumber());
           console.log(this.isCorrect(), 'New Level', this.round(), this.sentenceNumber());
@@ -134,11 +151,11 @@ export class PuzzleGamePageComponent implements OnInit {
   }
 
   completeSentence() {
-    if(!this.isCorrect()) {
+    if (!this.isCorrect()) {
       this.correctSentences.update((value) => {
         value.push(this.currentSentence());
         return value;
-      })
+      });
       this.puzzlesDataService.sourcePuzzles$.next([]);
       this.isCorrect.update(() => true);
     } else {

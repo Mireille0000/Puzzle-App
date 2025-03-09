@@ -3,11 +3,11 @@ import {
 } from '@angular/core';
 import { NgFor } from '@angular/common';
 import { PuzzleGameCardsDataService } from '../services/puzzle-game-cards-data.service';
-import { Card } from '../interfaces/level-data.interface';
+import { BackgroundColorDirective } from '../directives/add-background-color.directive';
 
 @Component({
   selector: 'pzl-puzzle-field',
-  imports: [NgFor],
+  imports: [NgFor, BackgroundColorDirective],
   templateUrl: './puzzle-field.component.html',
   styleUrl: './puzzle-field.component.scss',
 })
@@ -26,18 +26,19 @@ export class PuzzleFieldComponent implements OnInit {
 
   isCorrect = signal<boolean>(false);
 
-  isDisabled = signal<boolean>(true); // ?
+  isDisabled = signal<boolean>(true);
 
-  sentences = signal<Card[]>([]); // ?
+  isCorrectWordsOrder = signal<boolean>(false);
 
   ngOnInit(): void {
     this.currentSentence = this.puzzlesDataService.currentSentence;
     this.correctSentences = this.puzzlesDataService.correctSentences;
-    this.currentSentenceNum =  this.puzzlesDataService.sentenceNumber;
+    this.currentSentenceNum = this.puzzlesDataService.sentenceNumber;
 
     this.isCorrect = this.puzzlesDataService.isCorrect;
     this.isDisabled = this.puzzlesDataService.isDisabled;
-    this.sentences = this.puzzlesDataService.sentences;
+    this.isCorrectWordsOrder = this.puzzlesDataService.isCorrectWordsOrder;
+
     this.puzzlesDataService.sourcePuzzles$.subscribe((data) => {
       this.sourceBlock = data;
     });
@@ -46,34 +47,48 @@ export class PuzzleFieldComponent implements OnInit {
     });
   }
 
+  movePuzzles(index: number, word: string) {
+    if (index !== -1) {
+      this.puzzlesDataService
+        .pushInSourceBlock(
+          this.sourceBlock,
+          this.resultBlock,
+          word,
+          this.currentSentence().length,
+        );
+    }
+  }
+
   movePuzzleToPuzzlesBlock(word: string) {
     const wordIndex = this.resultBlock.indexOf(word);
-    if(this.isCorrect()) {
+    if (this.isCorrect()) {
       this.resultBlock = [];
-      if (wordIndex !== -1) {{
-        this.puzzlesDataService
-        .pushInSourceBlock(
-            this.sourceBlock,
-            this.resultBlock,
-            word,
-            this.currentSentence().length,
-          );
-        }
-      }
+      this.movePuzzles(wordIndex, word);
+      // if (wordIndex !== -1) {
+      //   {
+      //     this.puzzlesDataService
+      //       .pushInSourceBlock(
+      //         this.sourceBlock,
+      //         this.resultBlock,
+      //         word,
+      //         this.currentSentence().length,
+      //       );
+      //   }
+      // }
     } else {
-      if (wordIndex !== -1) {{
-        this.puzzlesDataService
-          .pushInSourceBlock(
-            this.sourceBlock,
-            this.resultBlock,
-            word,
-            this.currentSentence().length,
-          );
-        }
-      }
+      this.movePuzzles(wordIndex, word);
+      // {
+      //   this.puzzlesDataService
+      //     .pushInSourceBlock(
+      //       this.sourceBlock,
+      //       this.resultBlock,
+      //       word,
+      //       this.currentSentence().length,
+      //     );
+      // }
     }
 
-    if(this.sourceBlock.length === 0) {
+    if (this.sourceBlock.length === 0) {
       this.isDisabled.update(() => false);
     } else {
       this.isDisabled.update(() => true);
