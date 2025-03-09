@@ -7,7 +7,7 @@ interface LevelData {
   year: string
 }
 
-interface Card {
+export interface Card {
   audioExample: string
   id: number,
   textExample: string
@@ -21,9 +21,9 @@ interface Round {
   words: Array<Card>
 }
 
-interface Level {
+export interface Level {
   rounds: Array<Round>,
   roundsCount: number
 }
 
-export default Level;
+// export {Level, Card};

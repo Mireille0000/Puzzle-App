@@ -1,11 +1,26 @@
-<div class="word-puzzles-line">
-  <div
-  *ngFor="let word of resultBlock"
-  class="word-puzzle"
-  (click)="movePuzzleToPuzzlesBlock($event)"
-  >
-    <span>
-      {{word}}
-    </span>
+<div class="lines">
+  <div class="word-puzzles-line">
+    <div
+    class="word-puzzle word-puzzle-line"
+    *ngFor="let line of correctSentences()">
+      {{line.join(' ')}}
+    </div>
+
+    @if(!isCorrect() && currentSentenceNum() <= 9) {
+      <div class="words">
+        <div
+        class="word-puzzle"
+        *ngFor="let word of resultBlock"
+        (click)="movePuzzleToPuzzlesBlock(word)"
+        backgroundColor
+        [isCorrectWordsOrder]="isCorrectWordsOrder"
+        >
+          <span
+          class="{{word}}">
+            {{word}}
+          </span>
+        </div>
+      </div>
+    }
   </div>
 </div>

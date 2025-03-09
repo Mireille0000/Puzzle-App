@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
 import { map, Observable, Subject } from 'rxjs';
-import Level from '../interfaces/level-data.interface';
+import { Level, Card } from '../interfaces/level-data.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -9,11 +9,27 @@ import Level from '../interfaces/level-data.interface';
 export class PuzzleGameCardsDataService {
   private http: HttpClient = inject(HttpClient);
 
-  currentSentence$ = signal(['']);
-
   resultPuzzles$ = new Subject<Array<string>>();
 
   sourcePuzzles$ = new Subject<Array<string>>();
+
+  currentSentence = signal(['']);
+
+  level = signal(1);
+
+  round = signal(0);
+
+  sentenceNumber = signal(0);
+
+  sentences = signal<Card[]>([]); // ?
+
+  correctSentences = signal<string[][]>([]);
+
+  isCorrect = signal<boolean>(false);
+
+  isDisabled = signal<boolean>(true);
+
+  isCorrectWordsOrder = signal<boolean>(false); // ??
 
   getCardsData(round: number): Observable<Level> {
     return this.http.get(
@@ -43,6 +59,9 @@ export class PuzzleGameCardsDataService {
       map((data) => {
         const parsedData = this.parsePuzzleGameData(data);
         const sentence = parsedData.rounds[round].words[sentenceNumber].textExample;
+        const sentencesArr = parsedData.rounds[round].words;
+        this.sentences.set(sentencesArr);
+
         const wordsArr = sentence.split(' ');
         const reducedCurrentWordsArr: string[] = wordsArr.reduce((acc: string[], item, i) => {
           const randomNumber = this.getRandomInt(wordsArr.length);
@@ -50,12 +69,11 @@ export class PuzzleGameCardsDataService {
           return acc;
         }, wordsArr);
 
-        const randomizedWordsArr = reducedCurrentWordsArr
-          .concat(wordsArr)
-          .filter((item, i, arr) => arr.indexOf(item) === i);
+        console.log(reducedCurrentWordsArr);
+        const randomizedWordsArr = reducedCurrentWordsArr;
 
         this.sourcePuzzles$.next(randomizedWordsArr);
-        this.currentSentence$.set(sentence.split(' '));
+        this.currentSentence.set(sentence.split(' '));
         return randomizedWordsArr;
       }),
     );
@@ -72,13 +90,18 @@ export class PuzzleGameCardsDataService {
     const formattedWord = word.replaceAll('\n', '').trim();
     const wordToDeleteFromSource = arrToDelete.indexOf(formattedWord);
 
-    arrToDelete.splice(wordToDeleteFromSource, 1);
-    observableToDelete.next(arrToDelete);
+    const newArrToDelete = [...arrToDelete];
+    newArrToDelete.splice(wordToDeleteFromSource, 1);
+    observableToDelete.next(newArrToDelete);
 
-    arrToPush.push(formattedWord);
-    const result = Array.from(new Set(arrToPush));
-    observableToPush.next(result);
-    console.log(arrToPush);
+    let newArrToPush = [...arrToPush];
+    if (this.isCorrect()) {
+      newArrToPush = [];
+      observableToPush.next(newArrToPush);
+    } else {
+      newArrToPush.push(formattedWord);
+      observableToPush.next(newArrToPush);
+    }
   }
 
   pushInResultsBlock(
