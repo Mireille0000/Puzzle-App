@@ -1,7 +1,8 @@
 :host {
   // width: 70%;
-  display: grid;
-  grid-template-columns: 3fr 1fr;
+  display: flex;
+  justify-content: center;
+  // grid-template-columns: 3fr 1fr;
   gap: 10px;
   margin: auto;
   .puzzle-game {
@@ -19,6 +20,7 @@
     }
   }
   .game-menu {
+    width: 200px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;

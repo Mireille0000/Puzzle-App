@@ -23,6 +23,8 @@ export class PuzzleGameCardsDataService {
 
   sentences = signal<Card[]>([]); // ?
 
+  sentenceTranslation = signal<string>('');
+
   correctSentences = signal<string[][]>([]);
 
   isCorrect = signal<boolean>(false);
@@ -42,6 +44,8 @@ export class PuzzleGameCardsDataService {
     ).pipe(
       map((data) => {
         const parsedData = this.parsePuzzleGameData(data);
+        const sentenceTranslation = parsedData.rounds[this.round()].words[this.sentenceNumber()].textExampleTranslate;
+        this.sentenceTranslation.set(sentenceTranslation);
         return parsedData;
       }),
     );
@@ -59,6 +63,8 @@ export class PuzzleGameCardsDataService {
       map((data) => {
         const parsedData = this.parsePuzzleGameData(data);
         const sentence = parsedData.rounds[round].words[sentenceNumber].textExample;
+        const sentenceTranslation =
+        parsedData.rounds[round].words[sentenceNumber].textExampleTranslate; //???
         const sentencesArr = parsedData.rounds[round].words;
         this.sentences.set(sentencesArr);
 
@@ -69,11 +75,12 @@ export class PuzzleGameCardsDataService {
           return acc;
         }, wordsArr);
 
-        console.log(reducedCurrentWordsArr);
+        // console.log(reducedCurrentWordsArr);
         const randomizedWordsArr = reducedCurrentWordsArr;
 
         this.sourcePuzzles$.next(randomizedWordsArr);
         this.currentSentence.set(sentence.split(' '));
+        this.sentenceTranslation.set(sentenceTranslation); //???
         return randomizedWordsArr;
       }),
     );

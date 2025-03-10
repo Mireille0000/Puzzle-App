@@ -21,13 +21,13 @@ export class PuzzleGamePageComponent implements OnInit {
 
   private puzzlesDataService = inject(PuzzleGameCardsDataService);
 
-  currentSentence = signal(['']);
+  currentSentence = signal<string[]>(['']);
 
-  level = signal(1);
+  level = signal<number>(1);
 
-  round = signal(0);
+  round = signal<number>(0);
 
-  sentenceNumber = signal(0);
+  sentenceNumber = signal<number>(0);
 
   isCorrect = signal<boolean>(false);
 
@@ -92,11 +92,10 @@ export class PuzzleGamePageComponent implements OnInit {
   continue() {
     this.sentenceNumber.update((value) => value + 1);
     this.isDisabled.update(() => true);
-    console.log(this.isCorrect(), this.isDisabled());
 
     this.puzzlesDataService.getCardsData(this.level()).subscribe((data) => {
       const roundsNum = data.rounds.length - 1;
-      console.log(data.rounds.length);
+      console.log(this.sentenceNumber());
 
       const expr = true || false;
       switch (expr) {
@@ -162,41 +161,4 @@ export class PuzzleGamePageComponent implements OnInit {
       console.log('No word in source block'); // to delete
     }
   }
-
-  // changeSentence() {
-  //   const sentence = computed(() => {
-  //     return this.currentSentence().toString();
-  //   })
-
-  //   if (sentence() === this.completedSentence.join() && this.sentenceNumber() <= 9) {
-  //     this.sentenceNumber.update((value) => value + 1);
-  //     this.isCorrect.update(() => true); // to delete
-  //     this.correctSentences.update((value) => {
-  //       value.push(this.currentSentence());
-  //       return value;
-  //     }) // to delete
-
-  //     console.log(this.sentenceNumber())
-  //     this.puzzlesDataService.getCardsData(this.level()).subscribe((data) =>{
-  //       const card = data.rounds[this.round()].words[this.sentenceNumber()];
-  //       if (card) {
-  //         this.puzzlesDataService.getWordsData(this.level(), this.round(), this.sentenceNumber())
-  //           .subscribe((data) => {
-  //             this.sourceWords = data;
-  //           })
-  //         this.sentencesInRound = card.textExample; // to delete
-  //       } else {
-  //         this.isCorrect.update(() => false);
-  //         console.log(this.isCorrect(), 'New Round');
-  //       }
-  //       console.log('Testing', this.sentencesInRound); // to delete
-  //     }
-  //     ) // useful
-  //     console.log('Correct', this.isCorrect());
-  //   } else {
-  //     // round changing ??
-  //     this.isCorrect.update(() => false); // to delete
-  //     console.log(this.isCorrect(), this.sentenceNumber(), 'Try again'); // delete
-  //   }
-  // }
 }
