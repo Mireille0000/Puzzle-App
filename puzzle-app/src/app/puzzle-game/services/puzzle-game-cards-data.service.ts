@@ -25,6 +25,8 @@ export class PuzzleGameCardsDataService {
 
   sentenceTranslation = signal<string>('');
 
+  audioHint = signal<string>('');
+
   correctSentences = signal<string[][]>([]);
 
   isCorrect = signal<boolean>(false);
@@ -44,8 +46,6 @@ export class PuzzleGameCardsDataService {
     ).pipe(
       map((data) => {
         const parsedData = this.parsePuzzleGameData(data);
-        const sentenceTranslation = parsedData.rounds[this.round()].words[this.sentenceNumber()].textExampleTranslate;
-        this.sentenceTranslation.set(sentenceTranslation);
         return parsedData;
       }),
     );
@@ -64,7 +64,7 @@ export class PuzzleGameCardsDataService {
         const parsedData = this.parsePuzzleGameData(data);
         const sentence = parsedData.rounds[round].words[sentenceNumber].textExample;
         const sentenceTranslation =
-        parsedData.rounds[round].words[sentenceNumber].textExampleTranslate; //???
+        parsedData.rounds[round].words[sentenceNumber].textExampleTranslate;
         const sentencesArr = parsedData.rounds[round].words;
         this.sentences.set(sentencesArr);
 
@@ -75,8 +75,10 @@ export class PuzzleGameCardsDataService {
           return acc;
         }, wordsArr);
 
-        // console.log(reducedCurrentWordsArr);
         const randomizedWordsArr = reducedCurrentWordsArr;
+
+        const audioHint = parsedData.rounds[this.round()].words[this.sentenceNumber()].audioExample;
+        this.audioHint.set(audioHint);
 
         this.sourcePuzzles$.next(randomizedWordsArr);
         this.currentSentence.set(sentence.split(' '));
@@ -84,6 +86,15 @@ export class PuzzleGameCardsDataService {
         return randomizedWordsArr;
       }),
     );
+  }
+
+  getAudioFile(audioPath: string) {
+    return this.http.get(
+      `/api/rolling-scopes-school/rss-puzzle-data/main/${audioPath}`,
+      {
+        responseType: 'blob',
+      }
+    )
   }
 
   movePuzzles(

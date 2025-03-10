@@ -24,6 +24,8 @@ export class HintsBlockComponent implements OnInit {
 
   currentSentenceTranslation = signal<string>('');
 
+  currentAudioHint = signal<string>('');
+
   ngOnInit(): void {
     this.level = this.puzzlesDataService.level;
     this.round = this.puzzlesDataService.round;
@@ -31,15 +33,15 @@ export class HintsBlockComponent implements OnInit {
 
     this.isCorrect = this.puzzlesDataService.isCorrect;
 
-    this.puzzlesDataService.getCardsData(this.level()).subscribe((data) => {
+    this.puzzlesDataService.getWordsData(this.level(), this.round(), this.sentenceNumber()).subscribe((data) => {
       this.currentSentenceTranslation = this.puzzlesDataService.sentenceTranslation;
-      console.log(data.rounds[this.round()].levelData);
+      this.currentAudioHint = this.puzzlesDataService.audioHint;
     });
   }
 
   toggleCurrentSentenceTranslation() {
     this.isClickedTranslationHint = !this.isClickedTranslationHint;
-    this.puzzlesDataService.getCardsData(this.level()).subscribe(() => {
+    this.puzzlesDataService.getWordsData(this.level(), this.round(), this.sentenceNumber()).subscribe(() => {
       this.currentSentenceTranslation = this.puzzlesDataService.sentenceTranslation;
     });
 
@@ -48,4 +50,16 @@ export class HintsBlockComponent implements OnInit {
     console.log(this.sentenceNumber());
   }
 
+  toggleAudioHint() {
+    console.log('Audio Hint Works!');
+    this.puzzlesDataService.getWordsData(this.level(), this.round(), this.sentenceNumber()).subscribe(() => {
+      this.currentAudioHint = this.puzzlesDataService.audioHint;
+      this.puzzlesDataService.getAudioFile(this.currentAudioHint()).subscribe((data) => {
+        const audioUrl = URL.createObjectURL(data);
+        const audio = new Audio(audioUrl);
+        audio.play();
+      })
+      console.log(this.currentAudioHint());
+    });
+  }
 }
