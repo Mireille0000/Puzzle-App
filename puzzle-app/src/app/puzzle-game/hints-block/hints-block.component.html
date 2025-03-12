@@ -6,10 +6,19 @@
   <li (click)="toggleAudioHint()">
     <span class="pi pi-headphones" style="color: #2b435a" title="Listen the sentence"></span>
   </li>
-  <li>
+  <li (click)="toggleImageHint()">
     <span class="pi pi-image" style="color: #2b435a" title="Show the puzzle image"></span>
   </li>
 </ul>
 @if(isClickedTranslationHint || isCorrect()) {
   <p>{{currentSentenceTranslation()}}</p>
 }
+
+  <!-- <div backgroundImage [imagePath]="imagePath" style="background-size: cover;
+    width: 285px;
+    height: 160px;
+    border: 2px solid;
+    /* resize: both;
+    overflow: scroll; */
+    "
+    ></div> -->

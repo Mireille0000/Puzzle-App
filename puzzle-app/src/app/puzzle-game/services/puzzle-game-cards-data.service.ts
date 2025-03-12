@@ -27,6 +27,12 @@ export class PuzzleGameCardsDataService {
 
   audioHint = signal<string>('');
 
+  imageHint = signal<string>('');
+
+  backgroundImagePath = signal<string>('');
+
+  isClikedImageHint = signal<boolean>(false); //??
+
   correctSentences = signal<string[][]>([]);
 
   isCorrect = signal<boolean>(false);
@@ -65,6 +71,7 @@ export class PuzzleGameCardsDataService {
         const sentence = parsedData.rounds[round].words[sentenceNumber].textExample;
         const sentenceTranslation =
         parsedData.rounds[round].words[sentenceNumber].textExampleTranslate;
+
         const sentencesArr = parsedData.rounds[round].words;
         this.sentences.set(sentencesArr);
 
@@ -79,6 +86,11 @@ export class PuzzleGameCardsDataService {
 
         const audioHint = parsedData.rounds[this.round()].words[this.sentenceNumber()].audioExample;
         this.audioHint.set(audioHint);
+        const imagePath = parsedData.rounds[this.round()].levelData.cutSrc;
+        this.imageHint.set(imagePath);
+
+        const test = parsedData.rounds[this.round()].levelData;
+        console.log(test);
 
         this.sourcePuzzles$.next(randomizedWordsArr);
         this.currentSentence.set(sentence.split(' '));
@@ -94,6 +106,19 @@ export class PuzzleGameCardsDataService {
       {
         responseType: 'blob',
       }
+    )
+  }
+
+  getImageFile(imagePath: string) {
+    return this.http.get(
+      `/api/rolling-scopes-school/rss-puzzle-data/main/images/${imagePath}`,
+      {responseType: 'blob'}
+    ).pipe(
+      map((data) => {
+        const imageUrl = URL.createObjectURL(data);
+        this.backgroundImagePath.update((value) => value = imageUrl);
+        return this.backgroundImagePath;
+      })
     )
   }
 

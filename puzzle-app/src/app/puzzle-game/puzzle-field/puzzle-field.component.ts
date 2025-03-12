@@ -1,13 +1,14 @@
 import {
-  Component, inject, OnInit, signal,
+  Component, inject, OnInit, signal
 } from '@angular/core';
 import { NgFor } from '@angular/common';
 import { PuzzleGameCardsDataService } from '../services/puzzle-game-cards-data.service';
 import { BackgroundColorDirective } from '../directives/add-background-color.directive';
+import { BackgroundImageDirective } from '../directives/set-background-image.directive';
 
 @Component({
   selector: 'pzl-puzzle-field',
-  imports: [NgFor, BackgroundColorDirective],
+  imports: [NgFor, BackgroundColorDirective, BackgroundImageDirective],
   templateUrl: './puzzle-field.component.html',
   styleUrl: './puzzle-field.component.scss',
 })
@@ -20,15 +21,25 @@ export class PuzzleFieldComponent implements OnInit {
 
   correctSentences = signal<string[][]>([]);
 
-  currentSentenceNum = signal(0);
+  level = signal<number>(1);
 
-  currentSentence = signal(['']);
+  round = signal<number>(0);
+
+  currentSentenceNum = signal<number>(0);
+
+  currentSentence = signal<string[]>(['']);
+
+  currentImageHint = signal<string>('')
+
+  backgroundImagePath = signal<string>('');
 
   isCorrect = signal<boolean>(false);
 
   isDisabled = signal<boolean>(true);
 
   isCorrectWordsOrder = signal<boolean>(false);
+
+  isClickedImageHint = signal<boolean>(false);
 
   ngOnInit(): void {
     this.currentSentence = this.puzzlesDataService.currentSentence;
@@ -38,6 +49,9 @@ export class PuzzleFieldComponent implements OnInit {
     this.isCorrect = this.puzzlesDataService.isCorrect;
     this.isDisabled = this.puzzlesDataService.isDisabled;
     this.isCorrectWordsOrder = this.puzzlesDataService.isCorrectWordsOrder;
+    this.isClickedImageHint = this.puzzlesDataService.isClikedImageHint;
+
+    this.backgroundImagePath = this.puzzlesDataService.backgroundImagePath;
 
     this.puzzlesDataService.sourcePuzzles$.subscribe((data) => {
       this.sourceBlock = data;

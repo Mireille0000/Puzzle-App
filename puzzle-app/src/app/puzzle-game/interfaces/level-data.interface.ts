@@ -17,7 +17,7 @@ export interface Card {
 }
 
 interface Round {
-  levelData: Array<LevelData>,
+  levelData: LevelData,
   words: Array<Card>
 }
 

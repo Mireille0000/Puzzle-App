@@ -1,9 +1,12 @@
-<div class="lines">
+ <div class="puzzle-field" [backgroundImage]="backgroundImagePath()">
   <div class="word-puzzles-line">
     <div
     class="word-puzzle word-puzzle-line"
-    *ngFor="let line of correctSentences()">
-      {{line.join(' ')}}
+    *ngFor="let sentence of correctSentences()">
+      <div class="word-puzzle-item" *ngFor="let word of sentence">
+        <span>{{word}}</span>
+      </div>
+        <!-- {{line.join(' ')}} -->
     </div>
 
     @if(!isCorrect() && currentSentenceNum() <= 9) {

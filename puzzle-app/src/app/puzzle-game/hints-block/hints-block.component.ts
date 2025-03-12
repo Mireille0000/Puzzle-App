@@ -20,11 +20,17 @@ export class HintsBlockComponent implements OnInit {
 
   isClickedTranslationHint = false;
 
-  levelData = {};
+  isClickedAudioHint = false;
+
+  isClickedImageHint = signal<boolean>(false);
 
   currentSentenceTranslation = signal<string>('');
 
   currentAudioHint = signal<string>('');
+
+  currentImageHint = signal<string>('');
+
+  backgroundImagePath = signal<string>(''); // ???
 
   ngOnInit(): void {
     this.level = this.puzzlesDataService.level;
@@ -32,34 +38,42 @@ export class HintsBlockComponent implements OnInit {
     this.sentenceNumber = this.puzzlesDataService.sentenceNumber;
 
     this.isCorrect = this.puzzlesDataService.isCorrect;
+    this.isClickedImageHint = this.puzzlesDataService.isClikedImageHint;
 
     this.puzzlesDataService.getWordsData(this.level(), this.round(), this.sentenceNumber()).subscribe((data) => {
       this.currentSentenceTranslation = this.puzzlesDataService.sentenceTranslation;
       this.currentAudioHint = this.puzzlesDataService.audioHint;
+      this.currentImageHint = this.puzzlesDataService.imageHint;
+
+      this.backgroundImagePath = this.puzzlesDataService.backgroundImagePath;
     });
   }
 
   toggleCurrentSentenceTranslation() {
     this.isClickedTranslationHint = !this.isClickedTranslationHint;
-    this.puzzlesDataService.getWordsData(this.level(), this.round(), this.sentenceNumber()).subscribe(() => {
-      this.currentSentenceTranslation = this.puzzlesDataService.sentenceTranslation;
-    });
-
-    console.log(this.isClickedTranslationHint);
-    console.log(this.currentSentenceTranslation());
-    console.log(this.sentenceNumber());
+    this.currentSentenceTranslation = this.puzzlesDataService.sentenceTranslation;
   }
 
   toggleAudioHint() {
-    console.log('Audio Hint Works!');
-    this.puzzlesDataService.getWordsData(this.level(), this.round(), this.sentenceNumber()).subscribe(() => {
-      this.currentAudioHint = this.puzzlesDataService.audioHint;
-      this.puzzlesDataService.getAudioFile(this.currentAudioHint()).subscribe((data) => {
-        const audioUrl = URL.createObjectURL(data);
-        const audio = new Audio(audioUrl);
-        audio.play();
-      })
-      console.log(this.currentAudioHint());
+    // add toggle functionality?
+    this.isClickedAudioHint = !this.isClickedAudioHint;
+    this.currentAudioHint = this.puzzlesDataService.audioHint;
+    this.puzzlesDataService.getAudioFile(this.currentAudioHint()).subscribe((data) => {
+      const audioUrl = URL.createObjectURL(data);
+      const audio = new Audio(audioUrl);
+      audio.play();
+    })
+  }
+
+  toggleImageHint() {
+    this.puzzlesDataService.getImageFile(this.currentImageHint()).subscribe(() => {
+       if(this.isClickedImageHint() === false) {
+        this.isClickedImageHint.update(() => true);
+        this.backgroundImagePath.update((value) => value = this.puzzlesDataService.backgroundImagePath());
+      } else {
+        this.isClickedImageHint.update(() => false);
+        this.backgroundImagePath.update(() => '');
+      }
     });
   }
 }
