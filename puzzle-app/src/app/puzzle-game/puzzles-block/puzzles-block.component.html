@@ -1,6 +1,7 @@
 <div
 class="word-puzzle"
 *ngFor="let word of words">
+<!-- [backgroundImage]="backgroundImagePath()" -->
   <span (click)="movePuzzleToPuzzleField(word)">
     {{word}}
   </span>

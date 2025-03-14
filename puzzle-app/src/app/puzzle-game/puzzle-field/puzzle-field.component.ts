@@ -1,14 +1,20 @@
 import {
   Component, inject, OnInit, signal
 } from '@angular/core';
-import { NgFor } from '@angular/common';
+import { NgFor, NgIf, NgStyle } from '@angular/common';
 import { PuzzleGameCardsDataService } from '../services/puzzle-game-cards-data.service';
 import { BackgroundColorDirective } from '../directives/add-background-color.directive';
 import { BackgroundImageDirective } from '../directives/set-background-image.directive';
+import { BackgroundPositionDirective } from '../directives/set-background-position.directive';
 
 @Component({
   selector: 'pzl-puzzle-field',
-  imports: [NgFor, BackgroundColorDirective, BackgroundImageDirective],
+  imports: [
+    NgFor,
+    BackgroundColorDirective,
+    BackgroundImageDirective,
+    BackgroundPositionDirective
+  ],
   templateUrl: './puzzle-field.component.html',
   styleUrl: './puzzle-field.component.scss',
 })
@@ -41,6 +47,10 @@ export class PuzzleFieldComponent implements OnInit {
 
   isClickedImageHint = signal<boolean>(false);
 
+  bgPositionTop = '0';
+
+  correctLineBgImage = signal<string>('');
+
   ngOnInit(): void {
     this.currentSentence = this.puzzlesDataService.currentSentence;
     this.correctSentences = this.puzzlesDataService.correctSentences;
@@ -52,14 +62,42 @@ export class PuzzleFieldComponent implements OnInit {
     this.isClickedImageHint = this.puzzlesDataService.isClikedImageHint;
 
     this.backgroundImagePath = this.puzzlesDataService.backgroundImagePath;
+    console.log(this.backgroundImagePath());
+
+    this.puzzlesDataService.getWordsData(this.level(), this.round(), this.currentSentenceNum()).subscribe((data) => {
+      this.currentImageHint = this.puzzlesDataService.imageHint;
+      this.puzzlesDataService.getImageFile(this.currentImageHint()).subscribe(() => {
+        this.backgroundImagePath.update((value) => value = '');
+        this.correctLineBgImage = this.puzzlesDataService.correctLineBgImage;
+      })
+    });
 
     this.puzzlesDataService.sourcePuzzles$.subscribe((data) => {
       this.sourceBlock = data;
     });
+
     this.puzzlesDataService.resultPuzzles$.subscribe((data) => {
       this.resultBlock = data;
     });
   }
+
+  calculateBgPosition(index: number) {
+    const bgPositions: { bgPosition: string }[] = [];
+    const offset = index * 60;
+
+    bgPositions.push({ bgPosition: `top -${offset}px left` });
+    this.bgPositionTop = `${offset}`;
+    console.log(this.bgPositionTop);
+    return bgPositions;
+  }
+
+  calculatePuzzleBgPosition(index: number, top: string = this.bgPositionTop) {
+    const bgPositions: { bgPosition: string }[] = [];
+    const offset = index * 60;
+
+    bgPositions.push({ bgPosition: `top -${top}px left -${offset}px` });
+    return bgPositions;
+  } // ???
 
   movePuzzles(index: number, word: string) {
     if (index !== -1) {
@@ -78,28 +116,8 @@ export class PuzzleFieldComponent implements OnInit {
     if (this.isCorrect()) {
       this.resultBlock = [];
       this.movePuzzles(wordIndex, word);
-      // if (wordIndex !== -1) {
-      //   {
-      //     this.puzzlesDataService
-      //       .pushInSourceBlock(
-      //         this.sourceBlock,
-      //         this.resultBlock,
-      //         word,
-      //         this.currentSentence().length,
-      //       );
-      //   }
-      // }
     } else {
       this.movePuzzles(wordIndex, word);
-      // {
-      //   this.puzzlesDataService
-      //     .pushInSourceBlock(
-      //       this.sourceBlock,
-      //       this.resultBlock,
-      //       word,
-      //       this.currentSentence().length,
-      //     );
-      // }
     }
 
     if (this.sourceBlock.length === 0) {

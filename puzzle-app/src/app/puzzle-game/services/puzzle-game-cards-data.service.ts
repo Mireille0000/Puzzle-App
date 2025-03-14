@@ -39,7 +39,9 @@ export class PuzzleGameCardsDataService {
 
   isDisabled = signal<boolean>(true);
 
-  isCorrectWordsOrder = signal<boolean>(false); // ??
+  isCorrectWordsOrder = signal<boolean>(false);
+
+  correctLineBgImage = signal<string>('');
 
   getCardsData(round: number): Observable<Level> {
     return this.http.get(
@@ -89,9 +91,6 @@ export class PuzzleGameCardsDataService {
         const imagePath = parsedData.rounds[this.round()].levelData.cutSrc;
         this.imageHint.set(imagePath);
 
-        const test = parsedData.rounds[this.round()].levelData;
-        console.log(test);
-
         this.sourcePuzzles$.next(randomizedWordsArr);
         this.currentSentence.set(sentence.split(' '));
         this.sentenceTranslation.set(sentenceTranslation); //???
@@ -117,6 +116,7 @@ export class PuzzleGameCardsDataService {
       map((data) => {
         const imageUrl = URL.createObjectURL(data);
         this.backgroundImagePath.update((value) => value = imageUrl);
+        this.correctLineBgImage.update((value) => value = imageUrl);
         return this.backgroundImagePath;
       })
     )

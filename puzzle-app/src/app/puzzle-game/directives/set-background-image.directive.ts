@@ -10,7 +10,7 @@ export class BackgroundImageDirective {
   element = inject(ElementRef);
 
   @Input() set backgroundImage (imagePath: string) {
-    if(imagePath.length > 0) {
+    if(imagePath.length) {
       this.renderer.setStyle(
         this.element.nativeElement,
         'backgroundImage',
@@ -23,5 +23,5 @@ export class BackgroundImageDirective {
         `url('')`
         )
       }
-    }
+  }
 }

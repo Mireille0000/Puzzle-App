@@ -1,23 +1,29 @@
- <div class="puzzle-field" [backgroundImage]="backgroundImagePath()">
+ <div class="puzzle-field">
+  <!-- [backgroundImage]="backgroundImagePath()" -->
   <div class="word-puzzles-line">
     <div
     class="word-puzzle word-puzzle-line"
-    *ngFor="let sentence of correctSentences()">
+    *ngFor="let sentence of correctSentences(); let i = index"
+    [backgroundImage]="correctLineBgImage()"
+    backgroundPosition [backgroundPuzzlePosition]="calculateBgPosition(i)"
+    >
       <div class="word-puzzle-item" *ngFor="let word of sentence">
         <span>{{word}}</span>
       </div>
-        <!-- {{line.join(' ')}} -->
     </div>
 
     @if(!isCorrect() && currentSentenceNum() <= 9) {
       <div class="words">
         <div
         class="word-puzzle"
-        *ngFor="let word of resultBlock"
+        *ngFor="let word of resultBlock; let i = index"
         (click)="movePuzzleToPuzzlesBlock(word)"
         backgroundColor
         [isCorrectWordsOrder]="isCorrectWordsOrder"
+        [backgroundImage]="backgroundImagePath()"
         >
+        <!-- add the bg that is a part of the image to each puzzle -->
+        <!-- backgroundPosition [backgroundPuzzlePosition]="calculatePuzzleBgPosition(i)" -->
           <span
           class="{{word}}">
             {{word}}

@@ -54,7 +54,7 @@ export class HintsBlockComponent implements OnInit {
     this.currentSentenceTranslation = this.puzzlesDataService.sentenceTranslation;
   }
 
-  toggleAudioHint() {
+  playAudioHint() {
     // add toggle functionality?
     this.isClickedAudioHint = !this.isClickedAudioHint;
     this.currentAudioHint = this.puzzlesDataService.audioHint;
@@ -70,9 +70,11 @@ export class HintsBlockComponent implements OnInit {
        if(this.isClickedImageHint() === false) {
         this.isClickedImageHint.update(() => true);
         this.backgroundImagePath.update((value) => value = this.puzzlesDataService.backgroundImagePath());
+        console.log(this.backgroundImagePath());
       } else {
         this.isClickedImageHint.update(() => false);
         this.backgroundImagePath.update(() => '');
+        console.log(this.backgroundImagePath());
       }
     });
   }

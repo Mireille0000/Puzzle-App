@@ -1,9 +1,7 @@
 :host {
-  // height: 70vh;
   display: grid;
-  // grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
   gap: 10px;
-  padding: 15px;
+  padding: 5px;
   background-color: rgb(161 178 200 / 90%);
   border-radius: 10px;
   .puzzle-field {
@@ -29,7 +27,7 @@
           display: flex;
           align-items: center;
           padding: 5px;
-          border: 1px solid #32475d;
+          // border: 1px solid #32475d;
         }
         span {
           transform: scale(1);

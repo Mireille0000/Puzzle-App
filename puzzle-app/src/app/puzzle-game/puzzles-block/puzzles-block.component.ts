@@ -3,10 +3,11 @@ import {
 } from '@angular/core';
 import { NgFor } from '@angular/common';
 import { PuzzleGameCardsDataService } from '../services/puzzle-game-cards-data.service';
+import { BackgroundImageDirective } from '../directives/set-background-image.directive'
 
 @Component({
   selector: 'pzl-puzzles-block',
-  imports: [NgFor],
+  imports: [NgFor, /* BackgroundImageDirective */],
   templateUrl: './puzzles-block.component.html',
   styleUrl: './puzzles-block.component.scss',
 })
@@ -29,12 +30,16 @@ export class PuzzlesBlockComponent implements OnInit {
 
   isDisabled = signal<boolean>(true);
 
+  backgroundImagePath = signal<string>('');
+
   ngOnInit(): void {
     this.isCorrect = this.puzzlesDataService.isCorrect;
     this.level = this.puzzlesDataService.level;
     this.round = this.puzzlesDataService.round;
     this.sentenceNumber = this.puzzlesDataService.sentenceNumber;
     this.isDisabled = this.puzzlesDataService.isDisabled;
+
+    this.backgroundImagePath = this.puzzlesDataService.backgroundImagePath; //
 
     this.puzzlesDataService.getWordsData(
       this.level(),
@@ -56,6 +61,7 @@ export class PuzzlesBlockComponent implements OnInit {
   movePuzzleToPuzzleField(word: string) {
     const wordIndex = this.words.indexOf(word);
 
+    // refactor
     if (this.isCorrect()) {
       this.isCorrect.update(() => false);
       this.resultArr = [];

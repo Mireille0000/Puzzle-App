@@ -1,9 +1,8 @@
 <ul>
   <li (click)="toggleCurrentSentenceTranslation()">
-    <!-- <img ngSrc="hint-icons/translating.png" alt="translating" width="20" height="20"> -->
     <span class="pi pi-language" style="color: #2b435a" title="Show the sentence translation"></span>
   </li>
-  <li (click)="toggleAudioHint()">
+  <li (click)="playAudioHint()">
     <span class="pi pi-headphones" style="color: #2b435a" title="Listen the sentence"></span>
   </li>
   <li (click)="toggleImageHint()">
@@ -13,12 +12,3 @@
 @if(isClickedTranslationHint || isCorrect()) {
   <p>{{currentSentenceTranslation()}}</p>
 }
-
-  <!-- <div backgroundImage [imagePath]="imagePath" style="background-size: cover;
-    width: 285px;
-    height: 160px;
-    border: 2px solid;
-    /* resize: both;
-    overflow: scroll; */
-    "
-    ></div> -->

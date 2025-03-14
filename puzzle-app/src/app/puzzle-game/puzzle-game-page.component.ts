@@ -29,6 +29,10 @@ export class PuzzleGamePageComponent implements OnInit {
 
   sentenceNumber = signal<number>(0);
 
+  currentImageHint = signal<string>('');
+
+  puzzleImagePath =  signal<string>('');
+
   isCorrect = signal<boolean>(false);
 
   isDisabled = signal<boolean>(true);
@@ -89,13 +93,24 @@ export class PuzzleGamePageComponent implements OnInit {
     this.isCorrect.update(() => false);
   }
 
+  downloadNewImage(level: number, round: number, sentenceNum: number) {
+    this.isCorrect.update(() => true);
+    this.puzzlesDataService.getWordsData(level, round, sentenceNum)
+    .subscribe(() => {
+      this.currentImageHint = this.puzzlesDataService.imageHint;
+      this.puzzlesDataService.getImageFile(this.currentImageHint()).subscribe((data) => {
+        this.puzzleImagePath = data;
+      })
+    });
+    this.isCorrect.update(() => false);
+  }
+
   continue() {
     this.sentenceNumber.update((value) => value + 1);
     this.isDisabled.update(() => true);
 
     this.puzzlesDataService.getCardsData(this.level()).subscribe((data) => {
       const roundsNum = data.rounds.length - 1;
-      console.log(this.sentenceNumber());
 
       const expr = true || false;
       switch (expr) {
@@ -117,6 +132,7 @@ export class PuzzleGamePageComponent implements OnInit {
           });
 
           this.showNextWordsSet(this.level(), this.round(), this.sentenceNumber());
+          this.downloadNewImage(this.level(), this.round(), this.sentenceNumber());
           console.log(this.isCorrect(), 'New Round', this.round(), this.sentenceNumber());
           break;
         case roundsNum === this.round():
@@ -138,6 +154,7 @@ export class PuzzleGamePageComponent implements OnInit {
           });
 
           this.showNextWordsSet(this.level(), this.round(), this.sentenceNumber());
+          this.downloadNewImage(this.level(), this.round(), this.sentenceNumber());
           console.log(this.isCorrect(), 'New Level', this.round(), this.sentenceNumber());
           break;
         default:
@@ -146,7 +163,6 @@ export class PuzzleGamePageComponent implements OnInit {
     });
     this.puzzlesDataService.resultPuzzles$.next([]);
     this.isCorrect.update(() => false);
-    console.log('Continue button works');
   }
 
   completeSentence() {

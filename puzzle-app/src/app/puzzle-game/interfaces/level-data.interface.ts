@@ -25,5 +25,3 @@ export interface Level {
   rounds: Array<Round>,
   roundsCount: number
 }
-
-// export {Level, Card};
