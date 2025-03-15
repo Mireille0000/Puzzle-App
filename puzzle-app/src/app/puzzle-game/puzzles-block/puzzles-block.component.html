@@ -1,8 +1,12 @@
 <div
 class="word-puzzle"
-*ngFor="let word of words">
-<!-- [backgroundImage]="backgroundImagePath()" -->
-  <span (click)="movePuzzleToPuzzleField(word)">
-    {{word}}
+*ngFor="let item of words"
+[ngStyle]="{
+  'background-image': isClickedImageHint() ? 'url(' + item.image + ')' : 'url()',
+  'background-position': item.backgroundPosition
+}"
+>
+  <span (click)="movePuzzleToPuzzleField(item)">
+    {{item.word}}
   </span>
 </div>

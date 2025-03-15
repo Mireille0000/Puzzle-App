@@ -16,17 +16,16 @@
       <div class="words">
         <div
         class="word-puzzle"
-        *ngFor="let word of resultBlock; let i = index"
-        (click)="movePuzzleToPuzzlesBlock(word)"
+        *ngFor="let puzzle of resultBlock; let i = index"
+        (click)="movePuzzleToPuzzlesBlock(puzzle)"
         backgroundColor
         [isCorrectWordsOrder]="isCorrectWordsOrder"
         [backgroundImage]="backgroundImagePath()"
         >
         <!-- add the bg that is a part of the image to each puzzle -->
         <!-- backgroundPosition [backgroundPuzzlePosition]="calculatePuzzleBgPosition(i)" -->
-          <span
-          class="{{word}}">
-            {{word}}
+          <span>
+            {{puzzle.word}}
           </span>
         </div>
       </div>

@@ -6,6 +6,7 @@ import { PuzzleGameCardsDataService } from '../services/puzzle-game-cards-data.s
 import { BackgroundColorDirective } from '../directives/add-background-color.directive';
 import { BackgroundImageDirective } from '../directives/set-background-image.directive';
 import { BackgroundPositionDirective } from '../directives/set-background-position.directive';
+import PuzzleData from '../interfaces/puzzle-data.interface';
 
 @Component({
   selector: 'pzl-puzzle-field',
@@ -21,9 +22,13 @@ import { BackgroundPositionDirective } from '../directives/set-background-positi
 export class PuzzleFieldComponent implements OnInit {
   private puzzlesDataService = inject(PuzzleGameCardsDataService);
 
-  sourceBlock: string[] = [];
+  // sourceBlock: string[] = [];
 
-  resultBlock: string[] = [];
+  // resultBlock: string[] = [];
+
+  sourceBlock: PuzzleData[] = [];
+
+  resultBlock: PuzzleData[] = [];
 
   correctSentences = signal<string[][]>([]);
 
@@ -35,7 +40,7 @@ export class PuzzleFieldComponent implements OnInit {
 
   currentSentence = signal<string[]>(['']);
 
-  currentImageHint = signal<string>('')
+  currentImageHint = signal<string>('');
 
   backgroundImagePath = signal<string>('');
 
@@ -87,7 +92,7 @@ export class PuzzleFieldComponent implements OnInit {
 
     bgPositions.push({ bgPosition: `top -${offset}px left` });
     this.bgPositionTop = `${offset}`;
-    console.log(this.bgPositionTop);
+    // console.log(this.bgPositionTop);
     return bgPositions;
   }
 
@@ -99,25 +104,26 @@ export class PuzzleFieldComponent implements OnInit {
     return bgPositions;
   } // ???
 
-  movePuzzles(index: number, word: string) {
+  movePuzzles(index: number, /* word: string */ puzzle: PuzzleData) {
     if (index !== -1) {
       this.puzzlesDataService
         .pushInSourceBlock(
           this.sourceBlock,
           this.resultBlock,
-          word,
+          // word,
+          puzzle,
           this.currentSentence().length,
         );
     }
   }
 
-  movePuzzleToPuzzlesBlock(word: string) {
-    const wordIndex = this.resultBlock.indexOf(word);
+  movePuzzleToPuzzlesBlock(/* word: string*/ puzzle: PuzzleData) {
+    const wordIndex = this.resultBlock.indexOf(puzzle);
     if (this.isCorrect()) {
       this.resultBlock = [];
-      this.movePuzzles(wordIndex, word);
+      this.movePuzzles(wordIndex, puzzle);
     } else {
-      this.movePuzzles(wordIndex, word);
+      this.movePuzzles(wordIndex, puzzle);
     }
 
     if (this.sourceBlock.length === 0) {

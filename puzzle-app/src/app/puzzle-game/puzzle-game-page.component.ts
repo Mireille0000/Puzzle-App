@@ -7,6 +7,7 @@ import { HintsBlockComponent } from './hints-block/hints-block.component';
 import { PuzzleFieldComponent } from './puzzle-field/puzzle-field.component';
 import { PuzzlesBlockComponent } from './puzzles-block/puzzles-block.component';
 import { PuzzleGameCardsDataService } from './services/puzzle-game-cards-data.service';
+import PuzzleData from './interfaces/puzzle-data.interface';
 
 @Component({
   selector: 'app-puzzle-game-page',
@@ -39,11 +40,13 @@ export class PuzzleGamePageComponent implements OnInit {
 
   completedSentence: string[] = [];
 
-  sourceWords: string[] = [];
+  sourceWords: PuzzleData[] = [];
 
   correctSentences = signal<string[][]>([]);
 
   isCorrectWordsOrder = signal<boolean>(false);
+
+  bgPositionTop = signal<number>(0);
 
   ngOnInit(): void {
     this.navigation.getPathName(this.route);
@@ -58,8 +61,14 @@ export class PuzzleGamePageComponent implements OnInit {
     this.isDisabled = this.puzzlesDataService.isDisabled;
     this.isCorrectWordsOrder = this.puzzlesDataService.isCorrectWordsOrder; // naming
 
+    this.bgPositionTop = this.puzzlesDataService.bgPositonTop;
+
     this.puzzlesDataService.resultPuzzles$.subscribe((data) => {
-      this.completedSentence = data;
+      const sentence = data.reduce((acc: string[], item, i) => {
+        acc.push(item.word);
+        return acc;
+      }, [])
+      this.completedSentence = sentence;
     });
     this.puzzlesDataService.sourcePuzzles$.subscribe((data) => {
       this.sourceWords = data;
@@ -70,6 +79,12 @@ export class PuzzleGamePageComponent implements OnInit {
     const sentence = computed(() => this.currentSentence().toString());
 
     if (sentence() === this.completedSentence.join()) {
+      if (this.bgPositionTop() < 600) {
+        this.bgPositionTop.update((value) => value + 60)
+      } else {
+        this.bgPositionTop.update((value) => value = 0)
+      }
+      console.log(this.bgPositionTop());
       this.isCorrectWordsOrder.update(() => false);
       this.isCorrect.update(() => true);
       console.log(this.isCorrect(), 'Correct!');
@@ -80,6 +95,8 @@ export class PuzzleGamePageComponent implements OnInit {
     } else {
       this.isCorrectWordsOrder.update(() => true);
       this.isCorrect.update(() => false);
+      console.log(this.completedSentence);
+      console.log(sentence());
       console.log(this.isCorrect(), 'Try again');
     }
   }
@@ -166,7 +183,12 @@ export class PuzzleGamePageComponent implements OnInit {
   }
 
   completeSentence() {
-    if (!this.isCorrect()) {
+    if (!this.isCorrect() && this.bgPositionTop() < 600) {
+      this.bgPositionTop.update((value) => value + 60);
+      if(this.bgPositionTop() > 600) {
+        this.bgPositionTop.update((value) => value = 0);
+      }
+      console.log(this.bgPositionTop());
       this.correctSentences.update((value) => {
         value.push(this.currentSentence());
         return value;

@@ -1,22 +1,27 @@
 import {
   Component, inject, OnInit, signal,
 } from '@angular/core';
-import { NgFor } from '@angular/common';
+import { NgFor, NgOptimizedImage, NgStyle } from '@angular/common';
 import { PuzzleGameCardsDataService } from '../services/puzzle-game-cards-data.service';
 import { BackgroundImageDirective } from '../directives/set-background-image.directive'
+import PuzzleData from '../interfaces/puzzle-data.interface';
 
 @Component({
   selector: 'pzl-puzzles-block',
-  imports: [NgFor, /* BackgroundImageDirective */],
+  imports: [NgFor, NgStyle  /* BackgroundImageDirective */],
   templateUrl: './puzzles-block.component.html',
   styleUrl: './puzzles-block.component.scss',
 })
 export class PuzzlesBlockComponent implements OnInit {
   private puzzlesDataService = inject(PuzzleGameCardsDataService);
 
-  words: string[] = [];
+  // words: string[] = [];
 
-  resultArr: string[] = [];
+  // resultArr: string[] = [];
+
+  words: PuzzleData[] = [];
+
+  resultArr: PuzzleData[] = [];
 
   currentSentence = signal(['']);
 
@@ -32,12 +37,20 @@ export class PuzzlesBlockComponent implements OnInit {
 
   backgroundImagePath = signal<string>('');
 
+  currentImageHint = signal<string>(''); //
+
+  isClickedImageHint = signal<boolean>(false);
+
+  bgPositionTop = signal<number>(0);
+
   ngOnInit(): void {
     this.isCorrect = this.puzzlesDataService.isCorrect;
     this.level = this.puzzlesDataService.level;
     this.round = this.puzzlesDataService.round;
     this.sentenceNumber = this.puzzlesDataService.sentenceNumber;
     this.isDisabled = this.puzzlesDataService.isDisabled;
+
+    this.isClickedImageHint = this.puzzlesDataService.isClikedImageHint;
 
     this.backgroundImagePath = this.puzzlesDataService.backgroundImagePath; //
 
@@ -46,40 +59,71 @@ export class PuzzlesBlockComponent implements OnInit {
       this.round(),
       this.sentenceNumber(),
     ).subscribe(() => {
-      this.currentSentence = this.puzzlesDataService.currentSentence; // ?
+      this.currentSentence = this.puzzlesDataService.currentSentence;
+      this.currentImageHint = this.puzzlesDataService.imageHint;
+      this.bgPositionTop = this.puzzlesDataService.bgPositonTop;
+      this.puzzlesDataService.sourcePuzzles$.subscribe((data) => {
+        this.words = data;
+        this.words.reduce((acc: PuzzleData[], item, i) => {
+          const randomNumber = this.getRandomInt(this.words.length);
+          [acc[i], acc[randomNumber]] = [acc[randomNumber], acc[i]];
+          return acc;
+        }, this.words);
+        this.puzzlesDataService.getImageFile(this.currentImageHint()).subscribe(() => {
+          this.backgroundImagePath.update((value) => value = this.puzzlesDataService.backgroundImagePath());
+          this.words = this.words.reduce(
+            (acc:
+               PuzzleData[],
+               item,
+               i) =>
+              {
+            acc.push({word: item.word, image: this.backgroundImagePath(), backgroundPosition: item.backgroundPosition});
+            return acc;
+          }, []);
+        })
+      });
     });
 
     this.puzzlesDataService.resultPuzzles$.subscribe((data) => {
       this.resultArr = data;
     });
 
-    this.puzzlesDataService.sourcePuzzles$.subscribe((data) => {
-      this.words = data;
-    });
+    // this.puzzlesDataService.sourcePuzzles$.subscribe((data) => {
+    //   this.words = data;
+    // });
   }
 
-  movePuzzleToPuzzleField(word: string) {
-    const wordIndex = this.words.indexOf(word);
+  getRandomInt(max: number) {
+    return Math.floor(Math.random() * max);
+  }
+
+  movePuzzleToPuzzleField(/* word: string*/ puzzle: PuzzleData) {
+    // const wordIndex = this.words.indexOf(puzzle);
+    const word = puzzle.word;
+    const puzzleIndex = this.words.findIndex((x) => x.word === word);
+
 
     // refactor
     if (this.isCorrect()) {
       this.isCorrect.update(() => false);
       this.resultArr = [];
-      if (wordIndex !== -1) {
+      if (puzzleIndex !== -1) {
         this.puzzlesDataService
           .pushInResultsBlock(
             this.resultArr,
             this.words,
-            word,
+            // word,
+            puzzle,
             this.currentSentence().length,
           );
       }
-    } else if (wordIndex !== -1) {
+    } else if (puzzleIndex !== -1) {
       this.puzzlesDataService
         .pushInResultsBlock(
           this.resultArr,
           this.words,
-          word,
+          // word,
+          puzzle,
           this.currentSentence().length,
         );
     }
@@ -91,7 +135,8 @@ export class PuzzlesBlockComponent implements OnInit {
     }
 
     console.log(this.isDisabled(), this.words);
-    // console.log(`puzzle block, words arr, subscription to soucePuzzle: ${this.words}`);
-    // console.log(`puzzle block, words arr, subscription to results: ${this.resultArr}`);
+    console.log(puzzle.word);
+    console.log(`puzzle block, words arr, subscription to soucePuzzle: `, this.words);
+    console.log(`puzzle block, words arr, subscription to results: `, this.resultArr);
   }
 }
