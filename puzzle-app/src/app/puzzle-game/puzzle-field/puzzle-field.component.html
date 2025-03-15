@@ -20,10 +20,11 @@
         (click)="movePuzzleToPuzzlesBlock(puzzle)"
         backgroundColor
         [isCorrectWordsOrder]="isCorrectWordsOrder"
-        [backgroundImage]="backgroundImagePath()"
+        [ngStyle]="{
+          'background-image': isClickedImageHint() ? 'url(' + puzzle.image + ')' : 'url()',
+          'background-position': puzzle.backgroundPosition
+        }"
         >
-        <!-- add the bg that is a part of the image to each puzzle -->
-        <!-- backgroundPosition [backgroundPuzzlePosition]="calculatePuzzleBgPosition(i)" -->
           <span>
             {{puzzle.word}}
           </span>

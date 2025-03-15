@@ -1,9 +1,8 @@
 import {
   Component, inject, OnInit, signal,
 } from '@angular/core';
-import { NgFor, NgOptimizedImage, NgStyle } from '@angular/common';
+import { NgFor, NgStyle } from '@angular/common';
 import { PuzzleGameCardsDataService } from '../services/puzzle-game-cards-data.service';
-import { BackgroundImageDirective } from '../directives/set-background-image.directive'
 import PuzzleData from '../interfaces/puzzle-data.interface';
 
 @Component({
@@ -14,10 +13,6 @@ import PuzzleData from '../interfaces/puzzle-data.interface';
 })
 export class PuzzlesBlockComponent implements OnInit {
   private puzzlesDataService = inject(PuzzleGameCardsDataService);
-
-  // words: string[] = [];
-
-  // resultArr: string[] = [];
 
   words: PuzzleData[] = [];
 
