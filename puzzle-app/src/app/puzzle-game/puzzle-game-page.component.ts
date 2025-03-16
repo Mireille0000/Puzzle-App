@@ -47,6 +47,7 @@ export class PuzzleGamePageComponent implements OnInit {
   isCorrectWordsOrder = signal<boolean>(false);
 
   bgPositionTop = signal<number>(0);
+  girdTemplateRowsPuzzle = signal<string>('');
 
   ngOnInit(): void {
     this.navigation.getPathName(this.route);
@@ -62,6 +63,7 @@ export class PuzzleGamePageComponent implements OnInit {
     this.isCorrectWordsOrder = this.puzzlesDataService.isCorrectWordsOrder; // naming
 
     this.bgPositionTop = this.puzzlesDataService.bgPositonTop;
+    this.girdTemplateRowsPuzzle = this.puzzlesDataService.girdTemplateRowsPuzzle;
 
     this.puzzlesDataService.resultPuzzles$.subscribe((data) => {
       const sentence = data.reduce((acc: string[], item, i) => {
@@ -84,6 +86,7 @@ export class PuzzleGamePageComponent implements OnInit {
       } else {
         this.bgPositionTop.update((value) => value = 0)
       }
+      this.girdTemplateRowsPuzzle.update(() => this.currentSentence().map(() => '1fr').join(' '));
       console.log(this.bgPositionTop());
       this.isCorrectWordsOrder.update(() => false);
       this.isCorrect.update(() => true);
@@ -183,12 +186,14 @@ export class PuzzleGamePageComponent implements OnInit {
   }
 
   completeSentence() {
-    if (!this.isCorrect() && this.bgPositionTop() < 600) {
-      this.bgPositionTop.update((value) => value + 60);
-      if(this.bgPositionTop() > 600) {
+    if (!this.isCorrect()) {
+      if(this.bgPositionTop() >= 540) {
         this.bgPositionTop.update((value) => value = 0);
+      } else {
+        this.bgPositionTop.update((value) => value + 60);
       }
       console.log(this.bgPositionTop());
+      this.girdTemplateRowsPuzzle.update(() => this.currentSentence().map(() => '1fr').join(' '));
       this.correctSentences.update((value) => {
         value.push(this.currentSentence());
         return value;

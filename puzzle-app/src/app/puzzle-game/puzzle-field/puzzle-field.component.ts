@@ -53,6 +53,8 @@ export class PuzzleFieldComponent implements OnInit {
 
   correctLineBgImage = signal<string>('');
 
+  girdTemplateRowsPuzzle = signal<string>('');
+
   ngOnInit(): void {
     this.currentSentence = this.puzzlesDataService.currentSentence;
     this.correctSentences = this.puzzlesDataService.correctSentences;
@@ -68,6 +70,8 @@ export class PuzzleFieldComponent implements OnInit {
 
     this.puzzlesDataService.getWordsData(this.level(), this.round(), this.currentSentenceNum()).subscribe((data) => {
       this.currentImageHint = this.puzzlesDataService.imageHint;
+      this.girdTemplateRowsPuzzle = this.puzzlesDataService.girdTemplateRowsPuzzle;
+
       this.puzzlesDataService.getImageFile(this.currentImageHint()).subscribe(() => {
         this.backgroundImagePath.update((value) => value = '');
         this.correctLineBgImage = this.puzzlesDataService.correctLineBgImage;
@@ -105,7 +109,9 @@ export class PuzzleFieldComponent implements OnInit {
   }
 
   movePuzzleToPuzzlesBlock(puzzle: PuzzleData) {
-    const puzzleIndex = this.resultBlock.indexOf(puzzle);
+    const word = puzzle.word;
+    const puzzleIndex = this.resultBlock.findIndex((puzzle) => puzzle.word === word);
+    console.log(puzzleIndex);
     if (this.isCorrect()) {
       this.resultBlock = [];
       this.movePuzzles(puzzleIndex, puzzle);

@@ -44,6 +44,8 @@ export class PuzzleGameCardsDataService {
 
   bgPositonTop = signal<number>(0);
 
+  girdTemplateRowsPuzzle = signal<string>('');
+
   getCardsData(round: number): Observable<Level> {
     return this.http.get(
       `/api/rolling-scopes-school/rss-puzzle-data/main/data/wordCollectionLevel${round}.json`,
@@ -77,13 +79,20 @@ export class PuzzleGameCardsDataService {
 
         this.currentSentence.set(sentence.split(' '));
 
+        const wordsNum = 604 / this.currentSentence().length;
+        this.girdTemplateRowsPuzzle.update(
+          () => this.currentSentence().map(() => `1fr`).join(' ') //
+        );
+
         const puzzleDataObject = this.currentSentence().reduce((acc: PuzzleData[], item, i) => {
-          let left = i * 75; // ??
+          let left = i * wordsNum;
           acc.push(
             {
             word: item,
             image: this.backgroundImagePath(),
-            backgroundPosition: `top -${this.bgPositonTop()}px left -${left}px`});
+            backgroundPosition: `top -${this.bgPositonTop()}px left -${left}px`,
+            }
+          );
           return acc;
         }, []);
 

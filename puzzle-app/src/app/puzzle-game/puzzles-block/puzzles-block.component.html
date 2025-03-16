@@ -1,12 +1,21 @@
-<div
-class="word-puzzle"
-*ngFor="let item of words"
-[ngStyle]="{
-  'background-image': isClickedImageHint() ? 'url(' + item.image + ')' : 'url()',
-  'background-position': item.backgroundPosition
-}"
+<div class="source-block-wrapper"
+  [ngStyle]="
+    {
+      'grid-template-columns':  girdTemplateRowsPuzzle(),
+    }
+  "
 >
-  <span (click)="movePuzzleToPuzzleField(item)">
-    {{item.word}}
-  </span>
+  <div
+  class="word-puzzle"
+  *ngFor="let item of words"
+  (click)="movePuzzleToPuzzleField(item)"
+  [ngStyle]="{
+    'background-image': isClickedImageHint() ? 'url(' + item.image + ')' : 'url()',
+    'background-position': item.backgroundPosition
+  }"
+  >
+    <span>
+      {{item.word}}
+    </span>
+  </div>
 </div>

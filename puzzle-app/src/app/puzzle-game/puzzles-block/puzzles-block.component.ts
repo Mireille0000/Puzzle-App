@@ -1,5 +1,5 @@
 import {
-  Component, inject, OnInit, signal,
+  Component, inject, OnInit, Signal, signal,
 } from '@angular/core';
 import { NgFor, NgStyle } from '@angular/common';
 import { PuzzleGameCardsDataService } from '../services/puzzle-game-cards-data.service';
@@ -38,6 +38,8 @@ export class PuzzlesBlockComponent implements OnInit {
 
   bgPositionTop = signal<number>(0);
 
+ girdTemplateRowsPuzzle = signal<string>('')
+
   ngOnInit(): void {
     this.isCorrect = this.puzzlesDataService.isCorrect;
     this.level = this.puzzlesDataService.level;
@@ -57,6 +59,8 @@ export class PuzzlesBlockComponent implements OnInit {
       this.currentSentence = this.puzzlesDataService.currentSentence;
       this.currentImageHint = this.puzzlesDataService.imageHint;
       this.bgPositionTop = this.puzzlesDataService.bgPositonTop;
+      this.girdTemplateRowsPuzzle = this.puzzlesDataService.girdTemplateRowsPuzzle;
+
       this.puzzlesDataService.sourcePuzzles$.subscribe((data) => {
         this.words = data;
         this.words.reduce((acc: PuzzleData[], item, i) => {
@@ -72,7 +76,12 @@ export class PuzzlesBlockComponent implements OnInit {
                item,
                i) =>
               {
-            acc.push({word: item.word, image: this.backgroundImagePath(), backgroundPosition: item.backgroundPosition});
+            acc.push(
+              {word: item.word,
+              image: this.backgroundImagePath(),
+              backgroundPosition: item.backgroundPosition,
+              }
+             );
             return acc;
           }, []);
         })
@@ -92,35 +101,28 @@ export class PuzzlesBlockComponent implements OnInit {
     return Math.floor(Math.random() * max);
   }
 
-  movePuzzleToPuzzleField(/* word: string*/ puzzle: PuzzleData) {
-    // const wordIndex = this.words.indexOf(puzzle);
-    const word = puzzle.word;
-    const puzzleIndex = this.words.findIndex((x) => x.word === word);
-
-
-    // refactor
-    if (this.isCorrect()) {
-      this.isCorrect.update(() => false);
-      this.resultArr = [];
-      if (puzzleIndex !== -1) {
-        this.puzzlesDataService
+  movePuzzles(index: number, puzzle: PuzzleData) {
+    if (index !== -1) {
+      this.puzzlesDataService
           .pushInResultsBlock(
             this.resultArr,
             this.words,
-            // word,
             puzzle,
             this.currentSentence().length,
           );
-      }
-    } else if (puzzleIndex !== -1) {
-      this.puzzlesDataService
-        .pushInResultsBlock(
-          this.resultArr,
-          this.words,
-          // word,
-          puzzle,
-          this.currentSentence().length,
-        );
+    }
+  }
+
+  movePuzzleToPuzzleField(puzzle: PuzzleData) {
+    const word = puzzle.word;
+    const puzzleIndex = this.words.findIndex((x) => x.word === word);
+
+    if (this.isCorrect()) {
+      this.isCorrect.update(() => false);
+      this.resultArr = [];
+      this.movePuzzles(puzzleIndex, puzzle);
+    } else {
+      this.movePuzzles(puzzleIndex, puzzle);
     }
 
     if (this.words.length === 0) {
