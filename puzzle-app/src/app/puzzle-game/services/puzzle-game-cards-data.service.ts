@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
-import { map, Observable, Subject } from 'rxjs';
+import { map, Observable, Subject, tap } from 'rxjs';
 import { Level } from '../interfaces/level-data.interface';
 import PuzzleData from '../interfaces/puzzle-data.interface';
 
@@ -115,6 +115,12 @@ export class PuzzleGameCardsDataService {
       {
         responseType: 'blob',
       }
+    ).pipe(
+      map((data) => {
+        const audioUrl = URL.createObjectURL(data);
+        const audio = new Audio(audioUrl);
+        return audio;
+      })
     )
   }
 

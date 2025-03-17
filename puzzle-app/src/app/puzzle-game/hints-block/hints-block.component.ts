@@ -1,14 +1,19 @@
-import { Component, inject, OnInit, signal, WritableSignal } from '@angular/core';
+import { Component, ElementRef, inject, OnInit, Renderer2, signal, WritableSignal } from '@angular/core';
 import { PuzzleGameCardsDataService } from '../services/puzzle-game-cards-data.service';
+import { AudioHintAnimationDirective } from '../directives/audio-hint-animation.directive';
 
 @Component({
   selector: 'pzl-hints-block',
-  imports: [],
+  imports: [AudioHintAnimationDirective],
   templateUrl: './hints-block.component.html',
   styleUrl: './hints-block.component.scss',
 })
 export class HintsBlockComponent implements OnInit {
   private puzzlesDataService = inject(PuzzleGameCardsDataService);
+
+  private element = inject(ElementRef);
+
+  private renderer = inject(Renderer2);
 
   level = signal<number>(1);
 
@@ -58,10 +63,16 @@ export class HintsBlockComponent implements OnInit {
     // add toggle functionality?
     this.isClickedAudioHint = !this.isClickedAudioHint;
     this.currentAudioHint = this.puzzlesDataService.audioHint;
-    this.puzzlesDataService.getAudioFile(this.currentAudioHint()).subscribe((data) => {
-      const audioUrl = URL.createObjectURL(data);
-      const audio = new Audio(audioUrl);
+    this.puzzlesDataService.getAudioFile(this.currentAudioHint()).subscribe((audio) => {
+      const audioElem = this.element.nativeElement.querySelector('.audio-hint');
       audio.play();
+      audio.addEventListener('ended', () => {
+        this.renderer.setStyle(audioElem, 'color', '#2b435a');
+        this.renderer.setStyle(audioElem, 'transition', '2s');
+        this.renderer.removeClass(audioElem, 'fadein');
+        this.renderer.removeClass(audioElem, 'animation-duration-1000');
+        this.renderer.removeClass(audioElem, 'animation-iteration-infinite');
+      });
     })
   }
 
