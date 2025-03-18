@@ -32,7 +32,7 @@ export class PuzzleGamePageComponent implements OnInit {
 
   currentImageHint = signal<string>('');
 
-  puzzleImagePath =  signal<string>('');
+  puzzleImagePath = signal<string>('');
 
   isCorrect = signal<boolean>(false);
 
@@ -47,6 +47,7 @@ export class PuzzleGamePageComponent implements OnInit {
   isCorrectWordsOrder = signal<boolean>(false);
 
   bgPositionTop = signal<number>(0);
+
   girdTemplateRowsPuzzle = signal<string>('');
 
   ngOnInit(): void {
@@ -66,10 +67,10 @@ export class PuzzleGamePageComponent implements OnInit {
     this.girdTemplateRowsPuzzle = this.puzzlesDataService.girdTemplateRowsPuzzle;
 
     this.puzzlesDataService.resultPuzzles$.subscribe((data) => {
-      const sentence = data.reduce((acc: string[], item, i) => {
+      const sentence = data.reduce((acc: string[], item) => {
         acc.push(item.word);
         return acc;
-      }, [])
+      }, []);
       this.completedSentence = sentence;
     });
     this.puzzlesDataService.sourcePuzzles$.subscribe((data) => {
@@ -82,9 +83,13 @@ export class PuzzleGamePageComponent implements OnInit {
 
     if (sentence() === this.completedSentence.join()) {
       if (this.bgPositionTop() < 600) {
-        this.bgPositionTop.update((value) => value + 60)
+        this.bgPositionTop.update((value) => value + 60);
       } else {
-        this.bgPositionTop.update((value) => value = 0)
+        this.bgPositionTop.update((value) => {
+          let newValue = value;
+          newValue = 0;
+          return newValue;
+        });
       }
       this.girdTemplateRowsPuzzle.update(() => this.currentSentence().map(() => '1fr').join(' '));
       console.log(this.bgPositionTop());
@@ -116,12 +121,12 @@ export class PuzzleGamePageComponent implements OnInit {
   downloadNewImage(level: number, round: number, sentenceNum: number) {
     this.isCorrect.update(() => true);
     this.puzzlesDataService.getWordsData(level, round, sentenceNum)
-    .subscribe(() => {
-      this.currentImageHint = this.puzzlesDataService.imageHint;
-      this.puzzlesDataService.getImageFile(this.currentImageHint()).subscribe((data) => {
-        this.puzzleImagePath = data;
-      })
-    });
+      .subscribe(() => {
+        this.currentImageHint = this.puzzlesDataService.imageHint;
+        this.puzzlesDataService.getImageFile(this.currentImageHint()).subscribe((data) => {
+          this.puzzleImagePath = data;
+        });
+      });
     this.isCorrect.update(() => false);
   }
 
@@ -187,10 +192,18 @@ export class PuzzleGamePageComponent implements OnInit {
 
   completeSentence() {
     if (!this.isCorrect()) {
-      if(this.bgPositionTop() >= 540) {
-        this.bgPositionTop.update((value) => value = 0);
+      if (this.bgPositionTop() >= 540) {
+        this.bgPositionTop.update((value) => {
+          let newValue = value;
+          newValue = 0;
+          return newValue;
+        });
       } else {
-        this.bgPositionTop.update((value) => value + 60);
+        this.bgPositionTop.update((value) => {
+          let newValue = value;
+          newValue += 60;
+          return newValue;
+        });
       }
       console.log(this.bgPositionTop());
       this.girdTemplateRowsPuzzle.update(() => this.currentSentence().map(() => '1fr').join(' '));

@@ -1,6 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
-import { map, Observable, Subject, tap } from 'rxjs';
+import {
+  map, Observable, Subject,
+} from 'rxjs';
 import { Level } from '../interfaces/level-data.interface';
 import PuzzleData from '../interfaces/puzzle-data.interface';
 
@@ -30,7 +32,7 @@ export class PuzzleGameCardsDataService {
 
   backgroundImagePath = signal<string>('');
 
-  isClikedImageHint = signal<boolean>(false); //??
+  isClikedImageHint = signal<boolean>(false); // ??
 
   correctSentences = signal<string[][]>([]);
 
@@ -74,24 +76,26 @@ export class PuzzleGameCardsDataService {
       map((data) => {
         const parsedData = this.parsePuzzleGameData(data);
         const sentence = parsedData.rounds[round].words[sentenceNumber].textExample;
-        const sentenceTranslation =
-        parsedData.rounds[round].words[sentenceNumber].textExampleTranslate;
+        const sentenceTranslation = parsedData
+          .rounds[round]
+          .words[sentenceNumber]
+          .textExampleTranslate;
 
         this.currentSentence.set(sentence.split(' '));
 
         const wordsNum = 604 / this.currentSentence().length;
         this.girdTemplateRowsPuzzle.update(
-          () => this.currentSentence().map(() => `1fr`).join(' ') //
+          () => this.currentSentence().map(() => '1fr').join(' '), //
         );
 
         const puzzleDataObject = this.currentSentence().reduce((acc: PuzzleData[], item, i) => {
-          let left = i * wordsNum;
+          const left = i * wordsNum;
           acc.push(
             {
-            word: item,
-            image: this.backgroundImagePath(),
-            backgroundPosition: `top -${this.bgPositonTop()}px left -${left}px`,
-            }
+              word: item,
+              image: this.backgroundImagePath(),
+              backgroundPosition: `top -${this.bgPositonTop()}px left -${left}px`,
+            },
           );
           return acc;
         }, []);
@@ -114,28 +118,36 @@ export class PuzzleGameCardsDataService {
       `/api/rolling-scopes-school/rss-puzzle-data/main/${audioPath}`,
       {
         responseType: 'blob',
-      }
+      },
     ).pipe(
       map((data) => {
         const audioUrl = URL.createObjectURL(data);
         const audio = new Audio(audioUrl);
         return audio;
-      })
-    )
+      }),
+    );
   }
 
   getImageFile(imagePath: string) {
     return this.http.get(
       `/api/rolling-scopes-school/rss-puzzle-data/main/images/${imagePath}`,
-      {responseType: 'blob'}
+      { responseType: 'blob' },
     ).pipe(
       map((data) => {
         const imageUrl = URL.createObjectURL(data);
-        this.backgroundImagePath.update((value) => value = imageUrl);
-        this.correctLineBgImage.update((value) => value = imageUrl);
+        this.backgroundImagePath.update((value) => {
+          let newValue = value;
+          newValue = imageUrl;
+          return newValue;
+        });
+        this.correctLineBgImage.update((value) => {
+          let newValue = value;
+          newValue = imageUrl;
+          return newValue;
+        });
         return this.backgroundImagePath;
-      })
-    )
+      }),
+    );
   }
 
   movePuzzles(
@@ -151,7 +163,7 @@ export class PuzzleGameCardsDataService {
 
     const newArrToDelete = [...arrToDelete];
     console.log(newArrToDelete);
-    if(puzzleToMove !== -1) {
+    if (puzzleToMove !== -1) {
       newArrToDelete.splice(puzzleToMove, 1);
       observableToDelete.next(newArrToDelete);
     }

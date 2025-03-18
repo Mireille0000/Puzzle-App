@@ -1,4 +1,6 @@
-import { Component, ElementRef, inject, OnInit, Renderer2, signal, WritableSignal } from '@angular/core';
+import {
+  Component, ElementRef, inject, OnInit, Renderer2, signal, WritableSignal,
+} from '@angular/core';
 import { PuzzleGameCardsDataService } from '../services/puzzle-game-cards-data.service';
 import { AudioHintAnimationDirective } from '../directives/audio-hint-animation.directive';
 
@@ -45,13 +47,15 @@ export class HintsBlockComponent implements OnInit {
     this.isCorrect = this.puzzlesDataService.isCorrect;
     this.isClickedImageHint = this.puzzlesDataService.isClikedImageHint;
 
-    this.puzzlesDataService.getWordsData(this.level(), this.round(), this.sentenceNumber()).subscribe((data) => {
-      this.currentSentenceTranslation = this.puzzlesDataService.sentenceTranslation;
-      this.currentAudioHint = this.puzzlesDataService.audioHint;
-      this.currentImageHint = this.puzzlesDataService.imageHint;
+    this.puzzlesDataService
+      .getWordsData(this.level(), this.round(), this.sentenceNumber())
+      .subscribe(() => {
+        this.currentSentenceTranslation = this.puzzlesDataService.sentenceTranslation;
+        this.currentAudioHint = this.puzzlesDataService.audioHint;
+        this.currentImageHint = this.puzzlesDataService.imageHint;
 
-      this.backgroundImagePath = this.puzzlesDataService.backgroundImagePath;
-    });
+        this.backgroundImagePath = this.puzzlesDataService.backgroundImagePath;
+      });
   }
 
   toggleCurrentSentenceTranslation() {
@@ -73,14 +77,18 @@ export class HintsBlockComponent implements OnInit {
         this.renderer.removeClass(audioElem, 'animation-duration-1000');
         this.renderer.removeClass(audioElem, 'animation-iteration-infinite');
       });
-    })
+    });
   }
 
   toggleImageHint() {
     this.puzzlesDataService.getImageFile(this.currentImageHint()).subscribe(() => {
-       if(this.isClickedImageHint() === false) {
+      if (this.isClickedImageHint() === false) {
         this.isClickedImageHint.update(() => true);
-        this.backgroundImagePath.update((value) => value = this.puzzlesDataService.backgroundImagePath());
+        this.backgroundImagePath.update((value) => {
+          let newValue = value;
+          newValue = this.puzzlesDataService.backgroundImagePath();
+          return newValue;
+        });
         console.log(this.backgroundImagePath());
       } else {
         this.isClickedImageHint.update(() => false);

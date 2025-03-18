@@ -1,5 +1,5 @@
 import {
-  Component, inject, OnInit, signal
+  Component, inject, OnInit, signal,
 } from '@angular/core';
 import { NgFor, NgStyle } from '@angular/common';
 import { PuzzleGameCardsDataService } from '../services/puzzle-game-cards-data.service';
@@ -15,7 +15,7 @@ import PuzzleData from '../interfaces/puzzle-data.interface';
     NgStyle,
     BackgroundColorDirective,
     BackgroundImageDirective,
-    BackgroundPositionDirective
+    BackgroundPositionDirective,
   ],
   templateUrl: './puzzle-field.component.html',
   styleUrl: './puzzle-field.component.scss',
@@ -68,15 +68,21 @@ export class PuzzleFieldComponent implements OnInit {
     this.backgroundImagePath = this.puzzlesDataService.backgroundImagePath;
     console.log(this.backgroundImagePath());
 
-    this.puzzlesDataService.getWordsData(this.level(), this.round(), this.currentSentenceNum()).subscribe((data) => {
-      this.currentImageHint = this.puzzlesDataService.imageHint;
-      this.girdTemplateRowsPuzzle = this.puzzlesDataService.girdTemplateRowsPuzzle;
+    this.puzzlesDataService
+      .getWordsData(this.level(), this.round(), this.currentSentenceNum())
+      .subscribe(() => {
+        this.currentImageHint = this.puzzlesDataService.imageHint;
+        this.girdTemplateRowsPuzzle = this.puzzlesDataService.girdTemplateRowsPuzzle;
 
-      this.puzzlesDataService.getImageFile(this.currentImageHint()).subscribe(() => {
-        this.backgroundImagePath.update((value) => value = '');
-        this.correctLineBgImage = this.puzzlesDataService.correctLineBgImage;
-      })
-    });
+        this.puzzlesDataService.getImageFile(this.currentImageHint()).subscribe(() => {
+          this.backgroundImagePath.update((value) => {
+            let newValue = value;
+            newValue = '';
+            return newValue;
+          });
+          this.correctLineBgImage = this.puzzlesDataService.correctLineBgImage;
+        });
+      });
 
     this.puzzlesDataService.sourcePuzzles$.subscribe((data) => {
       this.sourceBlock = data;
@@ -109,8 +115,8 @@ export class PuzzleFieldComponent implements OnInit {
   }
 
   movePuzzleToPuzzlesBlock(puzzle: PuzzleData) {
-    const word = puzzle.word;
-    const puzzleIndex = this.resultBlock.findIndex((puzzle) => puzzle.word === word);
+    const { word } = puzzle;
+    const puzzleIndex = this.resultBlock.findIndex((puzzleObj) => puzzleObj.word === word);
     console.log(puzzleIndex);
     if (this.isCorrect()) {
       this.resultBlock = [];

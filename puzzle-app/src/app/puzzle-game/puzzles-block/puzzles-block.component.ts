@@ -1,5 +1,5 @@
 import {
-  Component, inject, OnInit, Signal, signal,
+  Component, inject, OnInit, signal,
 } from '@angular/core';
 import { NgFor, NgStyle } from '@angular/common';
 import { PuzzleGameCardsDataService } from '../services/puzzle-game-cards-data.service';
@@ -7,7 +7,7 @@ import PuzzleData from '../interfaces/puzzle-data.interface';
 
 @Component({
   selector: 'pzl-puzzles-block',
-  imports: [NgFor, NgStyle  /* BackgroundImageDirective */],
+  imports: [NgFor, NgStyle],
   templateUrl: './puzzles-block.component.html',
   styleUrl: './puzzles-block.component.scss',
 })
@@ -38,7 +38,7 @@ export class PuzzlesBlockComponent implements OnInit {
 
   bgPositionTop = signal<number>(0);
 
- girdTemplateRowsPuzzle = signal<string>('')
+  girdTemplateRowsPuzzle = signal<string>('');
 
   ngOnInit(): void {
     this.isCorrect = this.puzzlesDataService.isCorrect;
@@ -69,22 +69,26 @@ export class PuzzlesBlockComponent implements OnInit {
           return acc;
         }, this.words);
         this.puzzlesDataService.getImageFile(this.currentImageHint()).subscribe(() => {
-          this.backgroundImagePath.update((value) => value = this.puzzlesDataService.backgroundImagePath());
-          this.words = this.words.reduce(
-            (acc:
+          this.backgroundImagePath.update((value) => {
+            let newValue = value;
+            newValue = this.puzzlesDataService.backgroundImagePath();
+            return newValue;
+          });
+          this.words = this.words.reduce((
+            acc:
                PuzzleData[],
-               item,
-               i) =>
-              {
+            item,
+          ) => {
             acc.push(
-              {word: item.word,
-              image: this.backgroundImagePath(),
-              backgroundPosition: item.backgroundPosition,
-              }
-             );
+              {
+                word: item.word,
+                image: this.backgroundImagePath(),
+                backgroundPosition: item.backgroundPosition,
+              },
+            );
             return acc;
           }, []);
-        })
+        });
       });
     });
 
@@ -104,17 +108,17 @@ export class PuzzlesBlockComponent implements OnInit {
   movePuzzles(index: number, puzzle: PuzzleData) {
     if (index !== -1) {
       this.puzzlesDataService
-          .pushInResultsBlock(
-            this.resultArr,
-            this.words,
-            puzzle,
-            this.currentSentence().length,
-          );
+        .pushInResultsBlock(
+          this.resultArr,
+          this.words,
+          puzzle,
+          this.currentSentence().length,
+        );
     }
   }
 
   movePuzzleToPuzzleField(puzzle: PuzzleData) {
-    const word = puzzle.word;
+    const { word } = puzzle;
     const puzzleIndex = this.words.findIndex((x) => x.word === word);
 
     if (this.isCorrect()) {
@@ -133,7 +137,7 @@ export class PuzzlesBlockComponent implements OnInit {
 
     console.log(this.isDisabled(), this.words);
     console.log(puzzle.word);
-    console.log(`puzzle block, words arr, subscription to soucePuzzle: `, this.words);
-    console.log(`puzzle block, words arr, subscription to results: `, this.resultArr);
+    console.log('puzzle block, words arr, subscription to soucePuzzle: ', this.words);
+    console.log('puzzle block, words arr, subscription to results: ', this.resultArr);
   }
 }

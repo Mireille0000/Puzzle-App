@@ -1,27 +1,28 @@
-import { Directive, ElementRef, inject, Input, Renderer2 } from '@angular/core';
+import {
+  Directive, ElementRef, inject, Input, Renderer2,
+} from '@angular/core';
 
 @Directive({
-  selector: '[backgroundImage]'
+  selector: '[backgroundImage]',
 })
 export class BackgroundImageDirective {
-
   renderer = inject(Renderer2);
 
   element = inject(ElementRef);
 
-  @Input() set backgroundImage (imagePath: string) {
-    if(imagePath.length) {
+  @Input() set backgroundImage(imagePath: string) {
+    if (imagePath.length) {
       this.renderer.setStyle(
         this.element.nativeElement,
         'backgroundImage',
-        `url(${imagePath})`
-      )
-     } else {
+        `url(${imagePath})`,
+      );
+    } else {
       this.renderer.setStyle(
         this.element.nativeElement,
         'backgroundImage',
-        `url('')`
-        )
-      }
+        'url(\'\')',
+      );
+    }
   }
 }
