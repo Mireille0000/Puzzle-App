@@ -7,6 +7,7 @@ import { HintsBlockComponent } from './hints-block/hints-block.component';
 import { PuzzleFieldComponent } from './puzzle-field/puzzle-field.component';
 import { PuzzlesBlockComponent } from './puzzles-block/puzzles-block.component';
 import { PuzzleGameCardsDataService } from './services/puzzle-game-cards-data.service';
+import PuzzleData from './interfaces/puzzle-data.interface';
 
 @Component({
   selector: 'app-puzzle-game-page',
@@ -21,13 +22,17 @@ export class PuzzleGamePageComponent implements OnInit {
 
   private puzzlesDataService = inject(PuzzleGameCardsDataService);
 
-  currentSentence = signal(['']);
+  currentSentence = signal<string[]>(['']);
 
-  level = signal(1);
+  level = signal<number>(1);
 
-  round = signal(0);
+  round = signal<number>(0);
 
-  sentenceNumber = signal(0);
+  sentenceNumber = signal<number>(0);
+
+  currentImageHint = signal<string>('');
+
+  puzzleImagePath = signal<string>('');
 
   isCorrect = signal<boolean>(false);
 
@@ -35,11 +40,15 @@ export class PuzzleGamePageComponent implements OnInit {
 
   completedSentence: string[] = [];
 
-  sourceWords: string[] = [];
+  sourceWords: PuzzleData[] = [];
 
   correctSentences = signal<string[][]>([]);
 
   isCorrectWordsOrder = signal<boolean>(false);
+
+  bgPositionTop = signal<number>(0);
+
+  girdTemplateRowsPuzzle = signal<string>('');
 
   ngOnInit(): void {
     this.navigation.getPathName(this.route);
@@ -54,8 +63,15 @@ export class PuzzleGamePageComponent implements OnInit {
     this.isDisabled = this.puzzlesDataService.isDisabled;
     this.isCorrectWordsOrder = this.puzzlesDataService.isCorrectWordsOrder; // naming
 
+    this.bgPositionTop = this.puzzlesDataService.bgPositonTop;
+    this.girdTemplateRowsPuzzle = this.puzzlesDataService.girdTemplateRowsPuzzle;
+
     this.puzzlesDataService.resultPuzzles$.subscribe((data) => {
-      this.completedSentence = data;
+      const sentence = data.reduce((acc: string[], item) => {
+        acc.push(item.word);
+        return acc;
+      }, []);
+      this.completedSentence = sentence;
     });
     this.puzzlesDataService.sourcePuzzles$.subscribe((data) => {
       this.sourceWords = data;
@@ -66,6 +82,17 @@ export class PuzzleGamePageComponent implements OnInit {
     const sentence = computed(() => this.currentSentence().toString());
 
     if (sentence() === this.completedSentence.join()) {
+      if (this.bgPositionTop() < 600) {
+        this.bgPositionTop.update((value) => value + 60);
+      } else {
+        this.bgPositionTop.update((value) => {
+          let newValue = value;
+          newValue = 0;
+          return newValue;
+        });
+      }
+      this.girdTemplateRowsPuzzle.update(() => this.currentSentence().map(() => '1fr').join(' '));
+      console.log(this.bgPositionTop());
       this.isCorrectWordsOrder.update(() => false);
       this.isCorrect.update(() => true);
       console.log(this.isCorrect(), 'Correct!');
@@ -76,6 +103,8 @@ export class PuzzleGamePageComponent implements OnInit {
     } else {
       this.isCorrectWordsOrder.update(() => true);
       this.isCorrect.update(() => false);
+      console.log(this.completedSentence);
+      console.log(sentence());
       console.log(this.isCorrect(), 'Try again');
     }
   }
@@ -89,14 +118,24 @@ export class PuzzleGamePageComponent implements OnInit {
     this.isCorrect.update(() => false);
   }
 
+  downloadNewImage(level: number, round: number, sentenceNum: number) {
+    this.isCorrect.update(() => true);
+    this.puzzlesDataService.getWordsData(level, round, sentenceNum)
+      .subscribe(() => {
+        this.currentImageHint = this.puzzlesDataService.imageHint;
+        this.puzzlesDataService.getImageFile(this.currentImageHint()).subscribe((data) => {
+          this.puzzleImagePath = data;
+        });
+      });
+    this.isCorrect.update(() => false);
+  }
+
   continue() {
     this.sentenceNumber.update((value) => value + 1);
     this.isDisabled.update(() => true);
-    console.log(this.isCorrect(), this.isDisabled());
 
     this.puzzlesDataService.getCardsData(this.level()).subscribe((data) => {
       const roundsNum = data.rounds.length - 1;
-      console.log(data.rounds.length);
 
       const expr = true || false;
       switch (expr) {
@@ -118,6 +157,7 @@ export class PuzzleGamePageComponent implements OnInit {
           });
 
           this.showNextWordsSet(this.level(), this.round(), this.sentenceNumber());
+          this.downloadNewImage(this.level(), this.round(), this.sentenceNumber());
           console.log(this.isCorrect(), 'New Round', this.round(), this.sentenceNumber());
           break;
         case roundsNum === this.round():
@@ -139,6 +179,7 @@ export class PuzzleGamePageComponent implements OnInit {
           });
 
           this.showNextWordsSet(this.level(), this.round(), this.sentenceNumber());
+          this.downloadNewImage(this.level(), this.round(), this.sentenceNumber());
           console.log(this.isCorrect(), 'New Level', this.round(), this.sentenceNumber());
           break;
         default:
@@ -147,11 +188,25 @@ export class PuzzleGamePageComponent implements OnInit {
     });
     this.puzzlesDataService.resultPuzzles$.next([]);
     this.isCorrect.update(() => false);
-    console.log('Continue button works');
   }
 
   completeSentence() {
     if (!this.isCorrect()) {
+      if (this.bgPositionTop() >= 540) {
+        this.bgPositionTop.update((value) => {
+          let newValue = value;
+          newValue = 0;
+          return newValue;
+        });
+      } else {
+        this.bgPositionTop.update((value) => {
+          let newValue = value;
+          newValue += 60;
+          return newValue;
+        });
+      }
+      console.log(this.bgPositionTop());
+      this.girdTemplateRowsPuzzle.update(() => this.currentSentence().map(() => '1fr').join(' '));
       this.correctSentences.update((value) => {
         value.push(this.currentSentence());
         return value;
@@ -162,41 +217,4 @@ export class PuzzleGamePageComponent implements OnInit {
       console.log('No word in source block'); // to delete
     }
   }
-
-  // changeSentence() {
-  //   const sentence = computed(() => {
-  //     return this.currentSentence().toString();
-  //   })
-
-  //   if (sentence() === this.completedSentence.join() && this.sentenceNumber() <= 9) {
-  //     this.sentenceNumber.update((value) => value + 1);
-  //     this.isCorrect.update(() => true); // to delete
-  //     this.correctSentences.update((value) => {
-  //       value.push(this.currentSentence());
-  //       return value;
-  //     }) // to delete
-
-  //     console.log(this.sentenceNumber())
-  //     this.puzzlesDataService.getCardsData(this.level()).subscribe((data) =>{
-  //       const card = data.rounds[this.round()].words[this.sentenceNumber()];
-  //       if (card) {
-  //         this.puzzlesDataService.getWordsData(this.level(), this.round(), this.sentenceNumber())
-  //           .subscribe((data) => {
-  //             this.sourceWords = data;
-  //           })
-  //         this.sentencesInRound = card.textExample; // to delete
-  //       } else {
-  //         this.isCorrect.update(() => false);
-  //         console.log(this.isCorrect(), 'New Round');
-  //       }
-  //       console.log('Testing', this.sentencesInRound); // to delete
-  //     }
-  //     ) // useful
-  //     console.log('Correct', this.isCorrect());
-  //   } else {
-  //     // round changing ??
-  //     this.isCorrect.update(() => false); // to delete
-  //     console.log(this.isCorrect(), this.sentenceNumber(), 'Try again'); // delete
-  //   }
-  // }
 }

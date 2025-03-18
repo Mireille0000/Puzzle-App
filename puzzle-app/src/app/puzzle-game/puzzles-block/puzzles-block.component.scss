@@ -1,32 +1,47 @@
 :host {
-  height: 4vh;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
-  text-align: center;
-  background-color: rgb(161 178 200 / 90%);
-  border-radius: 10px;
-  .word-puzzle {
-    display: flex;
+  .source-block-wrapper {
+    height: 10vh;
+    display: grid;
+    justify-items: center;
     align-items: center;
-    padding: 0 5px;
-    background-color: rgb(223, 240, 254);
-    cursor: pointer;
-    transition: 0.5s;
-    span {
-      transform: scale(1);
+    gap: 10px;
+    padding: 5px;
+    text-align: center;
+    background-color: rgb(161 178 200 / 90%);
+    border-radius: 10px;
+    .word-puzzle {
+      width: fit-content;
+      height: 47px;
+      display: flex;
+      align-items: center;
+      box-sizing: border-box;
+      overflow: hidden;
+      padding: 0 20px;
+      // background-color: rgb(223, 240, 254);
+      background-color: #b27474;
+      cursor: pointer;
       transition: 0.5s;
+      span {
+        padding: 2px;
+        border-radius: 5px;
+        font-size: 1vw;
+        color: rgb(225, 211, 181);
+        background-color: rgba(164, 128, 51, 0.4);
+        box-shadow: 0px 0px 15px 5px rgba(164, 128, 51, 0.3);
+        transform: scale(1);
+        transition: 0.5s;
+      }
     }
-  }
 
-  .word-puzzle:hover {
-    background-color: rgb(234, 238, 187);
-    transition: 0.5s;
-    span:hover {
-      transform: scale(1.1);
+    .word-puzzle:hover {
+      background-color: rgb(234, 238, 187);
       transition: 0.5s;
+      span:hover {
+        background-color: rgba(110, 95, 65, 0.4);
+        box-shadow: 0px 0px 15px 5px rgba(164, 128, 51, 0.3);
+        transform: scale(1.1);
+        transition: 0.5s;
+      }
     }
   }
 }

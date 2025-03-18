@@ -1,1 +1,19 @@
-<p>puzzle-hints works!</p>
+<ul>
+  <li (click)="toggleCurrentSentenceTranslation()">
+    <span class="pi pi-language" style="color: #2b435a" title="Show the sentence translation"></span>
+  </li>
+  <li (click)="playAudioHint()">
+    <span
+    class="audio-hint pi pi-headphones"
+    style="color: #2b435a"
+    title="Listen the sentence"
+    audioHintAnimation
+    ></span>
+  </li>
+  <li (click)="toggleImageHint()">
+    <span class="pi pi-image" style="color: #2b435a" title="Show the puzzle image"></span>
+  </li>
+</ul>
+@if(isClickedTranslationHint || isCorrect()) {
+  <p>{{currentSentenceTranslation()}}</p>
+}

@@ -17,7 +17,7 @@ export interface Card {
 }
 
 interface Round {
-  levelData: Array<LevelData>,
+  levelData: LevelData,
   words: Array<Card>
 }
 
@@ -25,5 +25,3 @@ export interface Level {
   rounds: Array<Round>,
   roundsCount: number
 }
-
-// export {Level, Card};

@@ -1,8 +1,22 @@
 :host {
+  // width: 20%;
   height: 10%;
-  text-align: center;
-  background-color: rgb(161 178 200 / 90%);
-  p {
-    margin: auto;
+  ul {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin: 10px;
+    padding: 5px;
+    list-style: none;
+    li {
+      cursor: pointer;
+      transform: scale(1);
+      transition: 0.5s;
+    }
+    li:hover {
+      transform: scale(1.1);
+      transition: 0.5s;
+    }
   }
 }

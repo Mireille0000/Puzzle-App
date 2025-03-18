@@ -1,7 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
-import { map, Observable, Subject } from 'rxjs';
-import { Level, Card } from '../interfaces/level-data.interface';
+import {
+  map, Observable, Subject,
+} from 'rxjs';
+import { Level } from '../interfaces/level-data.interface';
+import PuzzleData from '../interfaces/puzzle-data.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -9,9 +12,9 @@ import { Level, Card } from '../interfaces/level-data.interface';
 export class PuzzleGameCardsDataService {
   private http: HttpClient = inject(HttpClient);
 
-  resultPuzzles$ = new Subject<Array<string>>();
+  resultPuzzles$ = new Subject<Array<PuzzleData>>();
 
-  sourcePuzzles$ = new Subject<Array<string>>();
+  sourcePuzzles$ = new Subject<Array<PuzzleData>>();
 
   currentSentence = signal(['']);
 
@@ -21,7 +24,15 @@ export class PuzzleGameCardsDataService {
 
   sentenceNumber = signal(0);
 
-  sentences = signal<Card[]>([]); // ?
+  sentenceTranslation = signal<string>('');
+
+  audioHint = signal<string>('');
+
+  imageHint = signal<string>('');
+
+  backgroundImagePath = signal<string>('');
+
+  isClikedImageHint = signal<boolean>(false); // ??
 
   correctSentences = signal<string[][]>([]);
 
@@ -29,7 +40,13 @@ export class PuzzleGameCardsDataService {
 
   isDisabled = signal<boolean>(true);
 
-  isCorrectWordsOrder = signal<boolean>(false); // ??
+  isCorrectWordsOrder = signal<boolean>(false);
+
+  correctLineBgImage = signal<string>('');
+
+  bgPositonTop = signal<number>(0);
+
+  girdTemplateRowsPuzzle = signal<string>('');
 
   getCardsData(round: number): Observable<Level> {
     return this.http.get(
@@ -59,61 +76,118 @@ export class PuzzleGameCardsDataService {
       map((data) => {
         const parsedData = this.parsePuzzleGameData(data);
         const sentence = parsedData.rounds[round].words[sentenceNumber].textExample;
-        const sentencesArr = parsedData.rounds[round].words;
-        this.sentences.set(sentencesArr);
+        const sentenceTranslation = parsedData
+          .rounds[round]
+          .words[sentenceNumber]
+          .textExampleTranslate;
 
-        const wordsArr = sentence.split(' ');
-        const reducedCurrentWordsArr: string[] = wordsArr.reduce((acc: string[], item, i) => {
-          const randomNumber = this.getRandomInt(wordsArr.length);
-          [acc[i], acc[randomNumber]] = [acc[randomNumber], acc[i]];
-          return acc;
-        }, wordsArr);
-
-        console.log(reducedCurrentWordsArr);
-        const randomizedWordsArr = reducedCurrentWordsArr;
-
-        this.sourcePuzzles$.next(randomizedWordsArr);
         this.currentSentence.set(sentence.split(' '));
-        return randomizedWordsArr;
+
+        const wordsNum = 604 / this.currentSentence().length;
+        this.girdTemplateRowsPuzzle.update(
+          () => this.currentSentence().map(() => '1fr').join(' '), //
+        );
+
+        const puzzleDataObject = this.currentSentence().reduce((acc: PuzzleData[], item, i) => {
+          const left = i * wordsNum;
+          acc.push(
+            {
+              word: item,
+              image: this.backgroundImagePath(),
+              backgroundPosition: `top -${this.bgPositonTop()}px left -${left}px`,
+            },
+          );
+          return acc;
+        }, []);
+
+        this.sentenceTranslation.set(sentenceTranslation); // naming of the hint
+        const audioHint = parsedData.rounds[this.round()].words[this.sentenceNumber()].audioExample;
+        this.audioHint.set(audioHint);
+        const imagePath = parsedData.rounds[this.round()].levelData.cutSrc;
+        this.imageHint.set(imagePath);
+
+        this.sourcePuzzles$.next(puzzleDataObject);
+
+        return puzzleDataObject;
+      }),
+    );
+  }
+
+  getAudioFile(audioPath: string) {
+    return this.http.get(
+      `/api/rolling-scopes-school/rss-puzzle-data/main/${audioPath}`,
+      {
+        responseType: 'blob',
+      },
+    ).pipe(
+      map((data) => {
+        const audioUrl = URL.createObjectURL(data);
+        const audio = new Audio(audioUrl);
+        return audio;
+      }),
+    );
+  }
+
+  getImageFile(imagePath: string) {
+    return this.http.get(
+      `/api/rolling-scopes-school/rss-puzzle-data/main/images/${imagePath}`,
+      { responseType: 'blob' },
+    ).pipe(
+      map((data) => {
+        const imageUrl = URL.createObjectURL(data);
+        this.backgroundImagePath.update((value) => {
+          let newValue = value;
+          newValue = imageUrl;
+          return newValue;
+        });
+        this.correctLineBgImage.update((value) => {
+          let newValue = value;
+          newValue = imageUrl;
+          return newValue;
+        });
+        return this.backgroundImagePath;
       }),
     );
   }
 
   movePuzzles(
-    arrToPush: string[],
-    arrToDelete: string[],
-    word: string,
-    currentSentenceLength: number,
-    observableToPush: Subject<string[]>,
-    observableToDelete: Subject<string[]>,
+    arrToPush: PuzzleData[],
+    arrToDelete: PuzzleData[],
+    puzzle: PuzzleData,
+    currentSentenceLength: number, //
+    observableToPush: Subject<PuzzleData[]>,
+    observableToDelete: Subject<PuzzleData[]>,
   ) {
-    const formattedWord = word.replaceAll('\n', '').trim();
-    const wordToDeleteFromSource = arrToDelete.indexOf(formattedWord);
+    const puzzleToMove = arrToDelete.findIndex((x) => x.word === puzzle.word);
+    console.log(puzzleToMove);
 
     const newArrToDelete = [...arrToDelete];
-    newArrToDelete.splice(wordToDeleteFromSource, 1);
-    observableToDelete.next(newArrToDelete);
+    console.log(newArrToDelete);
+    if (puzzleToMove !== -1) {
+      newArrToDelete.splice(puzzleToMove, 1);
+      observableToDelete.next(newArrToDelete);
+    }
 
     let newArrToPush = [...arrToPush];
     if (this.isCorrect()) {
       newArrToPush = [];
       observableToPush.next(newArrToPush);
     } else {
-      newArrToPush.push(formattedWord);
+      newArrToPush.push(puzzle);
       observableToPush.next(newArrToPush);
     }
   }
 
   pushInResultsBlock(
-    resultArr: string[],
-    sourceArr: string[],
-    word: string,
+    resultArr: PuzzleData[],
+    sourceArr: PuzzleData[],
+    puzzle: PuzzleData,
     currentSentenceLength: number,
   ) {
     return this.movePuzzles(
       resultArr,
       sourceArr,
-      word,
+      puzzle,
       currentSentenceLength,
       this.resultPuzzles$,
       this.sourcePuzzles$,
@@ -121,15 +195,15 @@ export class PuzzleGameCardsDataService {
   }
 
   pushInSourceBlock(
-    sourceArr: string[],
-    resultArr: string[],
-    word: string,
+    sourceArr: PuzzleData[],
+    resultArr: PuzzleData[],
+    puzzle: PuzzleData,
     currentSentenceLength: number,
   ) {
     return this.movePuzzles(
       sourceArr,
       resultArr,
-      word,
+      puzzle,
       currentSentenceLength,
       this.sourcePuzzles$,
       this.resultPuzzles$,
@@ -140,9 +214,5 @@ export class PuzzleGameCardsDataService {
     const dataToString = JSON.stringify(data);
     const typedData: Level = JSON.parse(dataToString);
     return typedData;
-  }
-
-  getRandomInt(max: number) {
-    return Math.floor(Math.random() * max);
   }
 }
