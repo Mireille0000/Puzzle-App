@@ -2,16 +2,23 @@ import {
   Component, computed, inject, OnInit, signal,
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { FormGroup } from '@angular/forms';
 import { NavigationService } from '../core/navigation.service';
 import { HintsBlockComponent } from './hints-block/hints-block.component';
 import { PuzzleFieldComponent } from './puzzle-field/puzzle-field.component';
 import { PuzzlesBlockComponent } from './puzzles-block/puzzles-block.component';
+import { LevelsAndRoundsComponent } from './levels-and-rounds/levels-and-rounds.component';
 import { PuzzleGameCardsDataService } from './services/puzzle-game-cards-data.service';
 import PuzzleData from './interfaces/puzzle-data.interface';
 
 @Component({
   selector: 'app-puzzle-game-page',
-  imports: [HintsBlockComponent, PuzzleFieldComponent, PuzzlesBlockComponent],
+  imports: [
+    HintsBlockComponent,
+    PuzzleFieldComponent,
+    PuzzlesBlockComponent,
+    LevelsAndRoundsComponent,
+  ],
   templateUrl: './puzzle-game-page.component.html',
   styleUrl: './puzzle-game-page.component.scss',
 })
@@ -49,6 +56,12 @@ export class PuzzleGamePageComponent implements OnInit {
   bgPositionTop = signal<number>(0);
 
   girdTemplateRowsPuzzle = signal<string>('');
+
+  levelsNum = signal<Array<{value: number, option: number}>>([{ value: 0, option: 1 }]); // ??
+
+  roundsPerLevel = signal<Array<{value: number, option: number}>>([{ value: 0, option: 1 }]);
+
+  form = signal<FormGroup>(new FormGroup({}));
 
   ngOnInit(): void {
     this.navigation.getPathName(this.route);
@@ -109,15 +122,6 @@ export class PuzzleGamePageComponent implements OnInit {
     }
   }
 
-  showNextWordsSet(level: number, round: number, sentenceNum: number) {
-    this.isCorrect.update(() => true);
-    this.puzzlesDataService.getWordsData(level, round, sentenceNum)
-      .subscribe((data) => {
-        this.sourceWords = data;
-      });
-    this.isCorrect.update(() => false);
-  }
-
   downloadNewImage(level: number, round: number, sentenceNum: number) {
     this.isCorrect.update(() => true);
     this.puzzlesDataService.getWordsData(level, round, sentenceNum)
@@ -130,18 +134,35 @@ export class PuzzleGamePageComponent implements OnInit {
     this.isCorrect.update(() => false);
   }
 
+  showNextWordsSet(level: number, round: number, sentenceNum: number) {
+    this.isCorrect.update(() => true);
+    this.puzzlesDataService.getWordsData(level, round, sentenceNum)
+      .subscribe((data) => {
+        this.sourceWords = data;
+      });
+    this.isCorrect.update(() => false);
+  }
+
+  updateRoundsPerLevelArr(level: number) {
+    this.puzzlesDataService.getLevelData(level).subscribe(() => {
+      this.roundsPerLevel = this.puzzlesDataService.roundsPerLevel;
+      this.roundsPerLevel.update(() => this.puzzlesDataService.roundsPerLevel());
+
+      this.form = this.puzzlesDataService.form;
+      this.form().get('round')?.setValue(this.roundsPerLevel()[this.round()]);
+    });
+  }
+
   continue() {
     this.sentenceNumber.update((value) => value + 1);
     this.isDisabled.update(() => true);
 
-    this.puzzlesDataService.getCardsData(this.level()).subscribe((data) => {
+    this.puzzlesDataService.getLevelData(this.level()).subscribe((data) => {
       const roundsNum = data.rounds.length - 1;
-
       const expr = true || false;
       switch (expr) {
         case (this.sentenceNumber() <= 9):
           this.showNextWordsSet(this.level(), this.round(), this.sentenceNumber());
-          console.log('Continue button', this.isCorrect());
           break;
         case (this.sentenceNumber() > 9 && roundsNum > this.round()):
           this.round.update((value) => value + 1);
@@ -156,11 +177,12 @@ export class PuzzleGamePageComponent implements OnInit {
             return newValue;
           });
 
+          this.updateRoundsPerLevelArr(this.level());
           this.showNextWordsSet(this.level(), this.round(), this.sentenceNumber());
           this.downloadNewImage(this.level(), this.round(), this.sentenceNumber());
           console.log(this.isCorrect(), 'New Round', this.round(), this.sentenceNumber());
           break;
-        case roundsNum === this.round():
+        case (roundsNum === this.round() && this.level() < 6):
           this.round.update((value) => {
             let newValue = value;
             newValue = 0;
@@ -177,12 +199,14 @@ export class PuzzleGamePageComponent implements OnInit {
             newValue = 0;
             return newValue;
           });
-
+          this.updateRoundsPerLevelArr(this.level());
           this.showNextWordsSet(this.level(), this.round(), this.sentenceNumber());
           this.downloadNewImage(this.level(), this.round(), this.sentenceNumber());
-          console.log(this.isCorrect(), 'New Level', this.round(), this.sentenceNumber());
+
+          console.log(this.isCorrect(), 'New Level', this.level(), this.round(), this.sentenceNumber());
           break;
         default:
+          console.log('Level', this.level(), 'Round', this.round(), 'Sentence', this.sentenceNumber());
           console.log('Win!');
       }
     });
@@ -191,7 +215,7 @@ export class PuzzleGamePageComponent implements OnInit {
   }
 
   completeSentence() {
-    if (!this.isCorrect()) {
+    if (!this.isCorrect() && this.sentenceNumber() < 10) {
       if (this.bgPositionTop() >= 540) {
         this.bgPositionTop.update((value) => {
           let newValue = value;

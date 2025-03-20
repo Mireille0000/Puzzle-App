@@ -6,9 +6,9 @@ import {
   selector: 'span[audioHintAnimation]',
 })
 export class AudioHintAnimationDirective {
-  element = inject(ElementRef);
+  private element = inject(ElementRef);
 
-  renderer = inject(Renderer2);
+  private renderer = inject(Renderer2);
 
   @HostListener('click', ['$event.target'])
   onClick() {

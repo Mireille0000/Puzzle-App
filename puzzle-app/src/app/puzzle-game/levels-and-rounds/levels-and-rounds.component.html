@@ -1,0 +1,32 @@
+<form [formGroup]="form()" class="levels-and-rounds">
+  <div class="levels">
+    <label for="levels-select">Level: {{level()}}</label>
+    <select formControlName="level" name="levels" id="levels-select" (change)="chooseLevel()">
+      <option
+      *ngFor="let level of levelsNum"
+      [ngValue]="level"
+      [selectedAttr]="createLevelOptionsObj(level.option)"
+      >
+      {{level.option}}
+    </option>
+    </select>
+  </div>
+
+  <div class="rounds">
+    <label for="rounds-select">Round: {{round() + 1}}</label>
+    <select
+    formControlName="round"
+    name="rounds"
+    id="rounds-select"
+    (change)="chooseRound()"
+    >
+      <option
+      *ngFor="let round of roundsPerLevel()"
+      [ngValue]="round"
+      [selectedAttr]="createRoundOptionsObj(round.option)"
+      >
+      {{round.option}}
+    </option>
+    </select>
+  </div>
+</form>

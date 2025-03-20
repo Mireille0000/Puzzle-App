@@ -1,0 +1,17 @@
+.levels-and-rounds {
+  display: flex;
+  gap: 10px;
+  .levels, .rounds {
+    display: flex;
+    gap: 5px;
+    select {
+      cursor: pointer;
+      transition: 1s;
+      transform: scale(1);
+    }
+    select:hover {
+      transition: 1s;
+      transform: scale(1.2);
+    }
+  }
+}

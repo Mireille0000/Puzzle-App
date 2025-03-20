@@ -3,6 +3,7 @@ import { inject, Injectable, signal } from '@angular/core';
 import {
   map, Observable, Subject,
 } from 'rxjs';
+import { FormControl, FormGroup } from '@angular/forms';
 import { Level } from '../interfaces/level-data.interface';
 import PuzzleData from '../interfaces/puzzle-data.interface';
 
@@ -48,9 +49,20 @@ export class PuzzleGameCardsDataService {
 
   girdTemplateRowsPuzzle = signal<string>('');
 
-  getCardsData(round: number): Observable<Level> {
+  // ??
+  levelsNum = signal<Array<{value: number, option: number}>>([{ value: 0, option: 1 }]);
+
+  roundsPerLevel = signal<Array<{value: number, option: number}>>([{ value: 0, option: 1 }]);
+
+  form = signal(new FormGroup({
+    level: new FormControl(),
+    round: new FormControl(),
+  }));
+  // ??
+
+  getLevelData(level: number): Observable<Level> {
     return this.http.get(
-      `/api/rolling-scopes-school/rss-puzzle-data/main/data/wordCollectionLevel${round}.json`,
+      `/api/rolling-scopes-school/rss-puzzle-data/main/data/wordCollectionLevel${level}.json`,
       {
         headers: {
           'Content-type': 'application/json',
@@ -59,6 +71,16 @@ export class PuzzleGameCardsDataService {
     ).pipe(
       map((data) => {
         const parsedData = this.parsePuzzleGameData(data);
+        this.roundsPerLevel.update(
+          () => (Array.from(
+            { length: parsedData.rounds.length },
+            (item, i) => {
+              item = { value: i, option: i + 1 };
+              return item;
+            },
+          )as {value: number, option: number}[]),
+        );
+        this.form().get('round')?.setValue(this.roundsPerLevel()[this.round()]);
         return parsedData;
       }),
     );
