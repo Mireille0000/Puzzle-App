@@ -51,6 +51,7 @@ export class PuzzleGameCardsDataService {
 
   // ??
   levelsNum = signal<Array<{value: number, option: number}>>([{ value: 0, option: 1 }]);
+  // ??
 
   roundsPerLevel = signal<Array<{value: number, option: number}>>([{ value: 0, option: 1 }]);
 
@@ -58,7 +59,8 @@ export class PuzzleGameCardsDataService {
     level: new FormControl(),
     round: new FormControl(),
   }));
-  // ??
+
+  gameProgressData = signal<string>(''); // ??
 
   getLevelData(level: number): Observable<Level> {
     return this.http.get(
@@ -176,15 +178,12 @@ export class PuzzleGameCardsDataService {
     arrToPush: PuzzleData[],
     arrToDelete: PuzzleData[],
     puzzle: PuzzleData,
-    currentSentenceLength: number, //
     observableToPush: Subject<PuzzleData[]>,
     observableToDelete: Subject<PuzzleData[]>,
   ) {
     const puzzleToMove = arrToDelete.findIndex((x) => x.word === puzzle.word);
-    console.log(puzzleToMove);
 
     const newArrToDelete = [...arrToDelete];
-    console.log(newArrToDelete);
     if (puzzleToMove !== -1) {
       newArrToDelete.splice(puzzleToMove, 1);
       observableToDelete.next(newArrToDelete);
@@ -210,7 +209,7 @@ export class PuzzleGameCardsDataService {
       resultArr,
       sourceArr,
       puzzle,
-      currentSentenceLength,
+      // currentSentenceLength,
       this.resultPuzzles$,
       this.sourcePuzzles$,
     );
@@ -226,10 +225,19 @@ export class PuzzleGameCardsDataService {
       sourceArr,
       resultArr,
       puzzle,
-      currentSentenceLength,
       this.sourcePuzzles$,
       this.resultPuzzles$,
     );
+  }
+
+  getLocalStorageProgressData(obj: {level: number, roundIndex: number}) {
+    const currentProgressInfo = localStorage.getItem('currentProgress');
+    if(currentProgressInfo) {
+      localStorage.setItem('currentProgress', JSON.stringify(obj));
+      this.gameProgressData.update(() => currentProgressInfo);
+    } else {
+      localStorage.setItem('currentProgress', JSON.stringify(obj));
+    }
   }
 
   parsePuzzleGameData(data: unknown): Level {

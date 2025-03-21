@@ -40,6 +40,8 @@ export class PuzzlesBlockComponent implements OnInit {
 
   girdTemplateRowsPuzzle = signal<string>('');
 
+  gameProgressData = signal<string>('');//
+
   ngOnInit(): void {
     this.isCorrect = this.puzzlesDataService.isCorrect;
     this.level = this.puzzlesDataService.level;
@@ -50,6 +52,11 @@ export class PuzzlesBlockComponent implements OnInit {
     this.isClickedImageHint = this.puzzlesDataService.isClikedImageHint;
 
     this.backgroundImagePath = this.puzzlesDataService.backgroundImagePath; //
+
+    const currentGameProgressData = localStorage.getItem('currentProgress');
+    this.gameProgressData = this.puzzlesDataService.gameProgressData;
+    this.gameProgressData.update(() => currentGameProgressData as string);
+    this.checkGameProgress();
 
     this.puzzlesDataService.getWordsData(
       this.level(),
@@ -63,7 +70,7 @@ export class PuzzlesBlockComponent implements OnInit {
 
       this.puzzlesDataService.sourcePuzzles$.subscribe((data) => {
         this.words = data;
-        this.words.reduce((acc: PuzzleData[], item, i) => {
+        this.words.reduce((acc: PuzzleData[], _, i) => {
           const randomNumber = this.getRandomInt(this.words.length);
           [acc[i], acc[randomNumber]] = [acc[randomNumber], acc[i]];
           return acc;
@@ -95,12 +102,15 @@ export class PuzzlesBlockComponent implements OnInit {
     this.puzzlesDataService.resultPuzzles$.subscribe((data) => {
       this.resultArr = data;
     });
-
-    // this.puzzlesDataService.sourcePuzzles$.subscribe((data) => {
-    //   this.words = data;
-    // });
   }
 
+  checkGameProgress() {
+    const parsedGameProgressData = JSON.parse(this.gameProgressData());
+    if(localStorage.getItem('currentProgress')){
+      this.round.update(() => parsedGameProgressData.roundIndex);
+      this.level.update(() => parsedGameProgressData.level);
+    }
+  }
   getRandomInt(max: number) {
     return Math.floor(Math.random() * max);
   }
@@ -134,10 +144,5 @@ export class PuzzlesBlockComponent implements OnInit {
     } else {
       this.isDisabled.update(() => true);
     }
-
-    console.log(this.isDisabled(), this.words);
-    console.log(puzzle.word);
-    console.log('puzzle block, words arr, subscription to soucePuzzle: ', this.words);
-    console.log('puzzle block, words arr, subscription to results: ', this.resultArr);
   }
 }

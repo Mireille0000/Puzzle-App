@@ -50,7 +50,7 @@ export class LevelsAndRoundsComponent implements OnInit {
       this.roundsPerLevel.update(() => this.puzzlesDataService.roundsPerLevel());
 
       this.form = this.puzzlesDataService.form;
-      this.form().get('level')?.setValue(this.levelsNum[0]);
+      this.form().get('level')?.setValue(this.levelsNum[this.level() - 1]);
       this.form().get('round')?.setValue(this.roundsPerLevel()[this.round()]);
     });
   }
@@ -99,7 +99,6 @@ export class LevelsAndRoundsComponent implements OnInit {
     });
 
     this.puzzlesDataService.getLevelData(this.level()).subscribe((data) => data);
-
     this.puzzlesDataService
       .getWordsData(this.level(), this.round(), this.sentenceNumber())
       .subscribe((data) => data);

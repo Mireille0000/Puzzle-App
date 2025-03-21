@@ -55,6 +55,8 @@ export class PuzzleFieldComponent implements OnInit {
 
   girdTemplateRowsPuzzle = signal<string>('');
 
+  gameProgressData = signal<string>('');
+
   ngOnInit(): void {
     this.currentSentence = this.puzzlesDataService.currentSentence;
     this.correctSentences = this.puzzlesDataService.correctSentences;
@@ -66,23 +68,27 @@ export class PuzzleFieldComponent implements OnInit {
     this.isClickedImageHint = this.puzzlesDataService.isClikedImageHint;
 
     this.backgroundImagePath = this.puzzlesDataService.backgroundImagePath;
-    console.log(this.backgroundImagePath());
 
-    this.puzzlesDataService
-      .getWordsData(this.level(), this.round(), this.currentSentenceNum())
-      .subscribe(() => {
-        this.currentImageHint = this.puzzlesDataService.imageHint;
-        this.girdTemplateRowsPuzzle = this.puzzlesDataService.girdTemplateRowsPuzzle;
+    const currentGameProgressData = localStorage.getItem('currentProgress');
+    this.gameProgressData = this.puzzlesDataService.gameProgressData;
+    this.gameProgressData.update(() => currentGameProgressData as string);
+    this.checkGameProgress();
 
-        this.puzzlesDataService.getImageFile(this.currentImageHint()).subscribe(() => {
-          this.backgroundImagePath.update((value) => {
-            let newValue = value;
-            newValue = '';
-            return newValue;
+      this.puzzlesDataService
+        .getWordsData(this.level(), this.round(), this.currentSentenceNum())
+        .subscribe(() => {
+          this.currentImageHint = this.puzzlesDataService.imageHint;
+          this.girdTemplateRowsPuzzle = this.puzzlesDataService.girdTemplateRowsPuzzle;
+
+          this.puzzlesDataService.getImageFile(this.currentImageHint()).subscribe(() => {
+            this.backgroundImagePath.update((value) => {
+              let newValue = value;
+              newValue = '';
+              return newValue;
+            });
+            this.correctLineBgImage = this.puzzlesDataService.correctLineBgImage;
           });
-          this.correctLineBgImage = this.puzzlesDataService.correctLineBgImage;
         });
-      });
 
     this.puzzlesDataService.sourcePuzzles$.subscribe((data) => {
       this.sourceBlock = data;
@@ -91,6 +97,15 @@ export class PuzzleFieldComponent implements OnInit {
     this.puzzlesDataService.resultPuzzles$.subscribe((data) => {
       this.resultBlock = data;
     });
+  }
+
+  checkGameProgress() {
+    const parsedGameProgressData = JSON.parse(this.gameProgressData());
+
+    if(localStorage.getItem('currentProgress')){
+      this.round.update(() => parsedGameProgressData.roundIndex);
+      this.level.update(() => parsedGameProgressData.level);
+    }
   }
 
   calculateBgPosition(index: number) {
@@ -117,7 +132,7 @@ export class PuzzleFieldComponent implements OnInit {
   movePuzzleToPuzzlesBlock(puzzle: PuzzleData) {
     const { word } = puzzle;
     const puzzleIndex = this.resultBlock.findIndex((puzzleObj) => puzzleObj.word === word);
-    console.log(puzzleIndex);
+
     if (this.isCorrect()) {
       this.resultBlock = [];
       this.movePuzzles(puzzleIndex, puzzle);
@@ -130,10 +145,5 @@ export class PuzzleFieldComponent implements OnInit {
     } else {
       this.isDisabled.update(() => true);
     }
-
-    console.log(this.isDisabled(), this.sourceBlock);
-
-    // console.log(`source block, puzzle field ${this.sourceBlock}`);
-    // console.log(`results, puzzle field component ${this.resultBlock}`);
   }
 }

@@ -105,10 +105,9 @@ export class PuzzleGamePageComponent implements OnInit {
         });
       }
       this.girdTemplateRowsPuzzle.update(() => this.currentSentence().map(() => '1fr').join(' '));
-      console.log(this.bgPositionTop());
+
       this.isCorrectWordsOrder.update(() => false);
       this.isCorrect.update(() => true);
-      console.log(this.isCorrect(), 'Correct!');
       this.correctSentences.update((value) => {
         value.push(this.currentSentence());
         return value;
@@ -116,9 +115,6 @@ export class PuzzleGamePageComponent implements OnInit {
     } else {
       this.isCorrectWordsOrder.update(() => true);
       this.isCorrect.update(() => false);
-      console.log(this.completedSentence);
-      console.log(sentence());
-      console.log(this.isCorrect(), 'Try again');
     }
   }
 
@@ -180,6 +176,11 @@ export class PuzzleGamePageComponent implements OnInit {
           this.updateRoundsPerLevelArr(this.level());
           this.showNextWordsSet(this.level(), this.round(), this.sentenceNumber());
           this.downloadNewImage(this.level(), this.round(), this.sentenceNumber());
+          this.puzzlesDataService
+          .getLocalStorageProgressData(
+            {level: this.level(), roundIndex: this.round()}
+          );
+          console.log(`Round ${this.round()} is completed!`); // local storage
           console.log(this.isCorrect(), 'New Round', this.round(), this.sentenceNumber());
           break;
         case (roundsNum === this.round() && this.level() < 6):
@@ -199,9 +200,14 @@ export class PuzzleGamePageComponent implements OnInit {
             newValue = 0;
             return newValue;
           });
+
           this.updateRoundsPerLevelArr(this.level());
           this.showNextWordsSet(this.level(), this.round(), this.sentenceNumber());
           this.downloadNewImage(this.level(), this.round(), this.sentenceNumber());
+          this.puzzlesDataService
+          .getLocalStorageProgressData(
+            {level: this.level(), roundIndex: this.round()}
+          );
 
           console.log(this.isCorrect(), 'New Level', this.level(), this.round(), this.sentenceNumber());
           break;
@@ -229,7 +235,6 @@ export class PuzzleGamePageComponent implements OnInit {
           return newValue;
         });
       }
-      console.log(this.bgPositionTop());
       this.girdTemplateRowsPuzzle.update(() => this.currentSentence().map(() => '1fr').join(' '));
       this.correctSentences.update((value) => {
         value.push(this.currentSentence());
