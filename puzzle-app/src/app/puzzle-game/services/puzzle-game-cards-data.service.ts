@@ -62,6 +62,8 @@ export class PuzzleGameCardsDataService {
 
   gameProgressData = signal<string>(''); // ??
 
+  completedRoundsLevelsStorage = signal<Array<{level: number, round: number}>>([{level: this.level(), round: this.round()}]);
+
   getLevelData(level: number): Observable<Level> {
     return this.http.get(
       `/api/rolling-scopes-school/rss-puzzle-data/main/data/wordCollectionLevel${level}.json`,
@@ -237,6 +239,18 @@ export class PuzzleGameCardsDataService {
       this.gameProgressData.update(() => currentProgressInfo);
     } else {
       localStorage.setItem('currentProgress', JSON.stringify(obj));
+    }
+  }
+
+  getCompletedRoundsStorage(obj: {level: number, round: number}) {
+    const completedStorageData = localStorage.getItem('completedStorage');
+    if(completedStorageData) {
+      const completedRoundsLevelsStorage = this.completedRoundsLevelsStorage();
+      completedRoundsLevelsStorage.push(obj);
+      this.completedRoundsLevelsStorage.set(completedRoundsLevelsStorage);
+      localStorage.setItem('completedStorage', JSON.stringify(this.completedRoundsLevelsStorage()));
+    } else {
+      localStorage.setItem('completedStorage', JSON.stringify(obj));
     }
   }
 

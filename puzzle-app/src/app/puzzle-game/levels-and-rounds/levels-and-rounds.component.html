@@ -22,6 +22,7 @@
     >
       <option
       *ngFor="let round of roundsPerLevel()"
+      completed [setCompletedStyles]="completedRoundsLevelsStorage()"
       [ngValue]="round"
       [selectedAttr]="createRoundOptionsObj(round.option)"
       >

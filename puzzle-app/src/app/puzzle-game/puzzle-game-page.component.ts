@@ -2,7 +2,7 @@ import {
   Component, computed, inject, OnInit, signal,
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { FormGroup } from '@angular/forms';
+import { FormControl, FormGroup } from '@angular/forms';
 import { NavigationService } from '../core/navigation.service';
 import { HintsBlockComponent } from './hints-block/hints-block.component';
 import { PuzzleFieldComponent } from './puzzle-field/puzzle-field.component';
@@ -62,6 +62,10 @@ export class PuzzleGamePageComponent implements OnInit {
   roundsPerLevel = signal<Array<{value: number, option: number}>>([{ value: 0, option: 1 }]);
 
   form = signal<FormGroup>(new FormGroup({}));
+
+  completedRoundsLevelsStorage = signal<Array<{level: number, round: number}>>([{level: this.level(), round:this.round()}]);
+
+  dataLength: number = 0;
 
   ngOnInit(): void {
     this.navigation.getPathName(this.route);
@@ -145,7 +149,10 @@ export class PuzzleGamePageComponent implements OnInit {
       this.roundsPerLevel.update(() => this.puzzlesDataService.roundsPerLevel());
 
       this.form = this.puzzlesDataService.form;
+
+      console.log('UPDATE FORM',this.form())
       this.form().get('round')?.setValue(this.roundsPerLevel()[this.round()]);
+      this.form().get('level')?.setValue(this.roundsPerLevel()[this.level()]);
     });
   }
 
@@ -154,6 +161,7 @@ export class PuzzleGamePageComponent implements OnInit {
     this.isDisabled.update(() => true);
 
     this.puzzlesDataService.getLevelData(this.level()).subscribe((data) => {
+      // this.dataLength = data.rounds.length - 1
       const roundsNum = data.rounds.length - 1;
       const expr = true || false;
       switch (expr) {
@@ -180,10 +188,17 @@ export class PuzzleGamePageComponent implements OnInit {
           .getLocalStorageProgressData(
             {level: this.level(), roundIndex: this.round()}
           );
-          console.log(`Round ${this.round()} is completed!`); // local storage
+
+          this.puzzlesDataService.getCompletedRoundsStorage({level: this.level(), round: this.round() - 1});
+          this.completedRoundsLevelsStorage = this.puzzlesDataService.completedRoundsLevelsStorage;
+          this.form = this.puzzlesDataService.form;
+
           console.log(this.isCorrect(), 'New Round', this.round(), this.sentenceNumber());
           break;
         case (roundsNum === this.round() && this.level() < 6):
+          this.puzzlesDataService.getCompletedRoundsStorage({level: this.level(), round: this.round()});
+          this.completedRoundsLevelsStorage = this.puzzlesDataService.completedRoundsLevelsStorage;
+
           this.round.update((value) => {
             let newValue = value;
             newValue = 0;
@@ -208,7 +223,6 @@ export class PuzzleGamePageComponent implements OnInit {
           .getLocalStorageProgressData(
             {level: this.level(), roundIndex: this.round()}
           );
-
           console.log(this.isCorrect(), 'New Level', this.level(), this.round(), this.sentenceNumber());
           break;
         default:
