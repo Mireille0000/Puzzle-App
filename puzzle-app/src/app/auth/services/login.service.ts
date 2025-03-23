@@ -18,7 +18,7 @@ export class LoginService {
   deleteUserCredentials() {
     if (localStorage.getItem('userCredentials')) {
       this.router.navigate(['/login']);
-      localStorage.clear();
+      localStorage.removeItem('userCredentials')
     }
   }
 }

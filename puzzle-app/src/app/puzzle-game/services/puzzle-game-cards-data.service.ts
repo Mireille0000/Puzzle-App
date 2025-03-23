@@ -3,6 +3,7 @@ import { inject, Injectable, signal } from '@angular/core';
 import {
   map, Observable, Subject,
 } from 'rxjs';
+import { FormControl, FormGroup } from '@angular/forms';
 import { Level } from '../interfaces/level-data.interface';
 import PuzzleData from '../interfaces/puzzle-data.interface';
 
@@ -48,9 +49,24 @@ export class PuzzleGameCardsDataService {
 
   girdTemplateRowsPuzzle = signal<string>('');
 
-  getCardsData(round: number): Observable<Level> {
+  // ??
+  levelsNum = signal<Array<{value: number, option: number}>>([{ value: 0, option: 1 }]);
+  // ??
+
+  roundsPerLevel = signal<Array<{value: number, option: number}>>([{ value: 0, option: 1 }]);
+
+  form = signal(new FormGroup({
+    level: new FormControl(),
+    round: new FormControl(),
+  }));
+
+  gameProgressData = signal<string>(''); // ??
+
+  completedRoundsLevelsStorage = signal<Array<{level: number, round: number}>>([{level: this.level(), round: this.round()}]);
+
+  getLevelData(level: number): Observable<Level> {
     return this.http.get(
-      `/api/rolling-scopes-school/rss-puzzle-data/main/data/wordCollectionLevel${round}.json`,
+      `/api/rolling-scopes-school/rss-puzzle-data/main/data/wordCollectionLevel${level}.json`,
       {
         headers: {
           'Content-type': 'application/json',
@@ -59,6 +75,16 @@ export class PuzzleGameCardsDataService {
     ).pipe(
       map((data) => {
         const parsedData = this.parsePuzzleGameData(data);
+        this.roundsPerLevel.update(
+          () => (Array.from(
+            { length: parsedData.rounds.length },
+            (item, i) => {
+              item = { value: i, option: i + 1 };
+              return item;
+            },
+          )as {value: number, option: number}[]),
+        );
+        this.form().get('round')?.setValue(this.roundsPerLevel()[this.round()]);
         return parsedData;
       }),
     );
@@ -154,15 +180,12 @@ export class PuzzleGameCardsDataService {
     arrToPush: PuzzleData[],
     arrToDelete: PuzzleData[],
     puzzle: PuzzleData,
-    currentSentenceLength: number, //
     observableToPush: Subject<PuzzleData[]>,
     observableToDelete: Subject<PuzzleData[]>,
   ) {
     const puzzleToMove = arrToDelete.findIndex((x) => x.word === puzzle.word);
-    console.log(puzzleToMove);
 
     const newArrToDelete = [...arrToDelete];
-    console.log(newArrToDelete);
     if (puzzleToMove !== -1) {
       newArrToDelete.splice(puzzleToMove, 1);
       observableToDelete.next(newArrToDelete);
@@ -188,7 +211,7 @@ export class PuzzleGameCardsDataService {
       resultArr,
       sourceArr,
       puzzle,
-      currentSentenceLength,
+      // currentSentenceLength,
       this.resultPuzzles$,
       this.sourcePuzzles$,
     );
@@ -204,10 +227,31 @@ export class PuzzleGameCardsDataService {
       sourceArr,
       resultArr,
       puzzle,
-      currentSentenceLength,
       this.sourcePuzzles$,
       this.resultPuzzles$,
     );
+  }
+
+  getLocalStorageProgressData(obj: {level: number, roundIndex: number}) {
+    const currentProgressInfo = localStorage.getItem('currentProgress');
+    if(currentProgressInfo) {
+      localStorage.setItem('currentProgress', JSON.stringify(obj));
+      this.gameProgressData.update(() => currentProgressInfo);
+    } else {
+      localStorage.setItem('currentProgress', JSON.stringify(obj));
+    }
+  }
+
+  getCompletedRoundsStorage(obj: {level: number, round: number}) {
+    const completedStorageData = localStorage.getItem('completedStorage');
+    if(completedStorageData) {
+      const completedRoundsLevelsStorage = this.completedRoundsLevelsStorage();
+      completedRoundsLevelsStorage.push(obj);
+      this.completedRoundsLevelsStorage.set(completedRoundsLevelsStorage);
+      localStorage.setItem('completedStorage', JSON.stringify(this.completedRoundsLevelsStorage()));
+    } else {
+      localStorage.setItem('completedStorage', JSON.stringify(obj));
+    }
   }
 
   parsePuzzleGameData(data: unknown): Level {

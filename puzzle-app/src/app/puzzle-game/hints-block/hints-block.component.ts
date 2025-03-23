@@ -89,11 +89,9 @@ export class HintsBlockComponent implements OnInit {
           newValue = this.puzzlesDataService.backgroundImagePath();
           return newValue;
         });
-        console.log(this.backgroundImagePath());
       } else {
         this.isClickedImageHint.update(() => false);
         this.backgroundImagePath.update(() => '');
-        console.log(this.backgroundImagePath());
       }
     });
   }

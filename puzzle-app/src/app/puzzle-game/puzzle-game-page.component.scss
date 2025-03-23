@@ -8,15 +8,15 @@
     display: flex;
     flex-direction: column;
     gap: 5px;
-    .levels-and-rounds {
-      height: 5%;
-      display: flex;
-      gap: 10px;
-      .levels, .rounds {
-        display: flex;
-        gap: 5px;
-      }
-    }
+    // .levels-and-rounds {
+    //   height: 5%;
+    //   display: flex;
+    //   gap: 10px;
+    //   .levels, .rounds {
+    //     display: flex;
+    //     gap: 5px;
+    //   }
+    // }
   }
   .game-menu {
     width: 200px;

@@ -1,0 +1,26 @@
+.levels-and-rounds {
+  display: flex;
+  gap: 10px;
+  .levels, .rounds {
+    display: flex;
+    gap: 5px;
+    font-weight: bold;
+    select {
+      border: 3px solid #8e70b3;
+      border-radius: 5px;
+      background-color: #92c6dd;
+      font-family: "Lucida Sans", sans-serif;
+      .completed {
+        background-color: #8e70b3;
+        font-family:Verdana, Geneva, Tahoma, sans-serif;
+      }
+      cursor: pointer;
+      transition: 1s;
+      transform: scale(1);
+    }
+    select:hover {
+      transition: 1s;
+      transform: scale(1.2);
+    }
+  }
+}
