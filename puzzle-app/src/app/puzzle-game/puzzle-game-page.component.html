@@ -11,7 +11,7 @@
     @if(!isCorrect()) {
       <button class="check-button" (click)="isCorrectlyCompleted()" [disabled]="isDisabled()">Check</button>
     } @else {
-      <button class="check-button" (click)="continue()">Continue</button>
+      <button class="continue-button" (click)="continue()">Continue</button>
     }
   </div>
 </div>

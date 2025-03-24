@@ -1,0 +1,22 @@
+:host {
+  height: 70%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  margin: 0 20px;
+  background-color: rgb(161 178 200 / 90%);
+  h3 {
+    margin: 0;
+    text-align: center;
+  }
+  .statistics {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+  }
+  .mat-mdc-table {
+    background-color: transparent;
+    .mat-mdc-row {
+      height: 30px;
+    }
+  }
+}
