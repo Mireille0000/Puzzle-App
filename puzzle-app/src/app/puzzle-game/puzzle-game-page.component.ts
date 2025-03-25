@@ -1,7 +1,8 @@
 import {
-  Component, computed, inject, OnInit, signal,
+  Component, computed, inject, Input, OnChanges, OnInit, signal,
+  SimpleChanges,
 } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { FormControl, FormGroup } from '@angular/forms';
 import { NavigationService } from '../core/navigation.service';
 import { HintsBlockComponent } from './hints-block/hints-block.component';
@@ -27,6 +28,8 @@ export class PuzzleGamePageComponent implements OnInit {
 
   private route = inject(ActivatedRoute);
 
+  private router = inject(Router);
+
   private puzzlesDataService = inject(PuzzleGameCardsDataService);
 
   currentSentence = signal<string[]>(['']);
@@ -45,6 +48,8 @@ export class PuzzleGamePageComponent implements OnInit {
 
   isDisabled = signal<boolean>(true);
 
+  canSeeResults = signal<boolean>(false);
+
   completedSentence: string[] = [];
 
   sourceWords: PuzzleData[] = [];
@@ -61,11 +66,9 @@ export class PuzzleGamePageComponent implements OnInit {
 
   roundsPerLevel = signal<Array<{value: number, option: number}>>([{ value: 0, option: 1 }]);
 
-  form = signal<FormGroup>(new FormGroup({}));
+  form = signal<FormGroup>(new FormGroup({})); //
 
   completedRoundsLevelsStorage = signal<Array<{level: number, round: number}>>([{level: this.level(), round:this.round()}]);
-
-  dataLength: number = 0;
 
   ngOnInit(): void {
     this.navigation.getPathName(this.route);
@@ -80,8 +83,17 @@ export class PuzzleGamePageComponent implements OnInit {
     this.isDisabled = this.puzzlesDataService.isDisabled;
     this.isCorrectWordsOrder = this.puzzlesDataService.isCorrectWordsOrder; // naming
 
+    this.canSeeResults = this.puzzlesDataService.canSeeResults;
+    this.canSeeResults.update(() => false);
+    console.log(this.canSeeResults());
+
     this.bgPositionTop = this.puzzlesDataService.bgPositonTop;
     this.girdTemplateRowsPuzzle = this.puzzlesDataService.girdTemplateRowsPuzzle;
+
+    if(localStorage.getItem('completedStorage')) {
+      this.puzzlesDataService.completedRoundsLevelsStorage.update(() =>
+        JSON.parse(localStorage.getItem('completedStorage') as string));
+    }
 
     this.puzzlesDataService.resultPuzzles$.subscribe((data) => {
       const sentence = data.reduce((acc: string[], item) => {
@@ -97,6 +109,11 @@ export class PuzzleGamePageComponent implements OnInit {
 
   isCorrectlyCompleted() {
     const sentence = computed(() => this.currentSentence().toString());
+    if (this.sentenceNumber() === 9) {
+      this.canSeeResults.update(() => true);
+      console.log(this.puzzlesDataService.completedRoundsLevelsStorage());
+      console.log('Check Button: The last sentence in the round!');
+    }
 
     if (sentence() === this.completedSentence.join()) {
       if (this.bgPositionTop() < 600) {
@@ -159,9 +176,12 @@ export class PuzzleGamePageComponent implements OnInit {
   continue() {
     this.sentenceNumber.update((value) => value + 1);
     this.isDisabled.update(() => true);
+    if (this.sentenceNumber() === 9) {
+      this.canSeeResults.update(() => false);
+      console.log('Continue Button', this.canSeeResults());
+    }
 
     this.puzzlesDataService.getLevelData(this.level()).subscribe((data) => {
-      // this.dataLength = data.rounds.length - 1
       const roundsNum = data.rounds.length - 1;
       const expr = true || false;
       switch (expr) {
@@ -235,6 +255,7 @@ export class PuzzleGamePageComponent implements OnInit {
   }
 
   completeSentence() {
+
     if (!this.isCorrect() && this.sentenceNumber() < 10) {
       if (this.bgPositionTop() >= 540) {
         this.bgPositionTop.update((value) => {
@@ -259,5 +280,10 @@ export class PuzzleGamePageComponent implements OnInit {
     } else {
       console.log('No word in source block'); // to delete
     }
+  }
+
+  showResults() {
+    this.router!.navigate(['/statistics']);
+    console.log('RESULTS BUTTON');
   }
 }

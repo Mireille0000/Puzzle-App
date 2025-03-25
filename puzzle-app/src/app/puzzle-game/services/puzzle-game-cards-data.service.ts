@@ -43,6 +43,8 @@ export class PuzzleGameCardsDataService {
 
   isCorrectWordsOrder = signal<boolean>(false);
 
+  canSeeResults = signal<boolean>(false);
+
   correctLineBgImage = signal<string>('');
 
   bgPositonTop = signal<number>(0);
@@ -58,9 +60,9 @@ export class PuzzleGameCardsDataService {
   form = signal(new FormGroup({
     level: new FormControl(),
     round: new FormControl(),
-  }));
+  })); //
 
-  gameProgressData = signal<string>(''); // ??
+  gameProgressData = signal<string>('');
 
   completedRoundsLevelsStorage = signal<Array<{level: number, round: number}>>([{level: this.level(), round: this.round()}]);
 
@@ -85,6 +87,7 @@ export class PuzzleGameCardsDataService {
           )as {value: number, option: number}[]),
         );
         this.form().get('round')?.setValue(this.roundsPerLevel()[this.round()]);
+        this.canSeeResults.update(() => false);
         return parsedData;
       }),
     );

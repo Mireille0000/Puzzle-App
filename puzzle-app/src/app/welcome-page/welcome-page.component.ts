@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgIf, NgTemplateOutlet } from '@angular/common';
 import { NavigationService } from '../core/navigation.service';
@@ -10,7 +10,7 @@ import UserCredentials from '../auth/interfaces/user-credentials.interface';
   templateUrl: './welcome-page.component.html',
   styleUrl: './welcome-page.component.scss',
 })
-export class WelcomePageComponent {
+export class WelcomePageComponent implements OnInit {
   userName: UserCredentials | null = JSON.parse(localStorage.getItem('userCredentials') as string)?.firstName;
 
   isLogged!: boolean;

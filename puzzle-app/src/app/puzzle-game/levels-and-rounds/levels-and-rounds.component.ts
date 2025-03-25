@@ -23,6 +23,8 @@ export class LevelsAndRoundsComponent implements OnInit {
 
   sentenceNumber = signal<number>(0);
 
+  canSeeResults = signal<boolean>(false);
+
   levelsNum: {value: number, option: number}[] = [];
 
   roundsPerLevel = signal<Array<{value: number, option: number}>>([{ value: 0, option: 1 }]);
@@ -43,6 +45,8 @@ export class LevelsAndRoundsComponent implements OnInit {
     this.level = this.puzzlesDataService.level;
     this.round = this.puzzlesDataService.round;
     this.sentenceNumber = this.puzzlesDataService.sentenceNumber;
+
+    this.canSeeResults = this.puzzlesDataService.canSeeResults;
 
     this.levelsNum = Array.from({ length: 6 }, (item, i) => {
       item = { value: i, option: i + 1 };
@@ -121,10 +125,19 @@ export class LevelsAndRoundsComponent implements OnInit {
 
     this.puzzlesDataService.getLevelData(this.level()).subscribe(() => {
       this.renewLocalStorage();
+      const getChosenRound = (item: {level: number, round: number}) => item.level === this.level() && item.round === this.round();
+      if(this.completedRoundsLevelsStorage().some(getChosenRound)) {
+        this.canSeeResults.update(() => true);
+        console.log(this.canSeeResults());
+        console.log('Already completed!');
+      } else {
+        this.canSeeResults.update(() => false);
+        console.log('Not completed yet!');
+      }
     });
     this.puzzlesDataService
       .getWordsData(this.level(), this.round(), this.sentenceNumber())
       .subscribe((data) => data);
-
+    console.log(this.completedRoundsLevelsStorage());
   }
 }
