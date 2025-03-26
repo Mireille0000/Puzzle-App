@@ -128,7 +128,7 @@ export class LevelsAndRoundsComponent implements OnInit {
       const getChosenRound = (item: {level: number, round: number}) => item.level === this.level() && item.round === this.round();
       if(this.completedRoundsLevelsStorage().some(getChosenRound)) {
         this.canSeeResults.update(() => true);
-        console.log(this.canSeeResults());
+        localStorage.setItem('chosenRound', `${this.round() + 1}`);
         console.log('Already completed!');
       } else {
         this.canSeeResults.update(() => false);

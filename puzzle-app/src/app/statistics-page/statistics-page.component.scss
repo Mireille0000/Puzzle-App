@@ -12,11 +12,26 @@
   .statistics {
     display: grid;
     grid-template-columns: 2fr 1fr;
-  }
-  .mat-mdc-table {
-    background-color: transparent;
-    .mat-mdc-row {
-      height: 30px;
+    .mat-mdc-table {
+      background-color: transparent;
+      .mat-mdc-row {
+        height: 30px;
+      }
     }
+  }
+  .back-to-game-button {
+    width: 150px;
+    height: 35px;
+    align-self: center;
+    font-family: "Lucida Sans", sans-serif;
+    border-radius: 10px;
+    background-color: rgb(173, 182, 176);
+    cursor: pointer;
+    transition: 1s;
+  }
+  .back-to-game-button:hover {
+    color: #ddecf3;
+    background-color: rgb(126 165 128);
+    transition: 1s;
   }
 }

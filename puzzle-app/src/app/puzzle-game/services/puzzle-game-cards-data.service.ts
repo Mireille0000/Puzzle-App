@@ -1,11 +1,13 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
 import {
+  BehaviorSubject,
   map, Observable, Subject,
 } from 'rxjs';
 import { FormControl, FormGroup } from '@angular/forms';
 import { Level } from '../interfaces/level-data.interface';
 import PuzzleData from '../interfaces/puzzle-data.interface';
+import { RoundStatisticsData } from '../../statistics-page/interfaces/round-statistics-data';
 
 @Injectable({
   providedIn: 'root',
@@ -66,6 +68,8 @@ export class PuzzleGameCardsDataService {
 
   completedRoundsLevelsStorage = signal<Array<{level: number, round: number}>>([{level: this.level(), round: this.round()}]);
 
+  roundStatisticsData$ = new Subject<Array<RoundStatisticsData>>();
+
   getLevelData(level: number): Observable<Level> {
     return this.http.get(
       `/api/rolling-scopes-school/rss-puzzle-data/main/data/wordCollectionLevel${level}.json`,
@@ -92,6 +96,34 @@ export class PuzzleGameCardsDataService {
       }),
     );
   }
+
+  getRoundData(level: number, round: number) {
+    return this.http.get(
+      `/api/rolling-scopes-school/rss-puzzle-data/main/data/wordCollectionLevel${level}.json`,
+      {
+        headers: {
+          'Content-type': 'application/json',
+        },
+      },
+    ).pipe(
+      map((data) => {
+        const parsedData = this.parsePuzzleGameData(data);
+        const chosenCompletedRound = parsedData.rounds[round];
+
+        const dataSource: RoundStatisticsData[] = [];
+        for (let i = 0; i < parsedData.rounds[round].words.length; i += 1) {
+          dataSource.push({
+            id: i + 1,
+            sentenceNumber: i + 1,
+            sound: parsedData.rounds[round].words[i].audioExample,
+            sentence: parsedData.rounds[round].words[i].textExample,
+            knownUnknown: 'X'})
+        }
+        this.roundStatisticsData$.next(dataSource);
+        return chosenCompletedRound;
+      }),
+    );
+  } // ???
 
   getWordsData(level: number, round: number, sentenceNumber: number) {
     return this.http.get(

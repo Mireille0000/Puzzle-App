@@ -79,6 +79,8 @@ export class PuzzleGamePageComponent implements OnInit {
     this.round = this.puzzlesDataService.round;
     this.sentenceNumber = this.puzzlesDataService.sentenceNumber;
 
+    localStorage.removeItem('chosenRound');
+
     this.isCorrect = this.puzzlesDataService.isCorrect; // naming
     this.isDisabled = this.puzzlesDataService.isDisabled;
     this.isCorrectWordsOrder = this.puzzlesDataService.isCorrectWordsOrder; // naming
@@ -111,6 +113,8 @@ export class PuzzleGamePageComponent implements OnInit {
     const sentence = computed(() => this.currentSentence().toString());
     if (this.sentenceNumber() === 9) {
       this.canSeeResults.update(() => true);
+      console.log(this.round());
+      localStorage.setItem('chosenRound', `${this.round() + 1}`);
       console.log(this.puzzlesDataService.completedRoundsLevelsStorage());
       console.log('Check Button: The last sentence in the round!');
     }
@@ -169,9 +173,8 @@ export class PuzzleGamePageComponent implements OnInit {
 
       console.log('UPDATE FORM',this.form())
       this.form().get('round')?.setValue(this.roundsPerLevel()[this.round()]);
-      this.form().get('level')?.setValue(this.roundsPerLevel()[this.level()]);
     });
-  }
+  } // naming
 
   continue() {
     this.sentenceNumber.update((value) => value + 1);
@@ -255,6 +258,11 @@ export class PuzzleGamePageComponent implements OnInit {
   }
 
   completeSentence() {
+    if (this.sentenceNumber() === 9) {
+      this.canSeeResults.update(() => true);
+      console.log(this.round());
+      console.log('Autocompletion Button: The last sentence in the round!');
+    }
 
     if (!this.isCorrect() && this.sentenceNumber() < 10) {
       if (this.bgPositionTop() >= 540) {
@@ -283,7 +291,11 @@ export class PuzzleGamePageComponent implements OnInit {
   }
 
   showResults() {
-    this.router!.navigate(['/statistics']);
-    console.log('RESULTS BUTTON');
+    if(!localStorage.getItem('chosenRound')) {
+      localStorage.setItem('chosenRound', `${this.round() + 1}`);
+      this.router!.navigate(['/statistics']);
+    } else {
+      this.router!.navigate(['/statistics']);
+    }
   }
 }

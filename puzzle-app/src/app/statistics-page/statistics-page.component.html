@@ -1,4 +1,4 @@
-<h3>STATISTICS</h3>
+<h3>STATISTICS {{round}}</h3>
 <div class="statistics">
   <table mat-table [dataSource]="dataSource">
     <ng-container matColumnDef="sentence-number">
@@ -8,7 +8,9 @@
 
     <ng-container matColumnDef="sound">
       <th mat-header-cell *matHeaderCellDef>Sound</th>
-      <td mat-cell *matCellDef="let element">{{element.sound}}</td>
+      <td mat-cell *matCellDef="let element">
+        <span class="pi pi-megaphone" (click)="listenAudio(element.id)"></span>
+      </td>
     </ng-container>
 
     <ng-container matColumnDef="sentence">
@@ -34,3 +36,4 @@
     </ul>
   </div>
 </div>
+<button class="back-to-game-button" (click)="backToGame()">Back To Game</button>
