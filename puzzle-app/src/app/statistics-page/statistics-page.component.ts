@@ -3,8 +3,10 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { MatTableModule } from '@angular/material/table';
 import { Router } from '@angular/router';
 import { PuzzleGameCardsDataService } from '../puzzle-game/services/puzzle-game-cards-data.service';
-import { RoundStatisticsData } from './interfaces/round-statistics-data';
+import { RoundStatisticsData } from './interfaces/round-statistics-data.interface';
 import { delay } from 'rxjs';
+import { PictureData } from './interfaces/picture-data.interface';
+import PuzzleData from '../puzzle-game/interfaces/puzzle-data.interface';
 
 @Component({
   selector: 'pzl-statistics-page',
@@ -18,9 +20,13 @@ export class StatisticsPageComponent implements OnInit{
 
   private puzzlesDataService = inject(PuzzleGameCardsDataService);
 
-  level = signal<number>(0); //
+  currentLevel = signal<number>(0); //
+
+  currentRound = signal<number>(0); //
 
   round = 0;
+
+  level = 1;
 
   displayedColumns: string[] = [
     'sentence-number', 'sound', 'sentence', 'known-unknown'
@@ -29,26 +35,45 @@ export class StatisticsPageComponent implements OnInit{
   dataSource: RoundStatisticsData[] =[
   ];
 
-  ngOnInit(): void {
-    this.level = this.puzzlesDataService.level;
-    this.round = +(localStorage.getItem('chosenRound') as string);
+  pictureData: PictureData = {author: '', title: '', year: '', image: ''}; //
 
-    this.puzzlesDataService.getRoundData(this.level(), this.round - 1).subscribe();
+  sourceBlock: PuzzleData [] = []
+
+  ngOnInit(): void {
+    this.currentLevel = this.puzzlesDataService.level;
+    this.currentRound = this.puzzlesDataService.round; //
+
+    this.round = localStorage.getItem('chosenRound') ?
+      +(localStorage.getItem('chosenRound') as string) - 1 :
+      0;
+    this.level = localStorage.getItem('chosenLevel') ?
+      +(localStorage.getItem('chosenLevel') as string) :
+      1;
+
+      console.log(this.level, this.round);
+    this.puzzlesDataService.getRoundData(this.level, this.round).subscribe((data) => {
+      console.log(data.levelData);
+      this.pictureData = {author: data.levelData.author, title: data.levelData.name, year: data.levelData.year, image: ''};
+      this.puzzlesDataService.getImageFile(data.levelData.cutSrc).subscribe((data) => {
+        this.pictureData.image = data();
+      });
+    });
     this.puzzlesDataService.roundStatisticsData$.subscribe((data) => {
       this.dataSource = data;
-      console.log(this.dataSource);
     })
 
-    console.log(this.dataSource);
-    // sentences of the round that was selected + or the round that has just been completed +-
+    console.log(this.round, this.currentRound());
     // is autocompletion  was applicated
-    // get the round that has just been compelted+-
   }
 
 
   backToGame() {
     this.router.navigate(['/puzzle-game']);
-    // return to the next round or level/round
+    this.puzzlesDataService.sentenceNumber.update(() => 0);
+    this.puzzlesDataService.canSeeResults.update(() => false);
+    this.puzzlesDataService.isCorrect.update(() => false);
+    console.log(this.puzzlesDataService.sentenceNumber());
+    // update round/level
   }
 
   listenAudio(id: number) {

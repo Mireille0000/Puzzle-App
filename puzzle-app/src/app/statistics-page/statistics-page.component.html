@@ -1,4 +1,4 @@
-<h3>STATISTICS {{round}}</h3>
+<h3>STATISTICS {{round + 1}}</h3>
 <div class="statistics">
   <table mat-table [dataSource]="dataSource">
     <ng-container matColumnDef="sentence-number">
@@ -28,11 +28,13 @@
     <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
   </table>
 
-  <div>Picture Details
+  <div class="picture-details">
+    <h4>Puzzle Picture Details</h4>
     <ul>
-      <li>Author: </li>
-      <li>Year: </li>
-      <li>Picture: </li>
+      <li>{{pictureData.author}}</li>
+      <li>{{pictureData.title}}</li>
+      <li>({{pictureData.year}})</li>
+      <li><img src="{{pictureData.image}}" width="100%" height="auto"></li>
     </ul>
   </div>
 </div>

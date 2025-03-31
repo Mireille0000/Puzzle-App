@@ -7,7 +7,7 @@ import {
 import { FormControl, FormGroup } from '@angular/forms';
 import { Level } from '../interfaces/level-data.interface';
 import PuzzleData from '../interfaces/puzzle-data.interface';
-import { RoundStatisticsData } from '../../statistics-page/interfaces/round-statistics-data';
+import { RoundStatisticsData } from '../../statistics-page/interfaces/round-statistics-data.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -66,9 +66,9 @@ export class PuzzleGameCardsDataService {
 
   gameProgressData = signal<string>('');
 
-  completedRoundsLevelsStorage = signal<Array<{level: number, round: number}>>([{level: this.level(), round: this.round()}]);
-
   roundStatisticsData$ = new Subject<Array<RoundStatisticsData>>();
+
+  completedRoundsLevelsStorage = signal<Array<{level: number, round: number}>>([]);
 
   getLevelData(level: number): Observable<Level> {
     return this.http.get(
@@ -92,6 +92,14 @@ export class PuzzleGameCardsDataService {
         );
         this.form().get('round')?.setValue(this.roundsPerLevel()[this.round()]);
         this.canSeeResults.update(() => false);
+        if(localStorage.getItem('completedStorage')){
+          const lsData = JSON.parse(localStorage.getItem('completedStorage') as string);
+          if (lsData.length) {
+            this.completedRoundsLevelsStorage.update((value) => [...value, ...lsData]);
+          } {
+            this.completedRoundsLevelsStorage.update(() => lsData);
+          }
+        }
         return parsedData;
       }),
     );
@@ -123,7 +131,7 @@ export class PuzzleGameCardsDataService {
         return chosenCompletedRound;
       }),
     );
-  } // ???
+  }
 
   getWordsData(level: number, round: number, sentenceNumber: number) {
     return this.http.get(
@@ -280,10 +288,23 @@ export class PuzzleGameCardsDataService {
   getCompletedRoundsStorage(obj: {level: number, round: number}) {
     const completedStorageData = localStorage.getItem('completedStorage');
     if(completedStorageData) {
-      const completedRoundsLevelsStorage = this.completedRoundsLevelsStorage();
-      completedRoundsLevelsStorage.push(obj);
-      this.completedRoundsLevelsStorage.set(completedRoundsLevelsStorage);
-      localStorage.setItem('completedStorage', JSON.stringify(this.completedRoundsLevelsStorage()));
+      if (this.completedRoundsLevelsStorage().length) {
+        this.completedRoundsLevelsStorage.update((value) => {
+          const newValue = value;
+          return [...newValue, obj].map((item) => JSON.stringify(item))
+          .reduce((acc:{level: number, round: number}[], item, i, arr) => {
+            if(arr.indexOf(item) === i) {
+              acc.push(JSON.parse(item));
+            }
+            return acc;
+          }, [])
+        });
+        localStorage.setItem('completedStorage', JSON.stringify(this.completedRoundsLevelsStorage()));
+        console.log('Service', this.completedRoundsLevelsStorage());
+      } else {
+        this.completedRoundsLevelsStorage.set([JSON.parse(completedStorageData), obj]);
+        localStorage.setItem('completedStorage', JSON.stringify(this.completedRoundsLevelsStorage()));
+      }
     } else {
       localStorage.setItem('completedStorage', JSON.stringify(obj));
     }
