@@ -9,6 +9,7 @@ import { Level } from '../interfaces/level-data.interface';
 import PuzzleData from '../interfaces/puzzle-data.interface';
 import { RoundStatisticsData } from '../../statistics-page/interfaces/round-statistics-data.interface';
 import { AutocompletionStatistics } from '../../statistics-page/interfaces/autocompletion-statistics';
+import { PictureData } from '../../statistics-page/interfaces/picture-data.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -68,6 +69,8 @@ export class PuzzleGameCardsDataService {
   gameProgressData = signal<string>('');
 
   roundStatisticsData$ = new Subject<Array<RoundStatisticsData>>();
+
+  roundImageData$ = new Subject<Partial<PictureData>>();
 
   completedRoundsLevelsStorage = signal<Array<{level: number, round: number}>>([]);
 
@@ -155,6 +158,7 @@ export class PuzzleGameCardsDataService {
           )
         }
         this.roundStatisticsData$.next(dataSource);
+        this.roundImageData$.next(parsedData.rounds[this.round()].levelData as Partial<PictureData>);
         return chosenCompletedRound;
       }),
     );

@@ -1,6 +1,14 @@
- <div class="puzzle-field">
-  <!-- [backgroundImage]="backgroundImagePath()" -->
-  <div class="word-puzzles-line">
+ <div
+ class="puzzle-field"
+ [ngStyle]="{'background-image': canSeeResults() ?
+ 'url(' + correctLineBgImage() + ')'
+ : 'none',
+ 'transition': '1s'}">
+  <div
+  class="word-puzzles-line"
+  [ngStyle]="
+  {'visibility': canSeeResults() ? 'hidden' : 'visible',
+    'transition': '1s'}">
     <div
     class="puzzle-fragment"
     *ngFor="let sentence of correctSentences(); let i = index"

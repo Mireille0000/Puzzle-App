@@ -128,6 +128,10 @@ export class PuzzleGamePageComponent implements OnInit {
 
       console.log(this.puzzlesDataService.completedRoundsLevelsStorage());
       console.log('Check Button: The last sentence in the round!');
+      console.log(
+        'visibility: hidden, pzl-puzzle-field host image is the puzzle of the round image',
+        'continue and results buttons - remove the above'
+      )
     }
     console.log(this.puzzlesDataService.sentenceNumber());
 

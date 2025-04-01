@@ -3,6 +3,8 @@ import {
 } from '@angular/core';
 import { PuzzleGameCardsDataService } from '../services/puzzle-game-cards-data.service';
 import { AudioHintAnimationDirective } from '../directives/audio-hint-animation.directive';
+import { RoundStatisticsData } from '../../statistics-page/interfaces/round-statistics-data.interface';
+import { PictureData } from '../../statistics-page/interfaces/picture-data.interface';
 
 @Component({
   selector: 'pzl-hints-block',
@@ -31,6 +33,8 @@ export class HintsBlockComponent implements OnInit {
 
   isClickedImageHint = signal<boolean>(false);
 
+  canSeeResults = signal<boolean>(false);
+
   currentSentenceTranslation = signal<string>('');
 
   currentAudioHint = signal<string>('');
@@ -39,6 +43,8 @@ export class HintsBlockComponent implements OnInit {
 
   backgroundImagePath = signal<string>(''); // ???
 
+  roundPictureData: Partial<PictureData> = {}
+
   ngOnInit(): void {
     this.level = this.puzzlesDataService.level;
     this.round = this.puzzlesDataService.round;
@@ -46,6 +52,11 @@ export class HintsBlockComponent implements OnInit {
 
     this.isCorrect = this.puzzlesDataService.isCorrect;
     this.isClickedImageHint = this.puzzlesDataService.isClikedImageHint;
+    this.canSeeResults = this.puzzlesDataService.canSeeResults;
+
+    this.puzzlesDataService.roundImageData$.subscribe((data) => {
+      this.roundPictureData = data;
+    });
 
     this.puzzlesDataService
       .getWordsData(this.level(), this.round(), this.sentenceNumber())
@@ -64,7 +75,6 @@ export class HintsBlockComponent implements OnInit {
   }
 
   playAudioHint() {
-    // add toggle functionality?
     this.isClickedAudioHint = !this.isClickedAudioHint;
     this.currentAudioHint = this.puzzlesDataService.audioHint;
     this.puzzlesDataService.getAudioFile(this.currentAudioHint()).subscribe((audio) => {
