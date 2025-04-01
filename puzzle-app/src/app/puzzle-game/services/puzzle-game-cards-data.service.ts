@@ -8,6 +8,7 @@ import { FormControl, FormGroup } from '@angular/forms';
 import { Level } from '../interfaces/level-data.interface';
 import PuzzleData from '../interfaces/puzzle-data.interface';
 import { RoundStatisticsData } from '../../statistics-page/interfaces/round-statistics-data.interface';
+import { AutocompletionStatistics } from '../../statistics-page/interfaces/autocompletion-statistics';
 
 @Injectable({
   providedIn: 'root',
@@ -70,6 +71,29 @@ export class PuzzleGameCardsDataService {
 
   completedRoundsLevelsStorage = signal<Array<{level: number, round: number}>>([]);
 
+  isAutocomplitionUsed = signal<Array<{sentenceNumber: number}>>([]); //
+
+  isAutocomplitionUsedArr = signal<AutocompletionStatistics>({
+    ['level' + 1]: Array.from({length: 45}, (_, i) => {
+    return {['round' + i]: [] as any}
+    }),
+    ['level' + 2]: Array.from({length: 41}, (_, i) => {
+      return {['round' + i]: [] as any}
+      }),
+    ['level' + 3]: Array.from({length: 40}, (_, i) => {
+      return {['round' + i]: [] as any}
+      }),
+    ['level' + 4]: Array.from({length: 41}, (_, i) => {
+        return {['round' + i]: [] as any}
+        }),
+    ['level' + 5]: Array.from({length: 29}, (_, i) => {
+        return {['round' + i]: [] as any};
+        }),
+    ['level' + 6]: Array.from({length: 25},(_, i) => {
+        return {['round' + i]: [] as any};
+        }),
+  })
+
   getLevelData(level: number): Observable<Level> {
     return this.http.get(
       `/api/rolling-scopes-school/rss-puzzle-data/main/data/wordCollectionLevel${level}.json`,
@@ -119,13 +143,16 @@ export class PuzzleGameCardsDataService {
         const chosenCompletedRound = parsedData.rounds[round];
 
         const dataSource: RoundStatisticsData[] = [];
+
         for (let i = 0; i < parsedData.rounds[round].words.length; i += 1) {
           dataSource.push({
             id: i + 1,
             sentenceNumber: i + 1,
             sound: parsedData.rounds[round].words[i].audioExample,
             sentence: parsedData.rounds[round].words[i].textExample,
-            knownUnknown: 'X'})
+            knownUnknown: '+'
+          }
+          )
         }
         this.roundStatisticsData$.next(dataSource);
         return chosenCompletedRound;

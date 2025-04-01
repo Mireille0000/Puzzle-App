@@ -50,30 +50,50 @@ export class StatisticsPageComponent implements OnInit{
       +(localStorage.getItem('chosenLevel') as string) :
       1;
 
-      console.log(this.level, this.round);
     this.puzzlesDataService.getRoundData(this.level, this.round).subscribe((data) => {
-      console.log(data.levelData);
       this.pictureData = {author: data.levelData.author, title: data.levelData.name, year: data.levelData.year, image: ''};
       this.puzzlesDataService.getImageFile(data.levelData.cutSrc).subscribe((data) => {
         this.pictureData.image = data();
       });
     });
+
     this.puzzlesDataService.roundStatisticsData$.subscribe((data) => {
+      const autocompletedSentencesLS = JSON.parse(localStorage.getItem('autocompletedSentencesStatistics') as string);
+      const isAutocompletedCurrentArr = autocompletedSentencesLS['level' + this.currentLevel()][this.currentRound()]['round' + this.currentRound()];
+      localStorage.setItem('autocompletedSentencesStatistics', JSON.stringify(autocompletedSentencesLS));
+      this.puzzlesDataService.isAutocomplitionUsedArr();
+      console.log("Evil experiment", isAutocompletedCurrentArr, autocompletedSentencesLS);
+
+      for(let i = 0; i < isAutocompletedCurrentArr.length; i += 1) {
+        const item = isAutocompletedCurrentArr[i].sentenceNumber + 1;
+        for (let j = 0; j < data.length; j++) {
+          if(item === data[j].sentenceNumber) {
+            data[j].knownUnknown = 'X'
+          }
+        }
+      }
       this.dataSource = data;
     })
-
-    console.log(this.round, this.currentRound());
-    // is autocompletion  was applicated
   }
-
 
   backToGame() {
     this.router.navigate(['/puzzle-game']);
     this.puzzlesDataService.sentenceNumber.update(() => 0);
     this.puzzlesDataService.canSeeResults.update(() => false);
     this.puzzlesDataService.isCorrect.update(() => false);
-    console.log(this.puzzlesDataService.sentenceNumber());
-    // update round/level
+
+    this.puzzlesDataService.getLevelData(this.currentLevel()).subscribe((data) => {
+      const roundsNum = data.rounds.length - 1;
+
+        if (roundsNum === this.currentRound() && this.currentLevel() < 6){
+          this.currentRound.update((value) => {
+            let newValue = value;
+            newValue = 0;
+            return newValue;
+          });
+          this.currentLevel.update((value) => value + 1);
+      }
+    })
   }
 
   listenAudio(id: number) {

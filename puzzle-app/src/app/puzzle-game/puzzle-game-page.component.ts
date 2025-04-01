@@ -1,9 +1,8 @@
 import {
-  Component, computed, inject, Input, OnChanges, OnInit, signal,
-  SimpleChanges,
+  Component, computed, inject, OnInit, signal
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormGroup } from '@angular/forms';
 import { NavigationService } from '../core/navigation.service';
 import { HintsBlockComponent } from './hints-block/hints-block.component';
 import { PuzzleFieldComponent } from './puzzle-field/puzzle-field.component';
@@ -70,6 +69,8 @@ export class PuzzleGamePageComponent implements OnInit {
 
   completedRoundsLevelsStorage = signal<Array<{level: number, round: number}>>([{level: this.level(), round:this.round()}]);
 
+  isAutocompletionUsed = signal<Array<{sentenceNumber: number}>>([]);
+
   ngOnInit(): void {
     this.navigation.getPathName(this.route);
     this.currentSentence = this.puzzlesDataService.currentSentence;
@@ -80,6 +81,8 @@ export class PuzzleGamePageComponent implements OnInit {
     this.sentenceNumber = this.puzzlesDataService.sentenceNumber;
 
     localStorage.removeItem('chosenRound');
+    localStorage.removeItem('chosenLevel');
+    localStorage.removeItem('autocompletedSentences')
 
     this.isCorrect = this.puzzlesDataService.isCorrect; // naming
     this.isDisabled = this.puzzlesDataService.isDisabled;
@@ -92,6 +95,8 @@ export class PuzzleGamePageComponent implements OnInit {
     this.canSeeResults = this.puzzlesDataService.canSeeResults;
     this.canSeeResults.update(() => false);
     console.log(this.canSeeResults());
+
+    this.isAutocompletionUsed = this.puzzlesDataService.isAutocomplitionUsed;
 
     this.bgPositionTop = this.puzzlesDataService.bgPositonTop;
     this.girdTemplateRowsPuzzle = this.puzzlesDataService.girdTemplateRowsPuzzle;
@@ -138,6 +143,7 @@ export class PuzzleGamePageComponent implements OnInit {
       }
       this.girdTemplateRowsPuzzle.update(() => this.currentSentence().map(() => '1fr').join(' '));
 
+      console.log(this.isAutocompletionUsed());
       this.isCorrectWordsOrder.update(() => false);
       this.isCorrect.update(() => true);
       this.correctSentences.update((value) => {
@@ -192,7 +198,6 @@ export class PuzzleGamePageComponent implements OnInit {
         case (this.sentenceNumber() <= 9):
           this.canSeeResults.update(() => false);
           this.showNextWordsSet(this.level(), this.round(), this.sentenceNumber());
-          console.log('Continue Button', this.canSeeResults());
           break;
         case (this.sentenceNumber() > 9 && roundsNum > this.round()):
           this.round.update((value) => value + 1);
@@ -270,7 +275,6 @@ export class PuzzleGamePageComponent implements OnInit {
       console.log(this.round());
       console.log('Autocompletion Button: The last sentence in the round!');
     }
-
     console.log(this.sentenceNumber());
 
     if (!this.isCorrect() && this.sentenceNumber() < 10) {
@@ -287,6 +291,17 @@ export class PuzzleGamePageComponent implements OnInit {
           return newValue;
         });
       }
+
+      this.isAutocompletionUsed.update((value) => {
+        const newValue = [...value];
+        newValue.push({sentenceNumber: this.sentenceNumber()});
+        return newValue;
+      });
+      if (this.sentenceNumber() === 9) {
+        console.log(this.isAutocompletionUsed());
+      }
+      console.log('1',this.puzzlesDataService.isAutocomplitionUsed());
+      console.log('2',this.isAutocompletionUsed())
       this.girdTemplateRowsPuzzle.update(() => this.currentSentence().map(() => '1fr').join(' '));
       this.correctSentences.update((value) => {
         value.push(this.currentSentence());
@@ -302,6 +317,32 @@ export class PuzzleGamePageComponent implements OnInit {
   showResults() {
     this.correctSentences.update(() => []);
     this.router.navigate(['/statistics']);
+    localStorage.setItem('autocompletedSentences', JSON.stringify(this.isAutocompletionUsed()));
+
+    this.puzzlesDataService.isAutocomplitionUsedArr.update((value) => {
+      const newValue = value;
+      newValue['level' + this.level()][this.round()]['round' + this.round()] = this.isAutocompletionUsed();
+      return newValue;
+    });
+
+    if(localStorage.getItem('autocompletedSentencesStatistics')) {
+      const autocompletedSentencesStatistics = JSON.parse(localStorage.getItem('autocompletedSentencesStatistics') as string);
+      const autocompletedArrCopy = [...this.isAutocompletionUsed()];
+      console.log('First IF');
+      if(autocompletedArrCopy.length === 0) {
+        console.log('FOLDED IF - Local Storage autocompletedArrCopy is 0');
+        console.log(autocompletedSentencesStatistics)
+        localStorage.setItem('autocompletedSentencesStatistics', JSON.stringify(autocompletedSentencesStatistics));
+      } else {
+        console.log('FOLDED ELSE - Local Storage autocompletedArrCopy is NOT 0');
+        autocompletedSentencesStatistics['level' + this.level()][this.round()]['round' + this.round()] = autocompletedArrCopy;
+        localStorage.setItem('autocompletedSentencesStatistics', JSON.stringify(autocompletedSentencesStatistics));
+      }
+    } else {
+      console.log('ELSE - Local Storage has NO autocompletedSentencesStatistics');
+      localStorage.setItem('autocompletedSentencesStatistics', JSON.stringify(this.puzzlesDataService.isAutocomplitionUsedArr()));
+    }
+    this.isAutocompletionUsed.update(() => []);
 
     this.puzzlesDataService.getLevelData(this.level()).subscribe((data) => {
       const roundsNum = data.rounds.length - 1;
@@ -314,12 +355,12 @@ export class PuzzleGamePageComponent implements OnInit {
           break;
         case (roundsNum === this.round() && this.level() < 6):
           console.log('case 2');
-          this.round.update((value) => {
-            let newValue = value;
-            newValue = 0;
-            return newValue;
-          });
-          this.level.update((value) => value + 1);
+          // this.round.update((value) => {
+          //   let newValue = value;
+          //   newValue = 0;
+          //   return newValue;
+          // });
+          // this.level.update((value) => value + 1);
           this.correctSentences.update((value) => {
             let newValue = [...value];
             newValue = [];
