@@ -1,0 +1,41 @@
+<h3>STATISTICS {{round + 1}}</h3>
+<div class="statistics">
+  <table mat-table [dataSource]="dataSource">
+    <ng-container matColumnDef="sentence-number">
+      <th mat-header-cell *matHeaderCellDef>No.</th>
+      <td mat-cell *matCellDef="let element">{{element.sentenceNumber}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="sound">
+      <th mat-header-cell *matHeaderCellDef>Sound</th>
+      <td mat-cell *matCellDef="let element">
+        <span class="pi pi-megaphone" (click)="listenAudio(element.id)"></span>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="sentence">
+      <th mat-header-cell *matHeaderCellDef>Sentence</th>
+      <td mat-cell *matCellDef="let element">{{element.sentence}}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="known-unknown">
+      <th mat-header-cell *matHeaderCellDef>Done/Auto</th>
+      <td mat-cell *matCellDef="let element">{{element.knownUnknown}}</td>
+    </ng-container>
+
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
+
+  <div class="picture-details">
+    <h4>Puzzle Picture Details</h4>
+    <ul>
+      <li>{{pictureData.author}}</li>
+      <li>{{pictureData.title}}</li>
+      <li>({{pictureData.year}})</li>
+      <li><img src="{{pictureData.image}}" width="100%" height="auto"></li>
+    </ul>
+  </div>
+</div>
+<button class="back-to-game-button" (click)="backToGame()">Back To Game</button>

@@ -1,0 +1,56 @@
+:host {
+  height: 70%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  margin: 0 20px;
+  background-color: rgb(161 178 200 / 90%);
+  h3 {
+    margin: 0;
+    text-align: center;
+  }
+  .statistics {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    .mat-mdc-table {
+      background-color: transparent;
+      .mat-mdc-row {
+        height: 30px;
+      }
+    }
+    .picture-details {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      h4 {
+        margin: 0;
+      }
+      ul {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        li {
+          margin: 0 10px;
+          padding: 5px 0;
+          list-style: none;
+        }
+      }
+    }
+  }
+  .back-to-game-button {
+    width: 150px;
+    height: 35px;
+    align-self: center;
+    font-family: "Lucida Sans", sans-serif;
+    border-radius: 10px;
+    background-color: rgb(173, 182, 176);
+    cursor: pointer;
+    transition: 1s;
+  }
+  .back-to-game-button:hover {
+    color: #ddecf3;
+    background-color: rgb(126 165 128);
+    transition: 1s;
+  }
+}

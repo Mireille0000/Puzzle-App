@@ -31,7 +31,7 @@
       display: flex;
       flex-direction: column;
       gap: 10px;
-      .check-button, .autocomplition-button {
+      .check-button, .continue-button, .results-button, .autocomplition-button {
         width: 150px;
         height: 35px;
         font-family: "Lucida Sans", sans-serif;
@@ -40,7 +40,7 @@
         cursor: pointer;
         transition: 1s;
       }
-      .check-button:hover, .autocomplition-button:hover {
+      .check-button:hover, .continue-button:hover, .results-button:hover, .autocomplition-button:hover {
         color: #ddecf3;
         background-color: rgb(126 165 128);
         transition: 1s;

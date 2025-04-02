@@ -69,6 +69,7 @@ export class HintsBlockComponent implements OnInit {
     this.currentAudioHint = this.puzzlesDataService.audioHint;
     this.puzzlesDataService.getAudioFile(this.currentAudioHint()).subscribe((audio) => {
       const audioElem = this.element.nativeElement.querySelector('.audio-hint');
+      console.log(audio);
       audio.play();
       audio.addEventListener('ended', () => {
         this.renderer.setStyle(audioElem, 'color', '#2b435a');
@@ -76,7 +77,7 @@ export class HintsBlockComponent implements OnInit {
         this.renderer.removeClass(audioElem, 'fadein');
         this.renderer.removeClass(audioElem, 'animation-duration-1000');
         this.renderer.removeClass(audioElem, 'animation-iteration-infinite');
-      });
+      }); //
     });
   }
 

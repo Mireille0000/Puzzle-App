@@ -1,8 +1,8 @@
 import {
-  Component, computed, inject, OnInit, signal,
+  Component, computed, inject, OnInit, signal
 } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { FormControl, FormGroup } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { FormGroup } from '@angular/forms';
 import { NavigationService } from '../core/navigation.service';
 import { HintsBlockComponent } from './hints-block/hints-block.component';
 import { PuzzleFieldComponent } from './puzzle-field/puzzle-field.component';
@@ -27,6 +27,8 @@ export class PuzzleGamePageComponent implements OnInit {
 
   private route = inject(ActivatedRoute);
 
+  private router = inject(Router);
+
   private puzzlesDataService = inject(PuzzleGameCardsDataService);
 
   currentSentence = signal<string[]>(['']);
@@ -45,6 +47,8 @@ export class PuzzleGamePageComponent implements OnInit {
 
   isDisabled = signal<boolean>(true);
 
+  canSeeResults = signal<boolean>(false);
+
   completedSentence: string[] = [];
 
   sourceWords: PuzzleData[] = [];
@@ -61,11 +65,11 @@ export class PuzzleGamePageComponent implements OnInit {
 
   roundsPerLevel = signal<Array<{value: number, option: number}>>([{ value: 0, option: 1 }]);
 
-  form = signal<FormGroup>(new FormGroup({}));
+  form = signal<FormGroup>(new FormGroup({})); //
 
   completedRoundsLevelsStorage = signal<Array<{level: number, round: number}>>([{level: this.level(), round:this.round()}]);
 
-  dataLength: number = 0;
+  isAutocompletionUsed = signal<Array<{sentenceNumber: number}>>([]);
 
   ngOnInit(): void {
     this.navigation.getPathName(this.route);
@@ -76,12 +80,31 @@ export class PuzzleGamePageComponent implements OnInit {
     this.round = this.puzzlesDataService.round;
     this.sentenceNumber = this.puzzlesDataService.sentenceNumber;
 
+    localStorage.removeItem('chosenRound');
+    localStorage.removeItem('chosenLevel');
+    localStorage.removeItem('autocompletedSentences')
+
     this.isCorrect = this.puzzlesDataService.isCorrect; // naming
     this.isDisabled = this.puzzlesDataService.isDisabled;
     this.isCorrectWordsOrder = this.puzzlesDataService.isCorrectWordsOrder; // naming
 
+    console.log('SENTENCE NUMBER', this.sentenceNumber());
+    console.log('IS CORRECT', this.isCorrect())
+    console.log('IS DISABLED', this.isDisabled());
+
+    this.canSeeResults = this.puzzlesDataService.canSeeResults;
+    this.canSeeResults.update(() => false);
+    console.log(this.canSeeResults());
+
+    this.isAutocompletionUsed = this.puzzlesDataService.isAutocomplitionUsed;
+
     this.bgPositionTop = this.puzzlesDataService.bgPositonTop;
     this.girdTemplateRowsPuzzle = this.puzzlesDataService.girdTemplateRowsPuzzle;
+
+    if(localStorage.getItem('completedStorage')) {
+      this.puzzlesDataService.completedRoundsLevelsStorage.update(() =>
+        JSON.parse(localStorage.getItem('completedStorage') as string));
+    }
 
     this.puzzlesDataService.resultPuzzles$.subscribe((data) => {
       const sentence = data.reduce((acc: string[], item) => {
@@ -97,6 +120,16 @@ export class PuzzleGamePageComponent implements OnInit {
 
   isCorrectlyCompleted() {
     const sentence = computed(() => this.currentSentence().toString());
+    if (this.sentenceNumber() === 9) {
+      this.canSeeResults.update(() => true);
+      this.puzzlesDataService.getCompletedRoundsStorage({level: this.level(), round: this.round()});
+      localStorage.setItem('chosenRound', `${this.round() + 1}`);
+      this.puzzlesDataService.getLocalStorageProgressData({level: this.level(), roundIndex: this.round() + 1}); //
+
+      console.log(this.puzzlesDataService.completedRoundsLevelsStorage());
+      console.log('Check Button: The last sentence in the round!');
+    }
+    console.log(this.puzzlesDataService.sentenceNumber());
 
     if (sentence() === this.completedSentence.join()) {
       if (this.bgPositionTop() < 600) {
@@ -110,6 +143,7 @@ export class PuzzleGamePageComponent implements OnInit {
       }
       this.girdTemplateRowsPuzzle.update(() => this.currentSentence().map(() => '1fr').join(' '));
 
+      console.log(this.isAutocompletionUsed());
       this.isCorrectWordsOrder.update(() => false);
       this.isCorrect.update(() => true);
       this.correctSentences.update((value) => {
@@ -149,23 +183,20 @@ export class PuzzleGamePageComponent implements OnInit {
       this.roundsPerLevel.update(() => this.puzzlesDataService.roundsPerLevel());
 
       this.form = this.puzzlesDataService.form;
-
-      console.log('UPDATE FORM',this.form())
       this.form().get('round')?.setValue(this.roundsPerLevel()[this.round()]);
-      this.form().get('level')?.setValue(this.roundsPerLevel()[this.level()]);
     });
-  }
+  } // naming
 
   continue() {
     this.sentenceNumber.update((value) => value + 1);
     this.isDisabled.update(() => true);
 
     this.puzzlesDataService.getLevelData(this.level()).subscribe((data) => {
-      // this.dataLength = data.rounds.length - 1
       const roundsNum = data.rounds.length - 1;
       const expr = true || false;
       switch (expr) {
         case (this.sentenceNumber() <= 9):
+          this.canSeeResults.update(() => false);
           this.showNextWordsSet(this.level(), this.round(), this.sentenceNumber());
           break;
         case (this.sentenceNumber() > 9 && roundsNum > this.round()):
@@ -196,7 +227,7 @@ export class PuzzleGamePageComponent implements OnInit {
           console.log(this.isCorrect(), 'New Round', this.round(), this.sentenceNumber());
           break;
         case (roundsNum === this.round() && this.level() < 6):
-          this.puzzlesDataService.getCompletedRoundsStorage({level: this.level(), round: this.round()});
+          // this.puzzlesDataService.getCompletedRoundsStorage({level: this.level(), round: this.round()});
           this.completedRoundsLevelsStorage = this.puzzlesDataService.completedRoundsLevelsStorage;
 
           this.round.update((value) => {
@@ -232,9 +263,20 @@ export class PuzzleGamePageComponent implements OnInit {
     });
     this.puzzlesDataService.resultPuzzles$.next([]);
     this.isCorrect.update(() => false);
-  }
+  } //
 
   completeSentence() {
+    if (this.sentenceNumber() === 9) {
+      this.canSeeResults.update(() => true);
+      this.puzzlesDataService.getCompletedRoundsStorage({level: this.level(), round: this.round()});
+      localStorage.setItem('chosenRound', `${this.round() + 1}`);
+      this.puzzlesDataService.getLocalStorageProgressData({level: this.level(), roundIndex: this.round() + 1});
+
+      console.log(this.round());
+      console.log('Autocompletion Button: The last sentence in the round!');
+    }
+    console.log(this.sentenceNumber());
+
     if (!this.isCorrect() && this.sentenceNumber() < 10) {
       if (this.bgPositionTop() >= 540) {
         this.bgPositionTop.update((value) => {
@@ -249,6 +291,17 @@ export class PuzzleGamePageComponent implements OnInit {
           return newValue;
         });
       }
+
+      this.isAutocompletionUsed.update((value) => {
+        const newValue = [...value];
+        newValue.push({sentenceNumber: this.sentenceNumber()});
+        return newValue;
+      });
+      if (this.sentenceNumber() === 9) {
+        console.log(this.isAutocompletionUsed());
+      }
+      console.log('1',this.puzzlesDataService.isAutocomplitionUsed());
+      console.log('2',this.isAutocompletionUsed())
       this.girdTemplateRowsPuzzle.update(() => this.currentSentence().map(() => '1fr').join(' '));
       this.correctSentences.update((value) => {
         value.push(this.currentSentence());
@@ -259,5 +312,69 @@ export class PuzzleGamePageComponent implements OnInit {
     } else {
       console.log('No word in source block'); // to delete
     }
-  }
+  } //
+
+  showResults() {
+    this.correctSentences.update(() => []);
+    this.router.navigate(['/statistics']);
+    localStorage.setItem('autocompletedSentences', JSON.stringify(this.isAutocompletionUsed()));
+
+    this.puzzlesDataService.isAutocomplitionUsedArr.update((value) => {
+      const newValue = value;
+      newValue['level' + this.level()][this.round()]['round' + this.round()] = this.isAutocompletionUsed();
+      return newValue;
+    });
+
+    if(localStorage.getItem('autocompletedSentencesStatistics')) {
+      const autocompletedSentencesStatistics = JSON.parse(localStorage.getItem('autocompletedSentencesStatistics') as string);
+      const autocompletedArrCopy = [...this.isAutocompletionUsed()];
+      console.log('First IF');
+      if(autocompletedArrCopy.length === 0) {
+        console.log('FOLDED IF - Local Storage autocompletedArrCopy is 0');
+        console.log(autocompletedSentencesStatistics)
+        localStorage.setItem('autocompletedSentencesStatistics', JSON.stringify(autocompletedSentencesStatistics));
+      } else {
+        console.log('FOLDED ELSE - Local Storage autocompletedArrCopy is NOT 0');
+        autocompletedSentencesStatistics['level' + this.level()][this.round()]['round' + this.round()] = autocompletedArrCopy;
+        localStorage.setItem('autocompletedSentencesStatistics', JSON.stringify(autocompletedSentencesStatistics));
+      }
+    } else {
+      console.log('ELSE - Local Storage has NO autocompletedSentencesStatistics');
+      localStorage.setItem('autocompletedSentencesStatistics', JSON.stringify(this.puzzlesDataService.isAutocomplitionUsedArr()));
+    }
+    this.isAutocompletionUsed.update(() => []);
+
+    this.puzzlesDataService.getLevelData(this.level()).subscribe((data) => {
+      const roundsNum = data.rounds.length - 1;
+      const completedRounds = JSON.parse(localStorage.getItem('completedStorage') as string);
+      const expr = true || false;
+      switch(expr) {
+        case this.sentenceNumber() < 10 && roundsNum > this.round():
+          console.log('case 1');
+          this.puzzlesDataService.getLocalStorageProgressData({level: this.level(), roundIndex: this.round() + 1});
+          break;
+        case (roundsNum === this.round() && this.level() < 6):
+          console.log('case 2');
+          // this.round.update((value) => {
+          //   let newValue = value;
+          //   newValue = 0;
+          //   return newValue;
+          // });
+          // this.level.update((value) => value + 1);
+          this.correctSentences.update((value) => {
+            let newValue = [...value];
+            newValue = [];
+            return newValue;
+          });
+          this.sentenceNumber.update((value) => {
+            let newValue = value;
+            newValue = 0;
+            return newValue;
+          });
+          console.log(completedRounds);
+          this.puzzlesDataService.getLocalStorageProgressData({level: this.level(), roundIndex: this.round()});
+          break;
+      }
+    })
+  } //
 }
