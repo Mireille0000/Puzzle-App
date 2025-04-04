@@ -166,19 +166,18 @@ export class LevelsAndRoundsComponent implements OnInit {
       return newValue;
     });
 
+    this.puzzlesDataService.getRoundData(this.level(), this.round()).subscribe((data) => {
+      console.log(data);
+    }); //
     this.puzzlesDataService.getLevelData(this.level()).subscribe(() => {
       this.completedRoundsLevelsStorage = this.puzzlesDataService.completedRoundsLevelsStorage;
-      console.log(this.completedRoundsLevelsStorage());
       const completedRoundsLS = localStorage.getItem('completedStorage');
-      const chosenRound = JSON.parse(localStorage.getItem('chosenRound') as string);
       if (this.completedRoundsLevelsStorage().length) {
         const getChosenRound = (item: {level: number, round: number}) => item.level === this.level() && item.round === this.round();
         if(this.completedRoundsLevelsStorage().some(getChosenRound)) {
           this.canSeeResults.update(() => true);
           localStorage.setItem('chosenRound', `${this.round() + 1}`);
-          // localStorage.setItem('chosenRound', `${+chosenRound + 1}`);
           console.log('Already completed!');
-          console.log(this.canSeeResults());
         } else {
           this.canSeeResults.update(() => false);
           console.log('Not completed yet!');

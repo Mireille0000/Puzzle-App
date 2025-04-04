@@ -1,7 +1,7 @@
 import {
   Component, inject, OnInit, signal,
 } from '@angular/core';
-import { NgFor, NgStyle } from '@angular/common';
+import { AsyncPipe, NgFor, NgIf, NgStyle } from '@angular/common';
 import { PuzzleGameCardsDataService } from '../services/puzzle-game-cards-data.service';
 import { BackgroundColorDirective } from '../directives/add-background-color.directive';
 import { BackgroundImageDirective } from '../directives/set-background-image.directive';
@@ -15,7 +15,7 @@ import PuzzleData from '../interfaces/puzzle-data.interface';
     NgStyle,
     BackgroundColorDirective,
     BackgroundImageDirective,
-    BackgroundPositionDirective,
+    BackgroundPositionDirective
   ],
   templateUrl: './puzzle-field.component.html',
   styleUrl: './puzzle-field.component.scss',
@@ -49,6 +49,8 @@ export class PuzzleFieldComponent implements OnInit {
 
   isClickedImageHint = signal<boolean>(false);
 
+  canSeeResults = signal<boolean>(false);
+
   bgPositionTop = '0'; // ??
 
   correctLineBgImage = signal<string>('');
@@ -66,6 +68,7 @@ export class PuzzleFieldComponent implements OnInit {
     this.isDisabled = this.puzzlesDataService.isDisabled;
     this.isCorrectWordsOrder = this.puzzlesDataService.isCorrectWordsOrder;
     this.isClickedImageHint = this.puzzlesDataService.isClikedImageHint;
+    this.canSeeResults = this.puzzlesDataService.canSeeResults;
 
     this.backgroundImagePath = this.puzzlesDataService.backgroundImagePath;
 
@@ -74,9 +77,9 @@ export class PuzzleFieldComponent implements OnInit {
     this.gameProgressData.update(() => currentGameProgressData as string);
     this.checkGameProgress();
 
-      this.puzzlesDataService
-        .getWordsData(this.level(), this.round(), this.currentSentenceNum())
-        .subscribe(() => {
+    this.puzzlesDataService
+      .getWordsData(this.level(), this.round(), this.currentSentenceNum())
+      .subscribe(() => {
           this.currentImageHint = this.puzzlesDataService.imageHint;
           this.girdTemplateRowsPuzzle = this.puzzlesDataService.girdTemplateRowsPuzzle;
 
@@ -86,9 +89,10 @@ export class PuzzleFieldComponent implements OnInit {
               newValue = '';
               return newValue;
             });
+            console.log(this.puzzlesDataService.correctLineBgImage());
             this.correctLineBgImage = this.puzzlesDataService.correctLineBgImage;
           });
-        });
+      });
 
     this.puzzlesDataService.sourcePuzzles$.subscribe((data) => {
       this.sourceBlock = data;

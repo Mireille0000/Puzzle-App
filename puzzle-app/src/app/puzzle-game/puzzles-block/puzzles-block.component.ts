@@ -30,6 +30,8 @@ export class PuzzlesBlockComponent implements OnInit {
 
   isDisabled = signal<boolean>(true);
 
+  canSeeResults = signal<boolean>(false);
+
   backgroundImagePath = signal<string>('');
 
   currentImageHint = signal<string>(''); //
@@ -50,6 +52,7 @@ export class PuzzlesBlockComponent implements OnInit {
     this.isDisabled = this.puzzlesDataService.isDisabled;
 
     this.isClickedImageHint = this.puzzlesDataService.isClikedImageHint;
+    this.canSeeResults = this.puzzlesDataService.canSeeResults; //
 
     this.backgroundImagePath = this.puzzlesDataService.backgroundImagePath; //
 
@@ -124,6 +127,8 @@ export class PuzzlesBlockComponent implements OnInit {
           puzzle,
           this.currentSentence().length,
         );
+
+        this.canSeeResults.update(() => false);
     }
   }
 

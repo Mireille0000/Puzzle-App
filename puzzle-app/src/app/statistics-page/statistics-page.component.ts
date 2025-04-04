@@ -35,7 +35,7 @@ export class StatisticsPageComponent implements OnInit{
   dataSource: RoundStatisticsData[] =[
   ];
 
-  pictureData: PictureData = {author: '', title: '', year: '', image: ''}; //
+  pictureData: PictureData = {author: '', name: '', year: '', image: ''}; //
 
   sourceBlock: PuzzleData [] = []
 
@@ -51,7 +51,7 @@ export class StatisticsPageComponent implements OnInit{
       1;
 
     this.puzzlesDataService.getRoundData(this.level, this.round).subscribe((data) => {
-      this.pictureData = {author: data.levelData.author, title: data.levelData.name, year: data.levelData.year, image: ''};
+      this.pictureData = {author: data.levelData.author, name: data.levelData.name, year: data.levelData.year, image: ''};
       this.puzzlesDataService.getImageFile(data.levelData.cutSrc).subscribe((data) => {
         this.pictureData.image = data();
       });

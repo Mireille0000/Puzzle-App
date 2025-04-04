@@ -14,6 +14,11 @@
     <span class="pi pi-image" style="color: #2b435a" title="Show the puzzle image"></span>
   </li>
 </ul>
+@if(canSeeResults()) {
+  <p>{{roundPictureData.author}}</p>
+  <p>{{roundPictureData.name}}</p>
+  <p>{{roundPictureData.year}}</p>
+}
 @if(isClickedTranslationHint || isCorrect()) {
   <p>{{currentSentenceTranslation()}}</p>
 }

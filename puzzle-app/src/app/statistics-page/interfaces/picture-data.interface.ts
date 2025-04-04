@@ -1,6 +1,6 @@
 export interface PictureData {
   author: string,
-  title: string,
+  name: string,
   year: string,
   image: string
 }
