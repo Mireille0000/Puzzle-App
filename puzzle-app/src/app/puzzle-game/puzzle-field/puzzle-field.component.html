@@ -33,14 +33,28 @@
         (click)="movePuzzleToPuzzlesBlock(puzzle)"
         backgroundColor
         [isCorrectWordsOrder]="isCorrectWordsOrder"
-        [ngStyle]="{
+        >
+        <!-- [ngStyle]="{
           'background-image': isClickedImageHint() ? 'url(' + puzzle.image + ')' : 'url()',
           'background-position': puzzle.backgroundPosition
-        }"
-        >
-          <span>
+        }" -->
+          <!-- <span>
             {{puzzle.word}}
-          </span>
+          </span> -->
+          <canvas
+          style="width: 100%; height: 100%;"
+          canvasRenderer [renderPuzzleElement]="
+            {
+              color: '#fa34a3',
+              word: puzzle.word,
+              wordsNumber: puzzle.wordsNumber,
+              image: isClickedImageHint() ? puzzle.image : 'https://letsenhance.io/static/73136da51c245e80edc6ccfe44888a99/1015f/MainBefore.jpg',
+              puzzleCroppingX: puzzle.puzzleCroppingX,
+              puzzleCroppingY: puzzle.puzzleCroppingY,
+              puzzleIndex: puzzle.index
+            }
+          "
+          ></canvas>
         </div>
       </div>
     }

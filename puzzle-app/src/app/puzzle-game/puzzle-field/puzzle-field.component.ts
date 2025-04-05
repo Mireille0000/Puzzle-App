@@ -7,6 +7,7 @@ import { BackgroundColorDirective } from '../directives/add-background-color.dir
 import { BackgroundImageDirective } from '../directives/set-background-image.directive';
 import { BackgroundPositionDirective } from '../directives/set-background-position.directive';
 import PuzzleData from '../interfaces/puzzle-data.interface';
+import { CanvasRendererDirective } from '../directives/canvas-renderer.directive';
 
 @Component({
   selector: 'pzl-puzzle-field',
@@ -15,7 +16,8 @@ import PuzzleData from '../interfaces/puzzle-data.interface';
     NgStyle,
     BackgroundColorDirective,
     BackgroundImageDirective,
-    BackgroundPositionDirective
+    BackgroundPositionDirective,
+    CanvasRendererDirective
   ],
   templateUrl: './puzzle-field.component.html',
   styleUrl: './puzzle-field.component.scss',
