@@ -193,9 +193,11 @@ export class PuzzleGameCardsDataService {
           const left = i * wordsNum;
           acc.push(
             {
+              index: i,
               word: item,
+              wordsNumber: this.currentSentence().length,
               image: this.backgroundImagePath(),
-              backgroundPosition: `top -${this.bgPositonTop()}px left -${left}px`,
+              backgroundPosition: `top -${this.bgPositonTop()}px left -${left}px`, // delete?
               puzzleCroppingX: left,
               puzzleCroppingY: this.bgPositonTop()
             },

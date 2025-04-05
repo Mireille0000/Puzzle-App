@@ -92,11 +92,13 @@ export class PuzzlesBlockComponent implements OnInit {
           ) => {
             acc.push(
               {
+                index: item.index, //
                 word: item.word,
+                wordsNumber: item.wordsNumber,
                 image: this.backgroundImagePath(),
                 backgroundPosition: item.backgroundPosition,
                 puzzleCroppingX: item.puzzleCroppingX, //
-                puzzleCroppingY: item.puzzleCroppingY //
+                puzzleCroppingY: item.puzzleCroppingY,
               },
             );
             return acc;

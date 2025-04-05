@@ -7,7 +7,7 @@
 >
   <div
   class="word-puzzle"
-  *ngFor="let item of words"
+  *ngFor="let item of words; let i = index"
   (click)="movePuzzleToPuzzleField(item)"
 
   >
@@ -24,9 +24,11 @@
       {
         color: '#fa34a3',
         word: item.word,
+        wordsNumber: item.wordsNumber,
         image: isClickedImageHint() ? item.image : 'https://letsenhance.io/static/73136da51c245e80edc6ccfe44888a99/1015f/MainBefore.jpg',
         puzzleCroppingX: item.puzzleCroppingX,
-        puzzleCroppingY: item.puzzleCroppingY
+        puzzleCroppingY: item.puzzleCroppingY,
+        puzzleIndex: item.index
       }
     "
     ></canvas>
