@@ -88,9 +88,9 @@ export class PuzzleGamePageComponent implements OnInit {
     this.isDisabled = this.puzzlesDataService.isDisabled;
     this.isCorrectWordsOrder = this.puzzlesDataService.isCorrectWordsOrder; // naming
 
-    console.log('SENTENCE NUMBER', this.sentenceNumber());
-    console.log('IS CORRECT', this.isCorrect())
-    console.log('IS DISABLED', this.isDisabled());
+    // console.log('SENTENCE NUMBER', this.sentenceNumber());
+    // console.log('IS CORRECT', this.isCorrect());
+    // console.log('IS DISABLED', this.isDisabled());
 
     this.canSeeResults = this.puzzlesDataService.canSeeResults;
     this.canSeeResults.update(() => false);

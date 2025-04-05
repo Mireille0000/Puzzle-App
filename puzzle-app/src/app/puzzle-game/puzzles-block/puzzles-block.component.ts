@@ -4,10 +4,11 @@ import {
 import { NgFor, NgStyle } from '@angular/common';
 import { PuzzleGameCardsDataService } from '../services/puzzle-game-cards-data.service';
 import PuzzleData from '../interfaces/puzzle-data.interface';
+import { CanvasRendererDirective } from '../directives/canvas-renderer.directive';
 
 @Component({
   selector: 'pzl-puzzles-block',
-  imports: [NgFor, NgStyle],
+  imports: [NgFor, NgStyle, CanvasRendererDirective],
   templateUrl: './puzzles-block.component.html',
   styleUrl: './puzzles-block.component.scss',
 })
@@ -94,6 +95,8 @@ export class PuzzlesBlockComponent implements OnInit {
                 word: item.word,
                 image: this.backgroundImagePath(),
                 backgroundPosition: item.backgroundPosition,
+                puzzleCroppingX: item.puzzleCroppingX, //
+                puzzleCroppingY: item.puzzleCroppingY //
               },
             );
             return acc;

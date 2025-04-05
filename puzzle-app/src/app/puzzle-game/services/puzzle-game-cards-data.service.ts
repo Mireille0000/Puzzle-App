@@ -188,6 +188,7 @@ export class PuzzleGameCardsDataService {
           () => this.currentSentence().map(() => '1fr').join(' '), //
         );
 
+        // calculate image postion for canvas bg
         const puzzleDataObject = this.currentSentence().reduce((acc: PuzzleData[], item, i) => {
           const left = i * wordsNum;
           acc.push(
@@ -195,6 +196,8 @@ export class PuzzleGameCardsDataService {
               word: item,
               image: this.backgroundImagePath(),
               backgroundPosition: `top -${this.bgPositonTop()}px left -${left}px`,
+              puzzleCroppingX: left,
+              puzzleCroppingY: this.bgPositonTop()
             },
           );
           return acc;

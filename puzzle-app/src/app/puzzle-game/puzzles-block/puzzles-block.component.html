@@ -9,13 +9,30 @@
   class="word-puzzle"
   *ngFor="let item of words"
   (click)="movePuzzleToPuzzleField(item)"
-  [ngStyle]="{
+
+  >
+  <!-- [ngStyle]="{
     'background-image': isClickedImageHint() ? 'url(' + item.image + ')' : 'url()',
     'background-position': item.backgroundPosition
-  }"
-  >
-    <span>
+  }" -->
+    <!-- <span>
       {{item.word}}
-    </span>
+    </span> -->
+    <canvas
+    style="width: 100%; height: 100%;"
+    canvasRenderer [renderPuzzleElement]="
+      {
+        color: '#fa34a3',
+        word: item.word,
+        image: isClickedImageHint() ? item.image : 'https://letsenhance.io/static/73136da51c245e80edc6ccfe44888a99/1015f/MainBefore.jpg',
+        puzzleCroppingX: item.puzzleCroppingX,
+        puzzleCroppingY: item.puzzleCroppingY
+      }
+    "
+    ></canvas>
+    <!-- [ngStyle]="{
+      'background-image': isClickedImageHint() ? 'url(' + item.image + ')' : 'url()',
+      'background-position': item.backgroundPosition
+    }" -->
   </div>
 </div>
