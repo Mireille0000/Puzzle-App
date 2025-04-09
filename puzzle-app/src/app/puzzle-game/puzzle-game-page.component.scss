@@ -1,22 +1,15 @@
 :host {
-  display: grid;
+  // display: grid;
+  display: flex;
   justify-content: center;
-  grid-template-columns: 3fr 1fr;
+  // grid-template-columns: 3fr 1fr;
   gap: 10px;
   margin: auto;
   .puzzle-game {
+    // width: 70vw;
     display: flex;
     flex-direction: column;
     gap: 5px;
-    // .levels-and-rounds {
-    //   height: 5%;
-    //   display: flex;
-    //   gap: 10px;
-    //   .levels, .rounds {
-    //     display: flex;
-    //     gap: 5px;
-    //   }
-    // }
   }
   .game-menu {
     width: 200px;

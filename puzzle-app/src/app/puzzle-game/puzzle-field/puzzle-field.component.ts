@@ -8,6 +8,7 @@ import { BackgroundImageDirective } from '../directives/set-background-image.dir
 import { BackgroundPositionDirective } from '../directives/set-background-position.directive';
 import PuzzleData from '../interfaces/puzzle-data.interface';
 import { CanvasRendererDirective } from '../directives/canvas-renderer.directive';
+import { delay } from 'rxjs';
 
 @Component({
   selector: 'pzl-puzzle-field',
@@ -85,13 +86,14 @@ export class PuzzleFieldComponent implements OnInit {
           this.currentImageHint = this.puzzlesDataService.imageHint;
           this.girdTemplateRowsPuzzle = this.puzzlesDataService.girdTemplateRowsPuzzle;
 
-          this.puzzlesDataService.getImageFile(this.currentImageHint()).subscribe(() => {
+          this.puzzlesDataService.getImageFile(this.currentImageHint()).subscribe((data) => {
             this.backgroundImagePath.update((value) => {
               let newValue = value;
               newValue = '';
               return newValue;
             });
             console.log(this.puzzlesDataService.correctLineBgImage());
+
             this.correctLineBgImage = this.puzzlesDataService.correctLineBgImage;
           });
       });
@@ -116,7 +118,7 @@ export class PuzzleFieldComponent implements OnInit {
 
   calculateBgPosition(index: number) {
     const bgPositions: { bgPosition: string }[] = [];
-    const offset = index * 60;
+    const offset = 10 + (index * 50);
 
     bgPositions.push({ bgPosition: `top -${offset}px left` });
     this.bgPositionTop = `${offset}`;

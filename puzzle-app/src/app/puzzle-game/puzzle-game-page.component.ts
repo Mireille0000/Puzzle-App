@@ -1,5 +1,5 @@
 import {
-  Component, computed, inject, OnInit, signal
+  Component, computed, HostBinding, inject, OnInit, signal
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormGroup } from '@angular/forms';
@@ -87,10 +87,6 @@ export class PuzzleGamePageComponent implements OnInit {
     this.isCorrect = this.puzzlesDataService.isCorrect; // naming
     this.isDisabled = this.puzzlesDataService.isDisabled;
     this.isCorrectWordsOrder = this.puzzlesDataService.isCorrectWordsOrder; // naming
-
-    // console.log('SENTENCE NUMBER', this.sentenceNumber());
-    // console.log('IS CORRECT', this.isCorrect());
-    // console.log('IS DISABLED', this.isDisabled());
 
     this.canSeeResults = this.puzzlesDataService.canSeeResults;
     this.canSeeResults.update(() => false);

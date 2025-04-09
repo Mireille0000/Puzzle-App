@@ -62,7 +62,6 @@ export class StatisticsPageComponent implements OnInit{
       const isAutocompletedCurrentArr = autocompletedSentencesLS['level' + this.currentLevel()][this.currentRound()]['round' + this.currentRound()];
       localStorage.setItem('autocompletedSentencesStatistics', JSON.stringify(autocompletedSentencesLS));
       this.puzzlesDataService.isAutocomplitionUsedArr();
-      console.log("Evil experiment", isAutocompletedCurrentArr, autocompletedSentencesLS);
 
       for(let i = 0; i < isAutocompletedCurrentArr.length; i += 1) {
         const item = isAutocompletedCurrentArr[i].sentenceNumber + 1;

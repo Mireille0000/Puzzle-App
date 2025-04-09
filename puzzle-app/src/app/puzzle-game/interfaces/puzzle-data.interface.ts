@@ -3,7 +3,7 @@ interface PuzzleData {
   word: string,
   wordsNumber: number,
   image: string,
-  backgroundPosition: string,
+  backgroundPosition: string, //
   puzzleCroppingX: number,
   puzzleCroppingY: number
 }

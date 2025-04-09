@@ -97,6 +97,8 @@ export class PuzzleGameCardsDataService {
         }),
   })
 
+  pictureWidth = signal<number>(0); //
+
   getLevelData(level: number): Observable<Level> {
     return this.http.get(
       `/api/rolling-scopes-school/rss-puzzle-data/main/data/wordCollectionLevel${level}.json`,
@@ -183,14 +185,14 @@ export class PuzzleGameCardsDataService {
 
         this.currentSentence.set(sentence.split(' '));
 
-        const wordsNum = 604 / this.currentSentence().length;
+        const wordCardWidth = 1111 / this.currentSentence().length; // picture width
         this.girdTemplateRowsPuzzle.update(
-          () => this.currentSentence().map(() => '1fr').join(' '), //
+          () => this.currentSentence().map(() => '1fr').join(' '),
         );
 
         // calculate image postion for canvas bg
         const puzzleDataObject = this.currentSentence().reduce((acc: PuzzleData[], item, i) => {
-          const left = i * wordsNum;
+          const left = i * wordCardWidth;
           acc.push(
             {
               index: i,
@@ -240,6 +242,11 @@ export class PuzzleGameCardsDataService {
     ).pipe(
       map((data) => {
         const imageUrl = URL.createObjectURL(data);
+
+        const test = new Image();
+        test.onload = () => this.pictureWidth.update((value) => value = test.width);
+        // test.src = imageUrl;
+
         this.backgroundImagePath.update((value) => {
           let newValue = value;
           newValue = imageUrl;

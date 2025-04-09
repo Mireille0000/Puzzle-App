@@ -11,13 +11,6 @@
   (click)="movePuzzleToPuzzleField(item)"
 
   >
-  <!-- [ngStyle]="{
-    'background-image': isClickedImageHint() ? 'url(' + item.image + ')' : 'url()',
-    'background-position': item.backgroundPosition
-  }" -->
-    <!-- <span>
-      {{item.word}}
-    </span> -->
     <canvas
     style="width: 100%; height: 100%;"
     canvasRenderer [renderPuzzleElement]="
@@ -25,16 +18,12 @@
         color: '#fa34a3',
         word: item.word,
         wordsNumber: item.wordsNumber,
-        image: isClickedImageHint() ? item.image : 'https://letsenhance.io/static/73136da51c245e80edc6ccfe44888a99/1015f/MainBefore.jpg',
+        image: isClickedImageHint() ? item.image : '',
         puzzleCroppingX: item.puzzleCroppingX,
         puzzleCroppingY: item.puzzleCroppingY,
         puzzleIndex: item.index
       }
     "
     ></canvas>
-    <!-- [ngStyle]="{
-      'background-image': isClickedImageHint() ? 'url(' + item.image + ')' : 'url()',
-      'background-position': item.backgroundPosition
-    }" -->
   </div>
 </div>

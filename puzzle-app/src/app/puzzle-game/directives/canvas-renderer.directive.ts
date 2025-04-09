@@ -1,12 +1,10 @@
-import { Directive, ElementRef, inject, Input, Renderer2 } from '@angular/core';
+import { Directive, ElementRef, inject, Input } from '@angular/core';
 
 @Directive({
   selector: '[canvasRenderer]'
 })
 export class CanvasRendererDirective {
   private element = inject(ElementRef);
-
-  private renderer = inject(Renderer2);
 
   @Input() set renderPuzzleElement(
     obj: {
@@ -19,13 +17,38 @@ export class CanvasRendererDirective {
       puzzleIndex: number
     }) {
     const canvas = this.element.nativeElement;
-    const canvasCtx = canvas.getContext('2d');
+    const canvasCtx: CanvasRenderingContext2D = canvas.getContext('2d');
     const bgImage = new Image();
-    bgImage.src = obj.image;
+    if (obj.image) {
+      this.createPuzzle(canvasCtx, obj.puzzleIndex, obj.wordsNumber);
+      bgImage.src = obj.image;
+      bgImage.onload = () => {
+        // image
+        const wordCardWidth = bgImage.width / obj.wordsNumber;
+        const sourceX = obj.puzzleCroppingX;
+        const sourceY = obj.puzzleCroppingY + 45;
 
-    bgImage.onload = () => {
-      canvasCtx.beginPath();
-      if (obj.puzzleIndex === 0) {
+        const sourceWidth = wordCardWidth;
+        const sourceHeight = 67;
+
+        const destX = 0;
+        const destY = 0;
+        const destWidth = canvas.width;
+        const destHeight = canvas.height;
+
+        canvasCtx.drawImage(bgImage, sourceX, sourceY, sourceWidth, sourceHeight, destX, destY, destWidth, destHeight);
+        // text styling
+        this.styleCanvasTextOnBgImage(canvasCtx, canvas.width, obj.word, obj.color)
+      }
+    } else {
+      this.createPuzzle(canvasCtx, obj.puzzleIndex, obj.wordsNumber);
+      this.styleEmptyCanvas(canvasCtx, obj.word, obj.color);
+    }
+  }
+
+  createPuzzle(canvasCtx: CanvasRenderingContext2D, puzzleIndex: number, wordsNumber: number) {
+    canvasCtx.beginPath();
+      if (puzzleIndex === 0) {
         // first puzzle shape
         canvasCtx.moveTo(10, 10);
         canvasCtx.lineTo(10, 145);
@@ -34,7 +57,7 @@ export class CanvasRendererDirective {
         canvasCtx.bezierCurveTo(265, 60, 240, 55, 250, 10);
         canvasCtx.lineTo(10, 10);
         canvasCtx.clip();
-      } else if (obj.puzzleIndex === obj.wordsNumber - 1) {
+      } else if (puzzleIndex === wordsNumber - 1) {
         // last puzzle shape
         canvasCtx.moveTo(10, 10);
         canvasCtx.bezierCurveTo(10, 95, 50, 34, 45, 80);
@@ -56,28 +79,25 @@ export class CanvasRendererDirective {
         canvasCtx.closePath;
         canvasCtx.clip();
       }
+  }
 
-      // image
-      const sourceX = obj.puzzleCroppingX;
-      const sourceY = obj.puzzleCroppingY;
-      const sourceWidth = 100;
-      const sourceHeight = 40;
+  styleEmptyCanvas(canvasCtx: CanvasRenderingContext2D, word: string, color: string) {
+    canvasCtx.fillStyle = '#5b9ab5';
+    canvasCtx.fill();
+    canvasCtx.font = 'bold 35px Arial';
+    canvasCtx.fillStyle = 'rgba(228, 206, 206, 0.9)';
+    canvasCtx.fillText(`${word}`, 55, 80);
+    canvasCtx.strokeStyle = `${color}`;
+    canvasCtx.stroke();
+  }
 
-      const destX = 0;
-      const destY = 0;
-      const destWidth = canvas.width;
-      const destHeight = canvas.height;
-
-      canvasCtx.drawImage(bgImage, sourceX, sourceY, sourceWidth, sourceHeight, destX, destY, destWidth, destHeight);
-
-      // text styling
-      canvasCtx.fillStyle = 'rgba(228, 206, 206, 0.9)';
-      canvasCtx.fillRect(90, 25, 120, 75);
-      canvasCtx.fillStyle = 'rgb(180, 104, 207)';
-      canvasCtx.font = '30px Arial';
-      canvasCtx.fillText(`${obj.word}`, 115, 80);
-      canvasCtx.strokeStyle = `${obj.color}`;
-      canvasCtx.stroke();
-    }
+  styleCanvasTextOnBgImage(canvasCtx: CanvasRenderingContext2D, canvasWidth: number, word: string, color: string) {
+    canvasCtx.fillStyle = 'rgba(228, 206, 206, 0.7)';
+    canvasCtx.fillRect(0, 25, canvasWidth, 75);
+    canvasCtx.fillStyle = 'rgb(90, 27, 113)';
+    canvasCtx.font = 'bold 35px Arial';
+    canvasCtx.fillText(`${word}`, 45, 80);
+    canvasCtx.strokeStyle = `${color}`;
+    canvasCtx.stroke();
   }
 }
