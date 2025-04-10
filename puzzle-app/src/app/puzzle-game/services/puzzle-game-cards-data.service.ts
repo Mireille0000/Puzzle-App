@@ -1,7 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
 import {
-  BehaviorSubject,
   map, Observable, Subject,
 } from 'rxjs';
 import { FormControl, FormGroup } from '@angular/forms';
@@ -77,25 +76,13 @@ export class PuzzleGameCardsDataService {
   isAutocomplitionUsed = signal<Array<{sentenceNumber: number}>>([]); //
 
   isAutocomplitionUsedArr = signal<AutocompletionStatistics>({
-    ['level' + 1]: Array.from({length: 45}, (_, i) => {
-    return {['round' + i]: [] as any}
-    }),
-    ['level' + 2]: Array.from({length: 41}, (_, i) => {
-      return {['round' + i]: [] as any}
-      }),
-    ['level' + 3]: Array.from({length: 40}, (_, i) => {
-      return {['round' + i]: [] as any}
-      }),
-    ['level' + 4]: Array.from({length: 41}, (_, i) => {
-        return {['round' + i]: [] as any}
-        }),
-    ['level' + 5]: Array.from({length: 29}, (_, i) => {
-        return {['round' + i]: [] as any};
-        }),
-    ['level' + 6]: Array.from({length: 25},(_, i) => {
-        return {['round' + i]: [] as any};
-        }),
-  })
+    [`level${1}`]: Array.from({ length: 45 }, (_, i) => ({ [`round${i}`]: [] as [] })),
+    [`level${2}`]: Array.from({ length: 41 }, (_, i) => ({ [`round${i}`]: [] as [] })),
+    [`level${3}`]: Array.from({ length: 40 }, (_, i) => ({ [`round${i}`]: [] as [] })),
+    [`level${4}`]: Array.from({ length: 41 }, (_, i) => ({ [`round${i}`]: [] as [] })),
+    [`level${5}`]: Array.from({ length: 29 }, (_, i) => ({ [`round${i}`]: [] as [] })),
+    [`level${6}`]: Array.from({ length: 25 }, (_, i) => ({ [`round${i}`]: [] as [] })),
+  });
 
   pictureWidth = signal<number>(0); //
 
@@ -114,18 +101,19 @@ export class PuzzleGameCardsDataService {
           () => (Array.from(
             { length: parsedData.rounds.length },
             (item, i) => {
-              item = { value: i, option: i + 1 };
-              return item;
+              let itemCopy = item;
+              itemCopy = { value: i, option: i + 1 };
+              return itemCopy;
             },
           )as {value: number, option: number}[]),
         );
         this.form().get('round')?.setValue(this.roundsPerLevel()[this.round()]);
         this.canSeeResults.update(() => false);
-        if(localStorage.getItem('completedStorage')){
+        if (localStorage.getItem('completedStorage')) {
           const lsData = JSON.parse(localStorage.getItem('completedStorage') as string);
           if (lsData.length) {
             this.completedRoundsLevelsStorage.update((value) => [...value, ...lsData]);
-          } {
+          } else {
             this.completedRoundsLevelsStorage.update(() => lsData);
           }
         }
@@ -155,12 +143,12 @@ export class PuzzleGameCardsDataService {
             sentenceNumber: i + 1,
             sound: parsedData.rounds[round].words[i].audioExample,
             sentence: parsedData.rounds[round].words[i].textExample,
-            knownUnknown: '+'
-          }
-          )
+            knownUnknown: '+',
+          });
         }
         this.roundStatisticsData$.next(dataSource);
-        this.roundImageData$.next(parsedData.rounds[this.round()].levelData as Partial<PictureData>);
+        this.roundImageData$.next(parsedData
+          .rounds[this.round()].levelData as Partial<PictureData>);
         return chosenCompletedRound;
       }),
     );
@@ -201,7 +189,7 @@ export class PuzzleGameCardsDataService {
               image: this.backgroundImagePath(),
               backgroundPosition: `top -${this.bgPositonTop()}px left -${left}px`, // delete?
               puzzleCroppingX: left,
-              puzzleCroppingY: this.bgPositonTop()
+              puzzleCroppingY: this.bgPositonTop(),
             },
           );
           return acc;
@@ -243,8 +231,8 @@ export class PuzzleGameCardsDataService {
       map((data) => {
         const imageUrl = URL.createObjectURL(data);
 
-        const test = new Image();
-        test.onload = () => this.pictureWidth.update((value) => value = test.width);
+        // const test = new Image();
+        // test.onload = () => this.pictureWidth.update((value) => value = test.width);
         // test.src = imageUrl;
 
         this.backgroundImagePath.update((value) => {
@@ -291,7 +279,7 @@ export class PuzzleGameCardsDataService {
     resultArr: PuzzleData[],
     sourceArr: PuzzleData[],
     puzzle: PuzzleData,
-    currentSentenceLength: number,
+    // currentSentenceLength: number,
   ) {
     return this.movePuzzles(
       resultArr,
@@ -307,7 +295,7 @@ export class PuzzleGameCardsDataService {
     sourceArr: PuzzleData[],
     resultArr: PuzzleData[],
     puzzle: PuzzleData,
-    currentSentenceLength: number,
+    // currentSentenceLength: number,
   ) {
     return this.movePuzzles(
       sourceArr,
@@ -320,7 +308,7 @@ export class PuzzleGameCardsDataService {
 
   getLocalStorageProgressData(obj: {level: number, roundIndex: number}) {
     const currentProgressInfo = localStorage.getItem('currentProgress');
-    if(currentProgressInfo) {
+    if (currentProgressInfo) {
       localStorage.setItem('currentProgress', JSON.stringify(obj));
       this.gameProgressData.update(() => currentProgressInfo);
     } else {
@@ -330,17 +318,17 @@ export class PuzzleGameCardsDataService {
 
   getCompletedRoundsStorage(obj: {level: number, round: number}) {
     const completedStorageData = localStorage.getItem('completedStorage');
-    if(completedStorageData) {
+    if (completedStorageData) {
       if (this.completedRoundsLevelsStorage().length) {
         this.completedRoundsLevelsStorage.update((value) => {
           const newValue = value;
           return [...newValue, obj].map((item) => JSON.stringify(item))
-          .reduce((acc:{level: number, round: number}[], item, i, arr) => {
-            if(arr.indexOf(item) === i) {
-              acc.push(JSON.parse(item));
-            }
-            return acc;
-          }, [])
+            .reduce((acc:{level: number, round: number}[], item, i, arr) => {
+              if (arr.indexOf(item) === i) {
+                acc.push(JSON.parse(item));
+              }
+              return acc;
+            }, []);
         });
         localStorage.setItem('completedStorage', JSON.stringify(this.completedRoundsLevelsStorage()));
         console.log('Service', this.completedRoundsLevelsStorage());

@@ -14,7 +14,6 @@ export class AppComponent {
   private router = inject(Router);
 
   @HostBinding('style.background') get background() {
-    if (this.router.url === '/puzzle-game') return 'linear-gradient( #c8b08f, #5e7f94)';
-    else return;
+    return this.router.url === '/puzzle-game' ? 'linear-gradient( #c8b08f, #5e7f94)' : '';
   }
 }

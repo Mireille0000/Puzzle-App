@@ -114,11 +114,12 @@ export class PuzzlesBlockComponent implements OnInit {
 
   checkGameProgress() {
     const parsedGameProgressData = JSON.parse(this.gameProgressData());
-    if(localStorage.getItem('currentProgress')){
+    if (localStorage.getItem('currentProgress')) {
       this.round.update(() => parsedGameProgressData.roundIndex);
       this.level.update(() => parsedGameProgressData.level);
     }
   }
+
   getRandomInt(max: number) {
     return Math.floor(Math.random() * max);
   }
@@ -130,10 +131,10 @@ export class PuzzlesBlockComponent implements OnInit {
           this.resultArr,
           this.words,
           puzzle,
-          this.currentSentence().length,
+          // this.currentSentence().length,
         );
 
-        this.canSeeResults.update(() => false);
+      this.canSeeResults.update(() => false);
     }
   }
 
