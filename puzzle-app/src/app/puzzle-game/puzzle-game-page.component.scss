@@ -1,12 +1,9 @@
 :host {
-  // display: grid;
   display: flex;
   justify-content: center;
-  // grid-template-columns: 3fr 1fr;
   gap: 10px;
   margin: auto;
   .puzzle-game {
-    // width: 70vw;
     display: flex;
     flex-direction: column;
     gap: 5px;
@@ -27,7 +24,9 @@
       .check-button, .continue-button, .results-button, .autocomplition-button {
         width: 150px;
         height: 35px;
-        font-family: "Lucida Sans", sans-serif;
+        font-family: "Winky Rough", sans-serif;
+        font-size: 15px;
+        font-weight: 700;
         border-radius: 10px;
         background-color: rgb(173, 182, 176);
         cursor: pointer;

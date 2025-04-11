@@ -1,4 +1,8 @@
-<div class="logo">Puzzle Game</div>
+<div class="logo">
+  <ng-container>
+    <canvas style="width: 130px; height: 60px;" #logoPuzzle></canvas>
+  </ng-container>
+</div>
 <nav>
   <ul>
     <li><a [routerLink]="currentLink" routerLinkActive="active-page" *ngIf="isLogged; else elseBlock" (click)="logOut()">{{logInLogOut}}</a></li>
