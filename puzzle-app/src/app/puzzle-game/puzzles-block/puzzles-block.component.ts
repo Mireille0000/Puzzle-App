@@ -4,10 +4,11 @@ import {
 import { NgFor, NgStyle } from '@angular/common';
 import { PuzzleGameCardsDataService } from '../services/puzzle-game-cards-data.service';
 import PuzzleData from '../interfaces/puzzle-data.interface';
+import { CanvasRendererDirective } from '../directives/canvas-renderer.directive';
 
 @Component({
   selector: 'pzl-puzzles-block',
-  imports: [NgFor, NgStyle],
+  imports: [NgFor, NgStyle, CanvasRendererDirective],
   templateUrl: './puzzles-block.component.html',
   styleUrl: './puzzles-block.component.scss',
 })
@@ -91,9 +92,13 @@ export class PuzzlesBlockComponent implements OnInit {
           ) => {
             acc.push(
               {
+                index: item.index, //
                 word: item.word,
+                wordsNumber: item.wordsNumber,
                 image: this.backgroundImagePath(),
                 backgroundPosition: item.backgroundPosition,
+                puzzleCroppingX: item.puzzleCroppingX, //
+                puzzleCroppingY: item.puzzleCroppingY,
               },
             );
             return acc;
@@ -109,11 +114,12 @@ export class PuzzlesBlockComponent implements OnInit {
 
   checkGameProgress() {
     const parsedGameProgressData = JSON.parse(this.gameProgressData());
-    if(localStorage.getItem('currentProgress')){
+    if (localStorage.getItem('currentProgress')) {
       this.round.update(() => parsedGameProgressData.roundIndex);
       this.level.update(() => parsedGameProgressData.level);
     }
   }
+
   getRandomInt(max: number) {
     return Math.floor(Math.random() * max);
   }
@@ -125,10 +131,10 @@ export class PuzzlesBlockComponent implements OnInit {
           this.resultArr,
           this.words,
           puzzle,
-          this.currentSentence().length,
+          // this.currentSentence().length,
         );
 
-        this.canSeeResults.update(() => false);
+      this.canSeeResults.update(() => false);
     }
   }
 

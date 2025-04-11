@@ -1,24 +1,19 @@
 :host {
   .source-block-wrapper {
-    height: 10vh;
+    height: 7vh;
     display: grid;
     justify-items: center;
     align-items: center;
-    gap: 10px;
     padding: 5px;
     text-align: center;
-    background-color: rgb(161 178 200 / 90%);
+    background-color: rgb(210 219 230 / 90%);
     border-radius: 10px;
     .word-puzzle {
-      width: fit-content;
       height: 47px;
       display: flex;
       align-items: center;
       box-sizing: border-box;
       overflow: hidden;
-      padding: 0 20px;
-      // background-color: rgb(223, 240, 254);
-      background-color: #b27474;
       cursor: pointer;
       transition: 0.5s;
       span {

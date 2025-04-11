@@ -3,7 +3,6 @@ import {
 } from '@angular/core';
 import { PuzzleGameCardsDataService } from '../services/puzzle-game-cards-data.service';
 import { AudioHintAnimationDirective } from '../directives/audio-hint-animation.directive';
-import { RoundStatisticsData } from '../../statistics-page/interfaces/round-statistics-data.interface';
 import { PictureData } from '../../statistics-page/interfaces/picture-data.interface';
 
 @Component({
@@ -43,7 +42,7 @@ export class HintsBlockComponent implements OnInit {
 
   backgroundImagePath = signal<string>(''); // ???
 
-  roundPictureData: Partial<PictureData> = {}
+  roundPictureData: Partial<PictureData> = {};
 
   ngOnInit(): void {
     this.level = this.puzzlesDataService.level;

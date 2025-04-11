@@ -9,8 +9,8 @@ import { StatisticsPageComponent } from './statistics-page/statistics-page.compo
 export const routes: Routes = [
   { path: 'login', component: LoginPageComponent },
   { path: 'welcome', component: WelcomePageComponent },
-  { path: 'puzzle-game', component: PuzzleGamePageComponent, canActivate: [loggedUserPagesGuard]},
-  { path: 'statistics', component: StatisticsPageComponent},
+  { path: 'puzzle-game', component: PuzzleGamePageComponent, canActivate: [loggedUserPagesGuard] },
+  { path: 'statistics', component: StatisticsPageComponent },
   { path: '', redirectTo: 'welcome', pathMatch: 'full' },
   { path: '**', component: ErrorPageComponent },
 ];

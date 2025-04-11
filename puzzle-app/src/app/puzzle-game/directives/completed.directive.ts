@@ -1,12 +1,13 @@
-import { Directive, ElementRef, inject, Input, OnChanges, OnInit, Renderer2, signal, SimpleChanges } from '@angular/core';
-import { PuzzleGameCardsDataService } from '../services/puzzle-game-cards-data.service';
+import {
+  Directive, ElementRef, inject, Input, OnChanges, OnInit, Renderer2, signal, SimpleChanges,
+} from '@angular/core';
 import { delay, of } from 'rxjs';
+import { PuzzleGameCardsDataService } from '../services/puzzle-game-cards-data.service';
 
 @Directive({
-  selector: '[completed]'
+  selector: '[completed]',
 })
 export class CompletedDirective implements OnChanges, OnInit {
-
   private element = inject(ElementRef);
 
   private renderer = inject(Renderer2);
@@ -21,31 +22,30 @@ export class CompletedDirective implements OnChanges, OnInit {
     this.level = this.puzzlesDataService.level;
   }
 
-
   @Input() set setCompletedStyles(completedArr: {level: number, round: number}[]) {
-      if(completedArr.length > 0) {
-        this.completedArr = completedArr;
-        // for (let i = 0; i < completedArr.length; i++) {
-        //   if(parseInt(this.element.nativeElement.value) === completedArr[i].round + 1){
-        //     this.renderer.addClass(this.element.nativeElement, 'completed');
-        //   } else {
-        //   }
-        // }
-      }
+    if (completedArr.length > 0) {
+      this.completedArr = completedArr;
+      // for (let i = 0; i < completedArr.length; i++) {
+      //   if(parseInt(this.element.nativeElement.value) === completedArr[i].round + 1){
+      //     this.renderer.addClass(this.element.nativeElement, 'completed');
+      //   } else {
+      //   }
+      // }
+    }
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if(changes['setCompletedStyles']) {
+    if (changes['setCompletedStyles']) {
       of(this.completedArr).pipe(
-        delay(2000)
+        delay(2000),
       ).subscribe((data) => {
-        if(data.length > 0) {
-          for (let i = 0; i < data.length; i++) {
-          if(+this.element.nativeElement.innerText === data[i].round + 1 &&
-            this.level() === data[i].level
-          ){
-            this.renderer.addClass(this.element.nativeElement, 'completed');
-          }
+        if (data.length > 0) {
+          for (let i = 0; i < data.length; i += 1) {
+            if (+this.element.nativeElement.innerText === data[i].round + 1
+            && this.level() === data[i].level
+            ) {
+              this.renderer.addClass(this.element.nativeElement, 'completed');
+            }
           }
         }
       });

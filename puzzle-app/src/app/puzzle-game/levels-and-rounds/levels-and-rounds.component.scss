@@ -5,14 +5,23 @@
     display: flex;
     gap: 5px;
     font-weight: bold;
+    label {
+      font-size: larger;
+      font-weight: bold;
+      color: #b9c4dd;
+      text-shadow: 1px 1px 2px #e6822d, 0 0 1em #0909e6, 0 0 0.2em #0909e6;
+    }
     select {
       border: 3px solid #8e70b3;
       border-radius: 5px;
       background-color: #92c6dd;
-      font-family: "Lucida Sans", sans-serif;
+      background-color: #5b9ab5;
+      font-family: "Winky Rough", sans-serif;
+      font-size: 15px;
+      font-weight: 800;
       .completed {
         background-color: #8e70b3;
-        font-family:Verdana, Geneva, Tahoma, sans-serif;
+        font-family: "Winky Rough", sans-serif;
       }
       cursor: pointer;
       transition: 1s;

@@ -7,15 +7,23 @@
 >
   <div
   class="word-puzzle"
-  *ngFor="let item of words"
+  *ngFor="let item of words; let i = index"
   (click)="movePuzzleToPuzzleField(item)"
-  [ngStyle]="{
-    'background-image': isClickedImageHint() ? 'url(' + item.image + ')' : 'url()',
-    'background-position': item.backgroundPosition
-  }"
+
   >
-    <span>
-      {{item.word}}
-    </span>
+    <canvas
+    style="width: 100%; height: 100%;"
+    canvasRenderer [renderPuzzleElement]="
+      {
+        color: '#fa34a3',
+        word: item.word,
+        wordsNumber: item.wordsNumber,
+        image: isClickedImageHint() ? item.image : '',
+        puzzleCroppingX: item.puzzleCroppingX,
+        puzzleCroppingY: item.puzzleCroppingY,
+        puzzleIndex: item.index
+      }
+    "
+    ></canvas>
   </div>
 </div>

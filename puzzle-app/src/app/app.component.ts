@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component, HostBinding, inject } from '@angular/core';
+import { Router, RouterOutlet } from '@angular/router';
 import { NgOptimizedImage } from '@angular/common';
 import { HeaderComponent } from './core/header/header.component';
 import { FooterComponent } from './core/footer/footer.component';
@@ -11,4 +11,9 @@ import { FooterComponent } from './core/footer/footer.component';
   styleUrl: './app.component.scss',
 })
 export class AppComponent {
+  private router = inject(Router);
+
+  @HostBinding('style.background') get background() {
+    return this.router.url === '/puzzle-game' ? 'linear-gradient( #c8b08f, #5e7f94)' : '';
+  }
 }

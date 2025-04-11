@@ -1,12 +1,13 @@
 import {
   Component, inject, OnInit, signal,
 } from '@angular/core';
-import { AsyncPipe, NgFor, NgIf, NgStyle } from '@angular/common';
+import { NgFor, NgStyle } from '@angular/common';
 import { PuzzleGameCardsDataService } from '../services/puzzle-game-cards-data.service';
 import { BackgroundColorDirective } from '../directives/add-background-color.directive';
 import { BackgroundImageDirective } from '../directives/set-background-image.directive';
 import { BackgroundPositionDirective } from '../directives/set-background-position.directive';
 import PuzzleData from '../interfaces/puzzle-data.interface';
+import { CanvasRendererDirective } from '../directives/canvas-renderer.directive';
 
 @Component({
   selector: 'pzl-puzzle-field',
@@ -15,7 +16,8 @@ import PuzzleData from '../interfaces/puzzle-data.interface';
     NgStyle,
     BackgroundColorDirective,
     BackgroundImageDirective,
-    BackgroundPositionDirective
+    BackgroundPositionDirective,
+    CanvasRendererDirective,
   ],
   templateUrl: './puzzle-field.component.html',
   styleUrl: './puzzle-field.component.scss',
@@ -80,18 +82,19 @@ export class PuzzleFieldComponent implements OnInit {
     this.puzzlesDataService
       .getWordsData(this.level(), this.round(), this.currentSentenceNum())
       .subscribe(() => {
-          this.currentImageHint = this.puzzlesDataService.imageHint;
-          this.girdTemplateRowsPuzzle = this.puzzlesDataService.girdTemplateRowsPuzzle;
+        this.currentImageHint = this.puzzlesDataService.imageHint;
+        this.girdTemplateRowsPuzzle = this.puzzlesDataService.girdTemplateRowsPuzzle;
 
-          this.puzzlesDataService.getImageFile(this.currentImageHint()).subscribe(() => {
-            this.backgroundImagePath.update((value) => {
-              let newValue = value;
-              newValue = '';
-              return newValue;
-            });
-            console.log(this.puzzlesDataService.correctLineBgImage());
-            this.correctLineBgImage = this.puzzlesDataService.correctLineBgImage;
+        this.puzzlesDataService.getImageFile(this.currentImageHint()).subscribe(() => {
+          this.backgroundImagePath.update((value) => {
+            let newValue = value;
+            newValue = '';
+            return newValue;
           });
+          console.log(this.puzzlesDataService.correctLineBgImage());
+
+          this.correctLineBgImage = this.puzzlesDataService.correctLineBgImage;
+        });
       });
 
     this.puzzlesDataService.sourcePuzzles$.subscribe((data) => {
@@ -106,7 +109,7 @@ export class PuzzleFieldComponent implements OnInit {
   checkGameProgress() {
     const parsedGameProgressData = JSON.parse(this.gameProgressData());
 
-    if(localStorage.getItem('currentProgress')){
+    if (localStorage.getItem('currentProgress')) {
       this.round.update(() => parsedGameProgressData.roundIndex);
       this.level.update(() => parsedGameProgressData.level);
     }
@@ -114,7 +117,7 @@ export class PuzzleFieldComponent implements OnInit {
 
   calculateBgPosition(index: number) {
     const bgPositions: { bgPosition: string }[] = [];
-    const offset = index * 60;
+    const offset = 10 + (index * 50);
 
     bgPositions.push({ bgPosition: `top -${offset}px left` });
     this.bgPositionTop = `${offset}`;
@@ -128,7 +131,7 @@ export class PuzzleFieldComponent implements OnInit {
           this.sourceBlock,
           this.resultBlock,
           puzzle,
-          this.currentSentence().length,
+          // this.currentSentence().length,
         );
     }
   }
