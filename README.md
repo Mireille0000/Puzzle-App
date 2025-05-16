@@ -1,7 +1,9 @@
 # Puzzle-App 🧩
 
 ### About ℹ️
-Puzzle Game Application is a browser game aimed at improvement of language skills in English both with enlargement of art knowledge. 🗣️🖌️
+Puzzle Game Application is a browser game aimed at improvement of language skills in English both with enlargement of commun art knowledge. 🗣️🖌️
+
+It is a pet project that helps me better understand Angular framework 🅰️.
 
 ### Rules 📜
 Complete sentences correctly and open puzzles line by line. 
@@ -14,9 +16,10 @@ You can use the hints as well: audio in english, sentence translation and puzzle
 
 When completing a round you can see statistics.
 
-### Tech stack ⚙️
+### Tech stack ⚙️👩🏻‍💻
 - HTML;
 - SASS;
+- TypeScript;
 - Angular 19;
 - RxJs;
 - Angualar Material;
